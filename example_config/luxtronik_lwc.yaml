@@ -1,0 +1,252 @@
+# This is an example configuration for an ESPHome firmware to integrate the
+# Luxtronik V1 heating control unit. The configuration requires the ESPHome
+# Luxtronik V1 (luxtronik_v1) component.
+
+# generic configuration (to be adapted)
+esphome:
+  name: "luxtronik-lwc"
+  friendly_name: "Luxtronik LWC"
+
+# example ESP32 firmware (can be replaced by appropriate configuration)
+esp32:
+  board: nodemcu-32s
+
+# include Luxtronik V1 component (mandatory)
+external_components:
+  - source: github://jensrossbach/esphome-luxtronik-v1
+    components: [luxtronik_v1]
+
+# enable logging (optional)
+logger:
+  level: INFO
+
+# enable Home Assistant API (mandatory if used with Home Assistant, alternatively configure MQTT)
+api:
+  encryption:
+    key: !secret ha_api_key
+
+# enable over-the-air updates (recommended)
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+# enable Wi-Fi (mandatory)
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # enable fallback hotspot (captive portal) in case Wi-Fi connection fails
+  ap:
+    ssid: "Luxtronik LWC Fallback Hotspot"
+    password: !secret fallback_hs_password
+
+# needed for fallback hotspot (see above)
+captive_portal:
+
+# time component (needed to have a valid time zone for the error and shutdown times)
+time:
+  - platform: homeassistant
+    id: ha_time
+
+# UART component (mandatory, RX/TX pins must be adapted to the used hardware)
+uart:
+  id: uart_bus
+  rx_pin: GPIO16    # UART2 RX
+  tx_pin: GPIO17    # UART2 TX
+  baud_rate: 57600
+  data_bits: 8
+  stop_bits: 1
+  parity: NONE
+
+# Luxtronik V1 component (mandatory)
+luxtronik_v1:
+  uart_id: uart_bus
+
+# numeric sensors (not needed sensors can be removed)
+sensor:
+  - platform: luxtronik_v1
+    flow_temperature:
+      name: Ist-Temperatur Vorlauf Heizkreis
+    return_temperature:
+      name: Ist-Temperatur Rücklauf Heizkreis
+    return_set_temperature:
+      name: Soll-Temperatur Rücklauf Heizkreis
+    hot_gas_temperature:
+      name: Heißgastemperatur
+    outside_temperature:
+      name: Außentemperatur
+    hot_water_temperature:
+      name: Ist-Temperatur Brauchwarmwasser
+    hot_water_set_temperature:
+      name: Soll-Temperatur Brauchwarmwasser
+    heat_source_input_temperature:
+      name: Temperatur Wärmequelleneintritt
+    heat_source_output_temperature:
+      name: Temperatur Wärmequellenaustritt
+    mixed_circuit_1_temperature:
+      name: Ist-Temperatur Vorlauf Mischkreis 1
+    mixed_circuit_1_set_temperature:
+      name: Soll-Temperatur Vorlauf Mischkreis 1
+    remote_adjuster_temperature:
+      name: Temperatur Raumfernversteller
+  - platform: wifi_signal
+    name: Wi-Fi Signal
+    update_interval: 60s
+
+# binary sensors (not needed sensors can be removed)
+binary_sensor:
+  - platform: luxtronik_v1
+    defrost_brine_flow:
+      name: Abtauende
+    power_provider_lock_period:
+      name: Sperrzeit EVU
+    low_pressure_state:
+      name: Niederdruckpressostat
+    high_pressure_state:
+      name: Hochdruckpressostat
+    engine_protection:
+      name: Motorschutz
+    external_power:
+      name: Fremdstromanode
+    defrost_valve:
+      name: Abtauventil
+    hot_water_pump:
+      name: Brauchwarmwasserumwälzpumpe
+    heating_pump:
+      name: Heizungsumwälzpumpe
+    floor_heating_pump:
+      name: Fußbodenheizungsumwälzpumpe
+    housing_ventilation:
+      name: Ventilation Wärmepumpengehäuse
+    ventilation_pump:
+      name: Ventilator
+    compressor_1:
+      name: Verdichter 1
+    compressor_2:
+      name: Verdichter 2
+    extra_pump:
+      name: Zusatzumwälzpumpe
+    secondary_heater_1:
+      name: Zweiter Wärmeerzeuger 1
+    secondary_heater_2_failure:
+      name: Zweiter Wärmeerzeuger 2 Sammelstörung
+    device_communication:
+      name: Gerätekommunikation
+  - platform: status
+    name: Status
+
+# text sensors (not needed sensors can be removed)
+text_sensor:
+  - platform: luxtronik_v1
+    device_type:
+      name: Anlagentyp
+      # alternatively, the filters can be removed and translation can be done in Home Assistant
+      filters:
+        map:
+          - ERC -> Nicht belegt
+          - SW1 -> Sole/Wasser 1 Verdichter
+          - SW2 -> Sole/Wasser 2 Verdichter
+          - WW1 -> Wasser/Wasser 1 Verdichter
+          - WW2 -> Wasser/Wasser 2 Verdichter
+          - L1I -> Luft/Wasser 1 Verdichter Innenaufstellung
+          - L2I -> Luft/Wasser 2 Verdichter Innenaufstellung
+          - L1A -> Luft/Wasser 1 Verdichter Außenaufstellung
+          - L2A -> Luft/Wasser 2 Verdichter Außenaufstellung
+          - KSW -> Kompaktheizzentrale Sole/Wasser
+          - KLW -> Kompaktheizzentrale Luft/Wasser
+          - SWC -> Sole/Wasser Compact
+          - LWC -> Luft/Wasser Compact
+          - L2G -> Luft/Wasser Großgerät 2 Verdichter
+          - WZS -> Wärmezentrale Sole/Wasser
+    firmware_version:
+      name: Firmware-Version
+    bivalence_level:
+      name: Bivalenzstufe
+      # alternatively, the filters can be removed and translation can be done in Home Assistant
+      filters:
+        map:
+          - single_compressor -> Ein Verdichter darf laufen
+          - dual_compressor -> Zwei Verdichter dürfen laufen
+          - additional_heater -> Zusätzlicher Wärmeerzeuger darf mitlaufen
+    operational_state:
+      name: Betriebszustand
+      # alternatively, the filters can be removed and translation can be done in Home Assistant
+      filters:
+        map:
+          - standby -> Bereitschaft
+          - heat -> Heizen
+          - hot_water -> Warmwasserzubereitung
+          - defrost -> Abtauen
+          - swimming_pool -> Schwimmbad
+          - provider_lock -> EVU-Sperre
+    heating_mode:
+      name: Betriebsart Heizung
+      # alternatively, the filters can be removed and translation can be done in Home Assistant
+      filters:
+        map:
+          - auto -> Automatik
+          - second_heater -> Zweiter Wärmeerzeuger
+          - party -> Party
+          - vacation -> Ferien
+          - off -> Aus
+    hot_water_mode:
+      name: Betriebsart Brauchwarmwasser
+      # alternatively, the filters can be removed and translation can be done in Home Assistant
+      filters:
+        map:
+          - auto -> Automatik
+          - second_heater -> Zweiter Wärmeerzeuger
+          - party -> Party
+          - vacation -> Ferien
+          - off -> Aus
+    mixer_1_state:
+      name: Ausgang Mischer 1
+      # alternatively, the filters can be removed and translation can be done in Home Assistant
+      filters:
+        map:
+          - idle -> Keine Ansteuerung
+          - opening -> Fährt auf
+          - closing -> Fährt zu
+    error_1_code:
+      name: Fehler 1 - Code
+    error_1_time:
+      name: Fehler 1 - Zeit
+    error_2_code:
+      name: Fehler 2 - Code
+    error_2_time:
+      name: Fehler 2 - Zeit
+    error_3_code:
+      name: Fehler 3 - Code
+    error_3_time:
+      name: Fehler 3 - Zeit
+    error_4_code:
+      name: Fehler 4 - Code
+    error_4_time:
+      name: Fehler 4 - Zeit
+    error_5_code:
+      name: Fehler 5 - Code
+    error_5_time:
+      name: Fehler 5 - Zeit
+    deactivation_1_code:
+      name: Abschaltung 1 - Code
+    deactivation_1_time:
+      name: Abschaltung 1 - Zeit
+    deactivation_2_code:
+      name: Abschaltung 2 - Code
+    deactivation_2_time:
+      name: Abschaltung 2 - Zeit
+    deactivation_3_code:
+      name: Abschaltung 3 - Code
+    deactivation_3_time:
+      name: Abschaltung 3 - Zeit
+    deactivation_4_code:
+      name: Abschaltung 4 - Code
+    deactivation_4_time:
+      name: Abschaltung 4 - Zeit
+    deactivation_5_code:
+      name: Abschaltung 5 - Code
+    deactivation_5_time:
+      name: Abschaltung 5 - Zeit
+  - platform: wifi_info
+    ip_address:
+      name: IP Adresse
