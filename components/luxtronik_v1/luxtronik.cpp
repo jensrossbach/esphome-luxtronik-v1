@@ -131,6 +131,7 @@ namespace esphome::luxtronik_v1
     Luxtronik::Luxtronik(uart::UARTComponent* uart)
         : PollingComponent()
         , m_device(uart)
+#ifdef USE_SENSOR
         , m_sensor_flow_temperature(nullptr)
         , m_sensor_return_temperature(nullptr)
         , m_sensor_return_set_temperature(nullptr)
@@ -143,6 +144,8 @@ namespace esphome::luxtronik_v1
         , m_sensor_mixed_circuit_1_temperature(nullptr)
         , m_sensor_mixed_circuit_1_set_temperature(nullptr)
         , m_sensor_remote_adjuster_temperature(nullptr)
+#endif
+#ifdef USE_BINARY_SENSOR
         , m_sensor_defrost_brine_flow(nullptr)
         , m_sensor_power_provider_lock_period(nullptr)
         , m_sensor_high_pressure_state(nullptr)
@@ -153,7 +156,6 @@ namespace esphome::luxtronik_v1
         , m_sensor_hot_water_pump(nullptr)
         , m_sensor_floor_heating_pump(nullptr)
         , m_sensor_heating_pump(nullptr)
-        , m_sensor_mixer_1_state(nullptr)
         , m_sensor_housing_ventilation(nullptr)
         , m_sensor_ventilation_pump(nullptr)
         , m_sensor_compressor_1(nullptr)
@@ -161,6 +163,10 @@ namespace esphome::luxtronik_v1
         , m_sensor_extra_pump(nullptr)
         , m_sensor_secondary_heater_1(nullptr)
         , m_sensor_secondary_heater_2_failure(nullptr)
+        , m_sensor_device_communication(nullptr)
+#endif
+#ifdef USE_TEXT_SENSOR
+        , m_sensor_mixer_1_state(nullptr)
         , m_sensor_device_type(nullptr)
         , m_sensor_firmware_version(nullptr)
         , m_sensor_bivalence_level(nullptr)
@@ -187,7 +193,7 @@ namespace esphome::luxtronik_v1
         , m_sensor_deactivation_3_time(nullptr)
         , m_sensor_deactivation_4_time(nullptr)
         , m_sensor_deactivation_5_time(nullptr)
-        , m_sensor_device_communication(nullptr)
+#endif
         , m_response_buffer{}
         , m_cursor(0)
         , m_received_responses(RESPONSE_ALL)
@@ -259,10 +265,12 @@ namespace esphome::luxtronik_v1
             ESP_LOGW(TAG, "No full response from Luxtronik in last update cycle:  RESP %04X", m_received_responses);
         }
 
+#ifdef USE_BINARY_SENSOR
         if (m_sensor_device_communication != nullptr)
         {
             m_sensor_device_communication->publish_state(m_received_responses != RESPONSE_ALL);
         }
+#endif
 
         m_received_responses = RESPONSE_NONE;
         m_slot_block = false;
@@ -278,6 +286,7 @@ namespace esphome::luxtronik_v1
     {
         ESP_LOGCONFIG(TAG, "Luxtronik V1");
 
+#ifdef USE_SENSOR
         LOG_SENSOR("", "Flow Temperture Sensor", m_sensor_flow_temperature);
         LOG_SENSOR("", "Return Temperture Sensor", m_sensor_return_temperature);
         LOG_SENSOR("", "Return Set-Temperture Sensor", m_sensor_return_set_temperature);
@@ -290,7 +299,9 @@ namespace esphome::luxtronik_v1
         LOG_SENSOR("", "Mixed Circuit 1 Temperture Sensor", m_sensor_mixed_circuit_1_temperature);
         LOG_SENSOR("", "Mixed Circuit 1 Set-Temperture Sensor", m_sensor_mixed_circuit_1_set_temperature);
         LOG_SENSOR("", "Remote Adjuster Temperture Sensor", m_sensor_remote_adjuster_temperature);
+#endif
 
+#ifdef USE_BINARY_SENSOR
         LOG_BINARY_SENSOR("", "Defrost/Brine/Flow Sensor", m_sensor_defrost_brine_flow);
         LOG_BINARY_SENSOR("", "Power Provider Lock Period Sensor", m_sensor_power_provider_lock_period);
         LOG_BINARY_SENSOR("", "Low Pressure State Sensor", m_sensor_low_pressure_state);
@@ -308,7 +319,10 @@ namespace esphome::luxtronik_v1
         LOG_BINARY_SENSOR("", "Extra Pump Sensor", m_sensor_extra_pump);
         LOG_BINARY_SENSOR("", "Secondary Heater 1 Sensor", m_sensor_secondary_heater_1);
         LOG_BINARY_SENSOR("", "Secondary Heater 2 Failure Sensor", m_sensor_secondary_heater_2_failure);
+        LOG_BINARY_SENSOR("", "Device Communication Sensor", m_sensor_device_communication);
+#endif
 
+#ifdef USE_TEXT_SENSOR
         LOG_TEXT_SENSOR("", "Mixer 1 Sensor", m_sensor_mixer_1_state);
         LOG_TEXT_SENSOR("", "Device Type Sensor", m_sensor_device_type);
         LOG_TEXT_SENSOR("", "Firmware Version Sensor", m_sensor_firmware_version);
@@ -334,6 +348,7 @@ namespace esphome::luxtronik_v1
         LOG_TEXT_SENSOR("", "Deactivation 3 Time Sensor", m_sensor_deactivation_3_time);
         LOG_TEXT_SENSOR("", "Deactivation 4 Time Sensor", m_sensor_deactivation_4_time);
         LOG_TEXT_SENSOR("", "Deactivation 5 Time Sensor", m_sensor_deactivation_5_code);
+#endif
     }
 
     void Luxtronik::send_request(const char* request)
@@ -362,6 +377,7 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_flow_temperature != nullptr)
             {
                 m_sensor_flow_temperature->
@@ -369,9 +385,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_return_temperature != nullptr)
             {
                 m_sensor_return_temperature->
@@ -379,9 +397,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_return_set_temperature != nullptr)
             {
                 m_sensor_return_set_temperature->
@@ -389,9 +409,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_hot_gas_temperature != nullptr)
             {
                 m_sensor_hot_gas_temperature->
@@ -399,9 +421,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_outside_temperature != nullptr)
             {
                 m_sensor_outside_temperature->
@@ -409,9 +433,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_hot_water_temperature != nullptr)
             {
                 m_sensor_hot_water_temperature->
@@ -419,9 +445,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_hot_water_set_temperature != nullptr)
             {
                 m_sensor_hot_water_set_temperature->
@@ -429,9 +457,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_heat_source_input_temperature != nullptr)
             {
                 m_sensor_heat_source_input_temperature->
@@ -439,9 +469,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_heat_source_output_temperature != nullptr)
             {
                 m_sensor_heat_source_output_temperature->
@@ -449,9 +481,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_mixed_circuit_1_temperature != nullptr)
             {
                 m_sensor_mixed_circuit_1_temperature->
@@ -459,9 +493,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_mixed_circuit_1_set_temperature != nullptr)
             {
                 m_sensor_mixed_circuit_1_set_temperature->
@@ -469,9 +505,11 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_SENSOR
             if (m_sensor_remote_adjuster_temperature != nullptr)
             {
                 m_sensor_remote_adjuster_temperature->
@@ -479,6 +517,7 @@ namespace esphome::luxtronik_v1
                         get_temperature(
                             response.substr(start, end - start)));
             }
+#endif
 
             m_received_responses |= RESPONSE_TEMPERATURES;
 
@@ -493,6 +532,7 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_defrost_brine_flow != nullptr)
             {
                 m_sensor_defrost_brine_flow->
@@ -500,9 +540,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(  // on = defrost ending or flow rate ok (depending on device type)
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_power_provider_lock_period != nullptr)
             {
                 m_sensor_power_provider_lock_period->
@@ -510,9 +552,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(  // off = lock period, on = not locked
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_high_pressure_state != nullptr)
             {
                 m_sensor_high_pressure_state->
@@ -520,9 +564,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(  // off = pressure ok, on = not ok
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_engine_protection != nullptr)
             {
                 m_sensor_engine_protection->
@@ -530,9 +576,11 @@ namespace esphome::luxtronik_v1
                         !get_binary_state(  // on = engine protection ok, off = not ok
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_low_pressure_state != nullptr)
             {
                 m_sensor_low_pressure_state->
@@ -540,9 +588,11 @@ namespace esphome::luxtronik_v1
                         !get_binary_state(  // on = pressure ok, off = not ok
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_external_power != nullptr)
             {
                 m_sensor_external_power->
@@ -550,6 +600,7 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             m_received_responses |= RESPONSE_INPUTS;
 
@@ -564,6 +615,7 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_defrost_valve != nullptr)
             {
                 m_sensor_defrost_valve->
@@ -571,9 +623,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_hot_water_pump != nullptr)
             {
                 m_sensor_hot_water_pump->
@@ -581,9 +635,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_floor_heating_pump != nullptr)
             {
                 m_sensor_floor_heating_pump->
@@ -591,9 +647,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_heating_pump != nullptr)
             {
                 m_sensor_heating_pump->
@@ -601,6 +659,7 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
@@ -610,6 +669,7 @@ namespace esphome::luxtronik_v1
             end = response.find(DELIMITER, start);
             bool mixerClose = get_binary_state(response.substr(start, end - start));
 
+#ifdef USE_TEXT_SENSOR
             // merge the two separate states (Mischer 1 fährt auf, Mischer 1 fährt zu) into one sensor
             if (m_sensor_mixer_1_state != nullptr)
             {
@@ -621,9 +681,11 @@ namespace esphome::luxtronik_v1
                                 ? "closing"
                                 : "idle");
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_housing_ventilation != nullptr)
             {
                 m_sensor_housing_ventilation->
@@ -631,9 +693,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_ventilation_pump != nullptr)
             {
                 m_sensor_ventilation_pump->
@@ -641,9 +705,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_compressor_1 != nullptr)
             {
                 m_sensor_compressor_1->
@@ -651,9 +717,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_compressor_2 != nullptr)
             {
                 m_sensor_compressor_2->
@@ -661,9 +729,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_extra_pump != nullptr)
             {
                 m_sensor_extra_pump->
@@ -671,9 +741,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_secondary_heater_1 != nullptr)
             {
                 m_sensor_secondary_heater_1->
@@ -681,9 +753,11 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_BINARY_SENSOR
             if (m_sensor_secondary_heater_2_failure != nullptr)
             {
                 m_sensor_secondary_heater_2_failure->
@@ -691,6 +765,7 @@ namespace esphome::luxtronik_v1
                         get_binary_state(
                             response.substr(start, end - start)));
             }
+#endif
 
             m_received_responses |= RESPONSE_OUTPUTS;
 
@@ -705,6 +780,7 @@ namespace esphome::luxtronik_v1
 
             if (starts_with(slot, TYPE_ERRORS_SLOT) && (response.length() >= MIN_SLOT_LENGTH))
             {
+#ifdef USE_TEXT_SENSOR
                 char slotID = response.at(INDEX_SLOT_ID);
                 switch (slotID)
                 {
@@ -714,6 +790,7 @@ namespace esphome::luxtronik_v1
                     case SLOT_4_ID: { parse_slot(response.substr(10), m_sensor_error_4_code, m_sensor_error_4_time); break; }
                     case SLOT_5_ID: { parse_slot(response.substr(10), m_sensor_error_5_code, m_sensor_error_5_time); break; }
                 }
+#endif
             }
             else if (!m_slot_block)
             {
@@ -736,6 +813,7 @@ namespace esphome::luxtronik_v1
 
             if (starts_with(slot, TYPE_DEACTIVATIONS_SLOT) && (response.length() >= MIN_SLOT_LENGTH))
             {
+#ifdef USE_TEXT_SENSOR
                 char slotID = response.at(INDEX_SLOT_ID);
                 switch (slotID)
                 {
@@ -745,6 +823,7 @@ namespace esphome::luxtronik_v1
                     case SLOT_4_ID: { parse_slot(response.substr(10), m_sensor_deactivation_4_code, m_sensor_deactivation_4_time); break; }
                     case SLOT_5_ID: { parse_slot(response.substr(10), m_sensor_deactivation_5_code, m_sensor_deactivation_5_time); break; }
                 }
+#endif
             }
             else if (!m_slot_block)
             {
@@ -769,6 +848,7 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_TEXT_SENSOR
             if (m_sensor_device_type != nullptr)
             {
                 value = std::atoi(response.substr(start, end - start).c_str());
@@ -793,9 +873,11 @@ namespace esphome::luxtronik_v1
                 }
                 m_sensor_device_type->publish_state(text);
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_TEXT_SENSOR
             if (m_sensor_firmware_version != nullptr)
             {
                 m_sensor_firmware_version->
@@ -804,9 +886,11 @@ namespace esphome::luxtronik_v1
                             start + 1,  // version without 'V' prefix
                             end - start - 1));
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_TEXT_SENSOR
             if (m_sensor_bivalence_level != nullptr)
             {
                 value = std::atoi(response.substr(start, end - start).c_str());
@@ -819,9 +903,11 @@ namespace esphome::luxtronik_v1
                 }
                 m_sensor_bivalence_level->publish_state(text);
             }
+#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_TEXT_SENSOR
             if (m_sensor_operational_state != nullptr)
             {
                 value = std::atoi(response.substr(start, end - start).c_str());
@@ -837,6 +923,7 @@ namespace esphome::luxtronik_v1
                 }
                 m_sensor_operational_state->publish_state(text);
             }
+#endif
 
             m_received_responses |= RESPONSE_INFORMATION;
 
@@ -853,6 +940,7 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_TEXT_SENSOR
             if (m_sensor_heating_mode != nullptr)
             {
                 value = std::atoi(response.substr(start, end - start).c_str());
@@ -867,6 +955,7 @@ namespace esphome::luxtronik_v1
                 }
                 m_sensor_heating_mode->publish_state(text);
             }
+#endif
 
             m_received_responses |= RESPONSE_HEATING_MODE;
 
@@ -883,6 +972,7 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
+#ifdef USE_TEXT_SENSOR
             if (m_sensor_hot_water_mode != nullptr)
             {
                 value = std::atoi(response.substr(start, end - start).c_str());
@@ -897,11 +987,13 @@ namespace esphome::luxtronik_v1
                 }
                 m_sensor_hot_water_mode->publish_state(text);
             }
+#endif
 
             m_received_responses |= RESPONSE_HOT_WATER_MODE;
         }
     }
 
+#ifdef USE_TEXT_SENSOR
     void Luxtronik::parse_slot(const std::string& slot, text_sensor::TextSensor* sensor_code, text_sensor::TextSensor* sensor_time)
     {
         size_t start = 0;
@@ -950,4 +1042,5 @@ namespace esphome::luxtronik_v1
             sensor_time->publish_state(timeStr);
         }
     }
+#endif
 }  // namespace esphome::luxtronik_v1
