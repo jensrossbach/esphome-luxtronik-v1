@@ -31,13 +31,13 @@ from esphome.const      import (
 )
 
 
+CODEOWNERS = ["@jensrossbach"]
+DEPENDENCIES = ["uart"]
+
 CONF_LUXTRONIK_ID = "luxtronik_id"
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
-
-CODEOWNERS = ["@jens_rossbach"]
-DEPENDENCIES = ["uart"]
 
 CONFIG_SCHEMA = cv.Schema(
 {

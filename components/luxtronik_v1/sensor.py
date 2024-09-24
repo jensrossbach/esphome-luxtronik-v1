@@ -37,7 +37,7 @@ from .                  import (
 )
 
 
-CODEOWNERS = ["@jens_rossbach"]
+CODEOWNERS = ["@jensrossbach"]
 
 CONF_FLOW_TEMPERATURE                = "flow_temperature"
 CONF_RETURN_TEMPERATURE              = "return_temperature"
