@@ -35,7 +35,7 @@ from .                  import (
 )
 
 
-CODEOWNERS = ["@jens_rossbach"]
+CODEOWNERS = ["@jensrossbach"]
 
 CONF_DEVICE_TYPE         = "device_type"
 CONF_FIRMWARE_VERSION    = "firmware_version"

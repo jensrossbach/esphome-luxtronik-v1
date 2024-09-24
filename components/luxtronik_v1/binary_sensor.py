@@ -38,7 +38,7 @@ from .                  import (
 )
 
 
-CODEOWNERS = ["@jens_rossbach"]
+CODEOWNERS = ["@jensrossbach"]
 
 CONF_DEFROST_BRINE_FLOW         = "defrost_brine_flow"
 CONF_POWER_PROVIDER_LOCK_PERIOD = "power_provider_lock_period"
