@@ -6,6 +6,9 @@
 esphome:
   name: "luxtronik-lwc"
   friendly_name: "Luxtronik LWC"
+  project:
+    name: jensrossbach.luxtronik_v1
+    version: 1.0.1
 
 # example ESP32 firmware (can be replaced by appropriate configuration)
 esp32:
