@@ -122,6 +122,7 @@ namespace esphome::luxtronik_v1
     private:
         void send_request(const char* req);
         void parse_response(const std::string& response);
+        void clear_uart_buffer();
 #ifdef USE_TEXT_SENSOR
         void parse_slot(const std::string& slot, text_sensor::TextSensor* sensor_code, text_sensor::TextSensor* sensor_time);
 #endif
