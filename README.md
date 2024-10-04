@@ -2,9 +2,29 @@
 > [!NOTE]
 > This is the German version, for the English version, scroll down or click [here](#esphome-luxtronik-v1-english).
 
-Luxtronik V1 ist eine ESPHome-Komponente zur Erstellung einer ESP-Firmware, die die Integration eines Luxtronik V1 Heizungssteuergeräts in das Smart Home ermöglicht. Die Komponente ist primär für die Einbindung in Home Assistant gedacht, aber über MQTT kann auch eine Integration mit einer alternativen Hausautomatisierungs-Software realisiert werden.
+Luxtronik V1 ist eine ESPHome-Komponente zur Erstellung einer ESP-Firmware, die die Integration eines Luxtronik V1 Heizungssteuergeräts in das Smart Home ermöglicht. Die Komponente ist primär für die Einbindung in Home Assistant gedacht, aber über MQTT kann auch eine Integration mit einer alternativen Hausautomatisierungs-Software realisiert werden. Die Luxtronik Heizungsregelung in der Version 1 (V1) verfügt nicht über eine Netzwerkschnittstelle, sondern stellt lediglich eine RS-232-Schnittstelle zur Verfügung. Daher ist ein Mikrocontroller als Gateway zwischen Heizungssteuergerät und Netzwerk notwendig.
 
 Dieses Projekt wurde stark von der [Luxtronik V1 ESPHome-Komponente](https://github.com/CBrosius/luxtronik_v1) von [CBrosius](https://github.com/CBrosius) inspiriert. Vielen Dank an CBrosius für die großartige Arbeit, die mir sehr geholfen hat, die Luxtronik-Schnittstelle und die Arbeitsweise von ESPHome-Komponenten zu verstehen.
+
+- [Haftungsausschluss](#haftungsausschluss)
+- [Lizenz](LICENSE)
+- [Hardware-Aufbau](#hardware-aufbau)
+- [Software-Konfiguration](#software-konfiguration)
+  - [Luxtronik-Komponente](#luxtronik-komponente)
+  - [UART-Komponente](#uart-komponente)
+  - [Time-Komponente](#time-komponente)
+  - [API/MQTT-Komponente](#apimqtt-komponente)
+  - [WiFi-Komponente](#wifi-komponente)
+  - [Sensoren](#sensoren)
+    - [Numerische Sensoren](#numerische-sensoren)
+    - [Binäre Sensoren](#binäre-sensoren)
+    - [Textsensoren](#textsensoren)
+- [Luxtronik-Konfiguration](#luxtronik-konfiguration)
+
+## Haftungsausschluss
+**DIESE SOFTWARE UND DEREN AUTOR STEHEN IN KEINER VERBINDUNG ZU AIT / ALPHA INNOTEC.**
+
+**DIE SOFTWARE WIRD OHNE MÄNGELGEWÄHR UND OHNE JEGLICHE AUSDRÜCKLICHE ODER STILLSCHWEIGENDE GEWÄHRLEISTUNG, EINSCHLIEẞLICH, ABER NICHT BESCHRÄNKT AUF DIE GEWÄHRLEISTUNG DER MARKTGÄNGIGKEIT, DER EIGNUNG FÜR EINEN BESTIMMTEN ZWECK UND DER NICHTVERLETZUNG VON RECHTEN DRITTER, ZUR VERFÜGUNG GESTELLT. DIE AUTOREN ODER URHEBERRECHTSINHABER SIND IN KEINEM FALL HAFTBAR FÜR ANSPRÜCHE, SCHÄDEN ODER ANDERE VERPFLICHTUNGEN, OB IN EINER VERTRAGS- ODER HAFTUNGSKLAGE, EINER UNERLAUBTEN HANDLUNG ODER ANDERWEITIG, DIE SICH AUS ODER IN VERBINDUNG MIT DER SOFTWARE ODER DER NUTZUNG ODER ANDEREN GESCHÄFTEN MIT DER SOFTWARE ERGEBEN.**
 
 ## Hardware-Aufbau
 Obwohl sich dieses Projekt hauptsächlich auf die Software-Implementierung konzentriert, habe ich auch einen möglichen Hardware-Aufbau dokumentiert. Dabei gibt es verschiedenen Möglichkeiten für den Aufbau, insbesondere in Hinblick auf den verwendeten Mikrocontroller (z.B. ESP8266 oder ESP32) und die Art und Weise, wie der Mikrocontroller mit dem Luxtronik Heizungssteuergerät verbunden wird.
@@ -12,7 +32,7 @@ Obwohl sich dieses Projekt hauptsächlich auf die Software-Implementierung konze
 > [!TIP]
 > Grundsätzlich kann sowohl ein ESP8266 als auch ein ESP32 verwendet werden. Letzterer ist dabei besser geeignet, da er über mehrere Hardware-UARTs verfügt. Der ESP8266 verfügt dagegen nur über einen einzigen bidirektionalen Hardware-UART, der standardmäßig für das Logging über USB verwendet wird. Bei Verwendung eines ESP8266 muss man daher entweder auf das USB-Logging verzichten oder Software-UART verwenden (welches unzuverlässiger ist).
 
-Das Luxtronik Heizungssteuergerät verfügt über eine RS-232-Schnittstelle, über die verschiedene Daten der Wärmepumpe abgefragt werden können. Der ESP-Mikrocontroller kann aufgrund der unterschiedlichen Spannungspegel nicht direkt an die RS-232-Schnittstelle angeschlossen werden. Stattdessen wird ein MAX3232-IC benötigt, um zwischen den unterschiedlichen Spannungspegeln auf Luxtronik- und Mikrocontroller-Seite zu konvertieren. Es gibt fertige Seriell-zu-TTL Konvertierungsmodulplatinen, die mit einem MAX3232-IC und einem DE-9 (auch D-Sub 9) Stecker ausgestattet sind. Auf der RS-232-Seite haben diese Module einen (meist weiblichen) DE-9-Stecker (an dem aber nur GND, RX und TX verbunden sind) und auf der TTL-Seite haben sie 4 Pins - VCC und GND für die Stromversorgung des Chips sowie RX und TX für die Datenübertragung. Diese Pins müssen mit den entsprechenden Pins des Mikrocontrollers verbunden werden. Der folgende Steckplatinen-Schaltplan zeigt ein Beispiel für einen Versuchsaufbau mit einem ESP32 NodeMCU Entwicklungsboard als Mikrocontroller.
+Der ESP-Mikrocontroller kann aufgrund der unterschiedlichen Spannungspegel nicht direkt an die RS-232-Schnittstelle des Luxtronik Heizungssteuergeräts angeschlossen werden. Stattdessen wird ein MAX3232-IC benötigt, um zwischen den unterschiedlichen Spannungspegeln auf Luxtronik- und Mikrocontroller-Seite zu konvertieren. Es gibt fertige Seriell-zu-TTL Konvertierungsmodulplatinen, die mit einem MAX3232-IC und einem DE-9 (auch D-Sub 9) Stecker ausgestattet sind. Auf der RS-232-Seite haben diese Module einen (meist weiblichen) DE-9-Stecker (an dem aber nur GND, RX und TX verbunden sind) und auf der TTL-Seite haben sie 4 Pins - VCC und GND für die Stromversorgung des Chips sowie RX und TX für die Datenübertragung. Diese Pins müssen mit den entsprechenden Pins des Mikrocontrollers verbunden werden. Der folgende Steckplatinen-Schaltplan zeigt ein Beispiel für einen Versuchsaufbau mit einem ESP32 NodeMCU Entwicklungsboard als Mikrocontroller.
 
 > [!IMPORTANT]
 > Verbinde den VCC-Pin mit dem **3V3-Pin** des ESP-Mikrocontrollers und **nicht** mit dem 5V-Pin. Dadurch wird sichergestellt, dass die RX- und TX-Pins ebenfalls einen Spannungspegel von 3,3V haben und die GPIO-Pins des Mikrocontrollers nicht beschädigt werden.
@@ -342,9 +362,29 @@ Um die serielle Schnittstelle des Luxtronik V1 Heizungssteuergeräts nutzen zu k
 -----
 
 # ESPHome Luxtronik V1 (English)
-Luxtronik V1 is an ESPHome component to build an ESP firmware for integrating a Luxtronik V1 heating control unit into your smart home. It is primarily intended for integration into Home Assistant, but integration with an alternative home automation software can also be realized via MQTT.
+Luxtronik V1 is an ESPHome component to build an ESP firmware for integrating a Luxtronik V1 heating control unit into your smart home. It is primarily intended for integration into Home Assistant, but integration with an alternative home automation software can also be realized via MQTT. The Luxtronik heating control unit in version 1 (V1) does not have a network interface, but only provides an RS-232 interface. A microcontroller is therefore required as a gateway between the heating control unit and the network.
 
 This project was heavily inspired by the [Luxtronik V1 ESPHome component](https://github.com/CBrosius/luxtronik_v1) from [CBrosius](https://github.com/CBrosius). Many thanks to CBrosius for the great work that helped me a lot to understand the Luxtronik interface as well as how ESPHome components work.
+
+- [Disclaimer](#disclaimer)
+- [License](LICENSE)
+- [Hardware Setup](#hardware-setup)
+- [Software Setup](#software-setup)
+  - [Luxtronik Component](#luxtronik-component)
+  - [UART Component](#uart-component)
+  - [Time Component](#time-component)
+  - [API/MQTT Component](#apimqtt-component)
+  - [WiFi Component](#wifi-component)
+  - [Sensors](#sensors)
+    - [Numeric Sensors](#numeric-sensors)
+    - [Binary Sensors](#binary-sensors)
+    - [Text Sensors](#text-sensors)
+- [Luxtronik Configuration](#luxtronik-configuration)
+
+## Disclaimer
+**THIS SOFTWARE AND ITS AUTHOR ARE NOT AFFILIATED WITH AIT / ALPHA INNOTEC.**
+
+**THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
 
 ## Hardware Setup
 Although this project mainly focusses on the software implementation, an example hardware setup is also documented here. There are different possibilities for the setup in regards to the used microcontroller (e.g., ESP8266 or ESP32) and the way how the microcontroller is connected to the Luxtronik heating control unit.
@@ -352,7 +392,7 @@ Although this project mainly focusses on the software implementation, an example
 > [!TIP]
 > In principle, both an ESP8266 and an ESP32 can be used. The latter is more suitable as it has several hardware UARTs. The ESP8266, on the other hand, only has a single bi-directional hardware UART, which is used by default for logging via USB. When using an ESP8266, you must therefore either do without USB logging or use software UART (which is less reliable).
 
-The Luxtronik heating control unit provides an RS-232 interface which can be used to retrieve various data of the heat pump. The ESP microcontroller cannot be directly connected to the RS-232 interface due to different voltage levels. Instead, a MAX3232 RS-232 line driver/receiver is needed in order to convert between the different voltage levels on Luxtronik and microcontroller side. There are ready-to-use serial to TTL converter modules equipped with a MAX3232 IC and a DE-9 connector available. On the RS-232 side, these modules have a (usually female) DE-9 connector (having only GND, RX and TX pins connected) and on the TTL side, they have 4 pins - VCC and GND for powering the chip as well as RX and TX for the data transfer. Those pins must be connected to appropriate pins of the microcontroller. The following breadboard schematic shows an example test setup using an ESP32 NodeMCU development board as microcontroller.
+The ESP microcontroller cannot be directly connected to the RS-232 interface of the Luxtronik heating control unit due to different voltage levels. Instead, a MAX3232 RS-232 line driver/receiver is needed in order to convert between the different voltage levels on Luxtronik and microcontroller side. There are ready-to-use serial to TTL converter modules equipped with a MAX3232 IC and a DE-9 connector available. On the RS-232 side, these modules have a (usually female) DE-9 connector (having only GND, RX and TX pins connected) and on the TTL side, they have 4 pins - VCC and GND for powering the chip as well as RX and TX for the data transfer. Those pins must be connected to appropriate pins of the microcontroller. The following breadboard schematic shows an example test setup using an ESP32 NodeMCU development board as microcontroller.
 
 > [!IMPORTANT]
 > Connect the VCC pin to the **3V3 pin** of the ESP microcontroller and **not** to the 5V pin. This ensures that the RX and TX pins also have a voltage level of 3.3V and the GPIO pins of the microcontroller don't get damaged.
@@ -381,8 +421,8 @@ To build an ESPHome firmware, you have to create a YAML based configuration file
 
 The following sections describe the most notable components contained in the firmware configuration file.
 
-### Luxtronik V1 Component
-The Luxtronik V1 component is essential and must be added in order to use its sensors.
+### Luxtronik Component
+The Luxtronik component is essential and must be added in order to use its sensors.
 
 As this is a custom component which is not part of ESPHome, it must be imported explicitly. The easiest way is to load the component directly from this repository.
 
