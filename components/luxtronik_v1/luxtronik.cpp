@@ -351,9 +351,22 @@ namespace esphome::luxtronik_v1
 #endif
     }
 
+    void Luxtronik::clear_uart_buffer()
+    {
+        uint8_t byte;
+
+        while (m_device.available())
+        {
+            m_device.read_byte(&byte);
+        }
+    }
+
     void Luxtronik::send_request(const char* request)
     {
         ESP_LOGD(TAG, "Sending request:  DATA %s", request);
+
+        // ensure we have an empty UART buffer for next request
+        clear_uart_buffer();
 
         m_device.write_str(request);
         m_device.write_byte(ASCII_CR);
