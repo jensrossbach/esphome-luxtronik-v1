@@ -20,6 +20,9 @@ Dieses Projekt wurde stark von der [Luxtronik V1 ESPHome-Komponente](https://git
     - [Binäre Sensoren](#binäre-sensoren)
     - [Textsensoren](#textsensoren)
 - [Luxtronik-Konfiguration](#luxtronik-konfiguration)
+- [Hilfe/Unterstützung](SUPPORT.md)
+- [Mitwirkung](CONTRIBUTING.md)
+- [Bekannte Probleme](https://github.com/jensrossbach/esphome-luxtronik-v1/issues?q=is%3Aissue+is%3Aopen+label%3A%22known+issue%22)
 
 ## Haftungsausschluss
 **DIESE SOFTWARE UND DEREN AUTOR STEHEN IN KEINER VERBINDUNG ZU AIT / ALPHA INNOTEC.**
@@ -380,6 +383,9 @@ This project was heavily inspired by the [Luxtronik V1 ESPHome component](https:
     - [Binary Sensors](#binary-sensors)
     - [Text Sensors](#text-sensors)
 - [Luxtronik Configuration](#luxtronik-configuration)
+- [Help/Support](SUPPORT.md#-getting-support-for-esphome-luxtronik-v1)
+- [Contributing](CONTRIBUTING.md#contributing-to-esphome-luxtronik-v1)
+- [Known Issues](https://github.com/jensrossbach/esphome-luxtronik-v1/issues?q=is%3Aissue+is%3Aopen+label%3A%22known+issue%22)
 
 ## Disclaimer
 **THIS SOFTWARE AND ITS AUTHOR ARE NOT AFFILIATED WITH AIT / ALPHA INNOTEC.**
