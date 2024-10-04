@@ -81,7 +81,7 @@ Die folgenden generischen Einstellungen können konfiguriert werden:
 
 | Option | Benötigt | Standardwert | Beschreibung |
 | ------ | --------- | ------------- |------------ |
-| `uart_id` | ja | - | Kennung der konfigurierten UART-Komponente (siehe unten) |
+| `uart_id` | ja | - | ID der konfigurierten UART-Komponente (siehe unten) |
 | `update_interval` | nein | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
 
 ##### Beispiel
@@ -444,7 +444,7 @@ The following generic configuration items can be configured:
 
 | Option | Mandatory | Default Value | Description |
 | ------ | --------- | ------------- |------------ |
-| `uart_id` | yes | n/a | Identifier of the configured UART component (see below) |
+| `uart_id` | yes | n/a | ID of the configured UART component (see below) |
 | `update_interval` | no | 60s | The interval how often the component fetches data from the heating control unit |
 
 ##### Example
