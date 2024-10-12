@@ -34,18 +34,30 @@ from esphome.const      import (
 CODEOWNERS = ["@jensrossbach"]
 DEPENDENCIES = ["uart"]
 
-CONF_LUXTRONIK_ID = "luxtronik_id"
+CONF_LUXTRONIK_ID     = "luxtronik_id"
+CONF_REQUEST_DELAY    = "request_delay"
+CONF_RESPONSE_TIMEOUT = "response_timeout"
+CONF_MAX_RETRIES      = "max_retries"
+
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
 
 CONFIG_SCHEMA = cv.Schema(
 {
-    cv.GenerateID(): cv.declare_id(Luxtronik)
+    cv.GenerateID(): cv.declare_id(Luxtronik),
+    cv.Optional(CONF_REQUEST_DELAY, default = 0): cv.int_range(min = 0, max = 2000),
+    cv.Optional(CONF_RESPONSE_TIMEOUT, default = 2000): cv.int_range(min = 500, max = 5000),
+    cv.Optional(CONF_MAX_RETRIES, default = 5): cv.int_range(min = 0, max = 15)
 }).extend(uart.UART_DEVICE_SCHEMA).extend(cv.polling_component_schema("60s"))
 
 
 async def to_code(config):
     uart_cmp = await cg.get_variable(config[CONF_UART_ID])
-    cmp = cg.new_Pvariable(config[CONF_ID], uart_cmp)
+    cmp = cg.new_Pvariable(
+                config[CONF_ID],
+                uart_cmp,
+                config[CONF_REQUEST_DELAY],
+                config[CONF_RESPONSE_TIMEOUT],
+                config[CONF_MAX_RETRIES])
     await cg.register_component(cmp, config)

@@ -38,13 +38,27 @@ namespace esphome::luxtronik_v1
     static constexpr const char* const TYPE_INPUTS             = "1200";
     static constexpr const char* const TYPE_OUTPUTS            = "1300";
     static constexpr const char* const TYPE_ERRORS             = "1500";
-    static constexpr const char* const TYPE_ERRORS_SLOT        = "150";
+    static constexpr const char* const TYPE_ERRORS_SLOT        = "1500;150";
     static constexpr const char* const TYPE_DEACTIVATIONS      = "1600";
-    static constexpr const char* const TYPE_DEACTIVATIONS_SLOT = "160";
+    static constexpr const char* const TYPE_DEACTIVATIONS_SLOT = "1600;160";
     static constexpr const char* const TYPE_INFORMATION        = "1700";
     static constexpr const char* const TYPE_ALL                = "1800";
     static constexpr const char* const TYPE_HEATING_MODE       = "3405";
     static constexpr const char* const TYPE_HOT_WATER_MODE     = "3505";
+
+    static constexpr const char* const REQUEST_TYPE[] =
+    {
+        TYPE_TEMPERATURES,
+        TYPE_INPUTS,
+        TYPE_OUTPUTS,
+        TYPE_ERRORS,
+        TYPE_DEACTIVATIONS,
+        TYPE_INFORMATION,
+        TYPE_HEATING_MODE,
+        TYPE_HOT_WATER_MODE
+    };
+
+    static constexpr const size_t NUM_REQUESTS = 8;
 
     static constexpr const char ASCII_CR      = 0x0D;  // cariage return ('\r')
     static constexpr const char ASCII_LF      = 0x0A;  // line feed ('\n')
@@ -61,8 +75,9 @@ namespace esphome::luxtronik_v1
     static constexpr const size_t MIN_RESPONSE_LENGTH =  5;
     static constexpr const size_t MIN_SLOT_LENGTH     = 10;
 
-    static constexpr const size_t INDEX_RESPONSE_START = 5;
-    static constexpr const size_t INDEX_SLOT_ID        = 8;
+    static constexpr const size_t INDEX_RESPONSE_START =  5;
+    static constexpr const size_t INDEX_SLOT_ID        =  8;
+    static constexpr const size_t INDEX_SLOT_START     = 10;
 
     static constexpr const uint16_t RESPONSE_TEMPERATURES   = 1 << 0;
     static constexpr const uint16_t RESPONSE_INPUTS         = 1 << 1;
@@ -128,7 +143,11 @@ namespace esphome::luxtronik_v1
         OFF           = 4
     };
 
-    Luxtronik::Luxtronik(uart::UARTComponent* uart)
+    Luxtronik::Luxtronik(
+                    uart::UARTComponent* uart,
+                    uint16_t request_delay,
+                    uint16_t response_timeout,
+                    uint16_t max_retries)
         : PollingComponent()
         , m_device(uart)
 #ifdef USE_SENSOR
@@ -194,16 +213,24 @@ namespace esphome::luxtronik_v1
         , m_sensor_deactivation_4_time(nullptr)
         , m_sensor_deactivation_5_time(nullptr)
 #endif
+        , m_request_delay(request_delay)
+        , m_response_timeout(response_timeout)
+        , m_max_retries(max_retries)
         , m_response_buffer{}
         , m_cursor(0)
         , m_received_responses(RESPONSE_ALL)
         , m_response_ready(false)
         , m_slot_block(false)
+        , m_retry_count(0)
+        , m_current_request(0)
+        , m_timer()
     {
     }
 
     void Luxtronik::loop()
     {
+        m_timer.loop();
+
         if (m_response_ready)
         {
             // we have a full response, so parse it
@@ -237,6 +264,7 @@ namespace esphome::luxtronik_v1
 
                         // we have a full response, so parse it in next loop
                         m_response_ready = true;
+
                         break;
                     }
                     else
@@ -260,6 +288,8 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::update()
     {
+        m_timer.cancel();
+
         if (m_received_responses != RESPONSE_ALL)
         {
             ESP_LOGW(TAG, "No full response from Luxtronik in last update cycle:  RESP %04X", m_received_responses);
@@ -273,18 +303,20 @@ namespace esphome::luxtronik_v1
 #endif
 
         m_received_responses = RESPONSE_NONE;
-        m_slot_block = false;
-
-        // reset cursor in case last response was not complete
-        m_cursor = 0;
+        m_retry_count = 0;
 
         // request temperatures
-        send_request(TYPE_TEMPERATURES);
+        m_current_request = 0;
+        request_data();
     }
 
     void Luxtronik::dump_config()
     {
         ESP_LOGCONFIG(TAG, "Luxtronik V1");
+
+        ESP_LOGCONFIG(TAG, "  Request delay: %u", m_request_delay);
+        ESP_LOGCONFIG(TAG, "  Response timeout: %u", m_response_timeout);
+        ESP_LOGCONFIG(TAG, "  Max. number of retries: %u", m_max_retries);
 
 #ifdef USE_SENSOR
         LOG_SENSOR("", "Flow Temperture Sensor", m_sensor_flow_temperature);
@@ -351,22 +383,63 @@ namespace esphome::luxtronik_v1
 #endif
     }
 
-    void Luxtronik::clear_uart_buffer()
+    void Luxtronik::next_request()
     {
-        uint8_t byte;
+        ++m_current_request;
+        m_retry_count = 0;
 
-        while (m_device.available())
+        if (m_current_request < NUM_REQUESTS)
         {
-            m_device.read_byte(&byte);
+            m_timer.schedule(
+                        std::chrono::milliseconds(m_request_delay),
+                        [this]() { request_data(); });
+        }
+        else
+        {
+            m_current_request = 0;
+        }
+    }
+
+    void Luxtronik::request_data()
+    {
+        send_request(REQUEST_TYPE[m_current_request]);
+
+        m_timer.schedule(
+                    std::chrono::milliseconds(m_response_timeout),
+                    [this]() { handle_timeout(); });
+    }
+
+    void Luxtronik::handle_timeout()
+    {
+        ESP_LOGW(TAG, "No response from Luxtronik within %u ms:  REQ %s", m_response_timeout, REQUEST_TYPE[m_current_request]);
+
+        if (++m_retry_count > m_max_retries)
+        {
+            ESP_LOGW(TAG, "Maximum number of retries reached");
+
+            ++m_current_request;
+            m_retry_count = 0;
+        }
+
+        if (m_current_request < NUM_REQUESTS)
+        {
+            request_data();
+        }
+        else
+        {
+            m_current_request = 0;
         }
     }
 
     void Luxtronik::send_request(const char* request)
     {
-        ESP_LOGD(TAG, "Sending request:  DATA %s", request);
+        ESP_LOGD(TAG, "Sending request:  DATA %s  TRY #%u", request, m_retry_count + 1);
 
-        // ensure we have an empty UART buffer for next request
+        // ensure we start with a clean state
         clear_uart_buffer();
+        m_cursor = 0;
+        m_response_ready = false;
+        m_slot_block = false;
 
         m_device.write_str(request);
         m_device.write_byte(ASCII_CR);
@@ -384,6 +457,8 @@ namespace esphome::luxtronik_v1
 
         if (starts_with(response, TYPE_TEMPERATURES))
         {
+            m_timer.cancel();
+
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
             // skip number of elements
@@ -535,10 +610,12 @@ namespace esphome::luxtronik_v1
             m_received_responses |= RESPONSE_TEMPERATURES;
 
             // request inputs
-            send_request(TYPE_INPUTS);
+            next_request();
         }
         else if (starts_with(response, TYPE_INPUTS))
         {
+            m_timer.cancel();
+
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
             // skip number of elements
@@ -618,10 +695,12 @@ namespace esphome::luxtronik_v1
             m_received_responses |= RESPONSE_INPUTS;
 
             // request outputs
-            send_request(TYPE_OUTPUTS);
+            next_request();
         }
         else if (starts_with(response, TYPE_OUTPUTS))
         {
+            m_timer.cancel();
+
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
             // skip number of elements
@@ -783,25 +862,23 @@ namespace esphome::luxtronik_v1
             m_received_responses |= RESPONSE_OUTPUTS;
 
             // request errors
-            send_request(TYPE_ERRORS);
+            next_request();
         }
         else if (starts_with(response, TYPE_ERRORS))
         {
-            size_t start = INDEX_RESPONSE_START;
-            size_t end = response.find(DELIMITER, start);
-            std::string slot = response.substr(start, end - start);
+            m_timer.cancel();
 
-            if (starts_with(slot, TYPE_ERRORS_SLOT) && (response.length() >= MIN_SLOT_LENGTH))
+            if ((response.length() >= MIN_SLOT_LENGTH) && starts_with(response, TYPE_ERRORS_SLOT))
             {
 #ifdef USE_TEXT_SENSOR
                 char slotID = response.at(INDEX_SLOT_ID);
                 switch (slotID)
                 {
-                    case SLOT_1_ID: { parse_slot(response.substr(10), m_sensor_error_1_code, m_sensor_error_1_time); break; }
-                    case SLOT_2_ID: { parse_slot(response.substr(10), m_sensor_error_2_code, m_sensor_error_2_time); break; }
-                    case SLOT_3_ID: { parse_slot(response.substr(10), m_sensor_error_3_code, m_sensor_error_3_time); break; }
-                    case SLOT_4_ID: { parse_slot(response.substr(10), m_sensor_error_4_code, m_sensor_error_4_time); break; }
-                    case SLOT_5_ID: { parse_slot(response.substr(10), m_sensor_error_5_code, m_sensor_error_5_time); break; }
+                    case SLOT_1_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_error_1_code, m_sensor_error_1_time); break; }
+                    case SLOT_2_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_error_2_code, m_sensor_error_2_time); break; }
+                    case SLOT_3_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_error_3_code, m_sensor_error_3_time); break; }
+                    case SLOT_4_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_error_4_code, m_sensor_error_4_time); break; }
+                    case SLOT_5_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_error_5_code, m_sensor_error_5_time); break; }
                 }
 #endif
             }
@@ -815,26 +892,24 @@ namespace esphome::luxtronik_v1
                 m_received_responses |= RESPONSE_ERRORS;
 
                 // request deactivations
-                send_request(TYPE_DEACTIVATIONS);
+                next_request();
             }
         }
         else if (starts_with(response, TYPE_DEACTIVATIONS))
         {
-            size_t start = INDEX_RESPONSE_START;
-            size_t end = response.find(DELIMITER, start);
-            std::string slot = response.substr(start, end - start);
+            m_timer.cancel();
 
-            if (starts_with(slot, TYPE_DEACTIVATIONS_SLOT) && (response.length() >= MIN_SLOT_LENGTH))
+            if ((response.length() >= MIN_SLOT_LENGTH) && starts_with(response, TYPE_DEACTIVATIONS_SLOT))
             {
 #ifdef USE_TEXT_SENSOR
                 char slotID = response.at(INDEX_SLOT_ID);
                 switch (slotID)
                 {
-                    case SLOT_1_ID: { parse_slot(response.substr(10), m_sensor_deactivation_1_code, m_sensor_deactivation_1_time); break; }
-                    case SLOT_2_ID: { parse_slot(response.substr(10), m_sensor_deactivation_2_code, m_sensor_deactivation_2_time); break; }
-                    case SLOT_3_ID: { parse_slot(response.substr(10), m_sensor_deactivation_3_code, m_sensor_deactivation_3_time); break; }
-                    case SLOT_4_ID: { parse_slot(response.substr(10), m_sensor_deactivation_4_code, m_sensor_deactivation_4_time); break; }
-                    case SLOT_5_ID: { parse_slot(response.substr(10), m_sensor_deactivation_5_code, m_sensor_deactivation_5_time); break; }
+                    case SLOT_1_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_deactivation_1_code, m_sensor_deactivation_1_time); break; }
+                    case SLOT_2_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_deactivation_2_code, m_sensor_deactivation_2_time); break; }
+                    case SLOT_3_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_deactivation_3_code, m_sensor_deactivation_3_time); break; }
+                    case SLOT_4_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_deactivation_4_code, m_sensor_deactivation_4_time); break; }
+                    case SLOT_5_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_deactivation_5_code, m_sensor_deactivation_5_time); break; }
                 }
 #endif
             }
@@ -848,11 +923,13 @@ namespace esphome::luxtronik_v1
                 m_received_responses |= RESPONSE_DEACTIVATIONS;
 
                 // request information
-                send_request(TYPE_INFORMATION);
+                next_request();
             }
         }
         else if (starts_with(response, TYPE_INFORMATION))
         {
+            m_timer.cancel();
+
             int32_t value = 0;
             std::string text = "";
             size_t start = INDEX_RESPONSE_START;
@@ -941,10 +1018,12 @@ namespace esphome::luxtronik_v1
             m_received_responses |= RESPONSE_INFORMATION;
 
             // request heating mode
-            send_request(TYPE_HEATING_MODE);
+            next_request();
         }
         else if (starts_with(response, TYPE_HEATING_MODE))
         {
+            m_timer.cancel();
+
             int32_t value = 0;
             std::string text = "";
             size_t start = INDEX_RESPONSE_START;
@@ -973,10 +1052,12 @@ namespace esphome::luxtronik_v1
             m_received_responses |= RESPONSE_HEATING_MODE;
 
             // request hot water mode
-            send_request(TYPE_HOT_WATER_MODE);
+            next_request();
         }
         else if (starts_with(response, TYPE_HOT_WATER_MODE))
         {
+            m_timer.cancel();
+
             int32_t value = 0;
             std::string text = "";
             size_t start = INDEX_RESPONSE_START;
@@ -1028,23 +1109,23 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_mday = static_cast<int32_t>(get_number(slot.substr(start, end - start)));
+            dt.tm_mday = get_number(slot.substr(start, end - start));
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_mon = static_cast<int32_t>(get_number(slot.substr(start, end - start))) - 1;  // convert from range 1-12 to range 0-11
+            dt.tm_mon = get_number(slot.substr(start, end - start)) - 1;  // convert from range 1-12 to range 0-11
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_year = static_cast<int32_t>(get_number(slot.substr(start, end - start))) + 100;  // convert from years since 2000 to years since 1900
+            dt.tm_year = get_number(slot.substr(start, end - start)) + 100;  // convert from years since 2000 to years since 1900
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_hour = static_cast<int32_t>(get_number(slot.substr(start, end - start)));
+            dt.tm_hour = get_number(slot.substr(start, end - start));
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_min = static_cast<int32_t>(get_number(slot.substr(start, end - start)));
+            dt.tm_min = get_number(slot.substr(start, end - start));
 
             dt.tm_isdst = -1;  // auto-detect daylight saving time
             std::mktime(&dt);  // convert to universal time
@@ -1056,4 +1137,14 @@ namespace esphome::luxtronik_v1
         }
     }
 #endif
+
+    void Luxtronik::clear_uart_buffer()
+    {
+        uint8_t byte;
+
+        while (m_device.available())
+        {
+            m_device.read_byte(&byte);
+        }
+    }
 }  // namespace esphome::luxtronik_v1
