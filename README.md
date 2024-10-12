@@ -79,16 +79,22 @@ external_components:
 
 Die folgenden generischen Einstellungen können konfiguriert werden:
 
-| Option | Benötigt | Standardwert | Beschreibung |
-| ------ | --------- | ------------- |------------ |
-| `uart_id` | ja | - | ID der konfigurierten UART-Komponente (siehe unten) |
-| `update_interval` | nein | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
+| Option | Benötigt | Wertebereich | Standardwert | Beschreibung |
+| ------ | -------- | ------------ |------------- | ------------ |
+| `uart_id` | ja | - | - | ID der konfigurierten UART-Komponente (siehe unten) |
+| `update_interval` | nein | Positive Zeitdauer | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
+| `request_delay` | nein | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
+| `response_timeout` | nein | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
+| `max_retries` | nein | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
 
 ##### Beispiel
 ```yaml
 luxtronik_v1:
   uart_id: uart_bus
-  update_interval: 300s  # Aktualisierung alle 5 Minuten
+  update_interval: 300s   # Aktualisierung alle 5 Minuten
+  request_delay: 100      # Verzögerung von 100 Millisekunden zwischen den Anfragen
+  response_timeout: 3000  # Maximal 3 Sekunden, bis Antwort kommen muss
+  max_retries: 10         # Maximal 10 Wiederholungsversuche
 ```
 
 ### UART-Komponente
@@ -442,16 +448,22 @@ external_components:
 
 The following generic configuration items can be configured:
 
-| Option | Mandatory | Default Value | Description |
-| ------ | --------- | ------------- |------------ |
-| `uart_id` | yes | n/a | ID of the configured UART component (see below) |
-| `update_interval` | no | 60s | The interval how often the component fetches data from the heating control unit |
+| Option | Mandatory | Value Range | Default Value | Description |
+| ------ | --------- | ----------- |-------------- | ----------- |
+| `uart_id` | yes | n/a | n/a | ID of the configured UART component (see below) |
+| `update_interval` | no | Positive duration | 60s | The interval how often the component fetches data from the heating control unit |
+| `request_delay` | no | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
+| `response_timeout` | no | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
+| `max_retries` | no | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
 
 ##### Example
 ```yaml
 luxtronik_v1:
   uart_id: uart_bus
-  update_interval: 300s  # update every 5 minutes
+  update_interval: 300s   # update every 5 minutes
+  request_delay: 100      # delay of 100 milliseconds between requests
+  response_timeout: 3000  # a maximum of 3 seconds until response is expected
+  max_retries: 10         # retry a maximum of 10 times
 ```
 
 ### UART Component
