@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include "simple_timer.h"
+
 #include "esphome/core/defines.h"
 #include "esphome/core/component.h"
 #ifdef USE_SENSOR
@@ -47,7 +49,11 @@ namespace esphome::luxtronik_v1
     class Luxtronik : public PollingComponent
     {
     public:
-        Luxtronik(uart::UARTComponent* uart);
+        Luxtronik(
+            uart::UARTComponent* uart,
+            uint16_t request_delay,
+            uint16_t response_timeout,
+            uint16_t max_retries);
         virtual ~Luxtronik() = default;
 
         void loop() override;
@@ -120,23 +126,26 @@ namespace esphome::luxtronik_v1
 #endif
 
     private:
+        void next_request();
+        void request_data();
         void send_request(const char* req);
         void parse_response(const std::string& response);
+        void handle_timeout();
         void clear_uart_buffer();
 #ifdef USE_TEXT_SENSOR
         void parse_slot(const std::string& slot, text_sensor::TextSensor* sensor_code, text_sensor::TextSensor* sensor_time);
 #endif
 
-        static float get_temperature(const std::string& input_str)               { return std::atof(input_str.c_str()) / 10;          }
-        static float get_number(const std::string& input_str)                    { return std::atoi(input_str.c_str());               }
-        static bool get_binary_state(const std::string& input_str)               { return input_str != "0";                           }
-        static bool starts_with(const std::string& str, const std::string& with) { return (str.compare(0, with.length(), with) == 0); }
+        static float   get_temperature(const std::string& input_str)                { return std::atof(input_str.c_str()) / 10;          }
+        static int32_t get_number(const std::string& input_str)                     { return std::atoi(input_str.c_str());               }
+        static bool    get_binary_state(const std::string& input_str)               { return input_str != "0";                           }
+        static bool    starts_with(const std::string& str, const std::string& with) { return (str.compare(0, with.length(), with) == 0); }
 
     protected:
         uart::UARTDevice m_device;
 
 #ifdef USE_SENSOR
-        // Temperatures
+        // temperatures
         sensor::Sensor* m_sensor_flow_temperature;                 // 1100:2  - Ist-Temperatur Vorlauf Heizkreis
         sensor::Sensor* m_sensor_return_temperature;               // 1100:3  - Ist-Temperatur Rücklauf Heizkreis
         sensor::Sensor* m_sensor_return_set_temperature;           // 1100:4  - Soll-Temperatur Rücklauf Heizkreis
@@ -152,7 +161,7 @@ namespace esphome::luxtronik_v1
 #endif
 
 #ifdef USE_BINARY_SENSOR
-        // Inputs
+        // inputs
         binary_sensor::BinarySensor* m_sensor_defrost_brine_flow;          // 1200:2 - Abtau, Soledruck, Durchfluss
         binary_sensor::BinarySensor* m_sensor_power_provider_lock_period;  // 1200:3 - Sperrzeit EVU
         binary_sensor::BinarySensor* m_sensor_high_pressure_state;         // 1200:4 - Hodruckpressostat
@@ -160,7 +169,7 @@ namespace esphome::luxtronik_v1
         binary_sensor::BinarySensor* m_sensor_low_pressure_state;          // 1200:6 - Niederdruckpressostat
         binary_sensor::BinarySensor* m_sensor_external_power;              // 1200:7 - Fremdstromanode
 
-        // Outputs
+        // outputs
         binary_sensor::BinarySensor* m_sensor_defrost_valve;               // 1300:2   - Abtauventil
         binary_sensor::BinarySensor* m_sensor_hot_water_pump;              // 1300:3   - Brauchwarmwasserumwälzpumpe
         binary_sensor::BinarySensor* m_sensor_floor_heating_pump;          // 1300:4   - Fußbodenheizungsumwälzpumpe
@@ -173,25 +182,25 @@ namespace esphome::luxtronik_v1
         binary_sensor::BinarySensor* m_sensor_secondary_heater_1;          // 1300:13  - Zweiter Wärmeerzeuger 1
         binary_sensor::BinarySensor* m_sensor_secondary_heater_2_failure;  // 1300:14  - Zweiter Wärmeerzeuger 2 - Sammelstörung
 
-        // Diagnostic
+        // diagnostic
         binary_sensor::BinarySensor* m_sensor_device_communication;
 #endif
 
 #ifdef USE_TEXT_SENSOR
-        // Outputs
+        // outputs
         text_sensor::TextSensor* m_sensor_mixer_1_state;  // 1300:6,7 - Mischer 1 fährt auf, Mischer 1 fährt zu
 
-        // Information
+        // information
         text_sensor::TextSensor* m_sensor_device_type;        // 1700:2 - Wärmepumpentyp
         text_sensor::TextSensor* m_sensor_firmware_version;   // 1700:3 - Software-Stand Firmware
         text_sensor::TextSensor* m_sensor_bivalence_level;    // 1700:4 - Bivalenzstufe
         text_sensor::TextSensor* m_sensor_operational_state;  // 1700:5 - Betriebszustand
 
-        // Modes
+        // modes
         text_sensor::TextSensor* m_sensor_heating_mode;    // 3405:2 - Betriebsart Heizung
         text_sensor::TextSensor* m_sensor_hot_water_mode;  // 3505:2 - Betriebsart Brauchwarmwasser
 
-        // Errors
+        // errors
         text_sensor::TextSensor* m_sensor_error_1_code;  // 1500:1500:2   - Fehler 1 - Code
         text_sensor::TextSensor* m_sensor_error_2_code;  // 1500:1501:2   - Fehler 2 - Code
         text_sensor::TextSensor* m_sensor_error_3_code;  // 1500:1502:2   - Fehler 3 - Code
@@ -203,7 +212,7 @@ namespace esphome::luxtronik_v1
         text_sensor::TextSensor* m_sensor_error_4_time;  // 1500:1503:2-6 - Fehler 4 - Datum/Uhrzeit
         text_sensor::TextSensor* m_sensor_error_5_time;  // 1500:1504:2-6 - Fehler 5 - Datum/Uhrzeit
 
-        // Deactivations
+        // deactivations
         text_sensor::TextSensor* m_sensor_deactivation_1_code;  // 1600:1600:2   - Abschaltung 1 - Code
         text_sensor::TextSensor* m_sensor_deactivation_2_code;  // 1600:1601:2   - Abschaltung 2 - Code
         text_sensor::TextSensor* m_sensor_deactivation_3_code;  // 1600:1602:2   - Abschaltung 3 - Code
@@ -216,10 +225,19 @@ namespace esphome::luxtronik_v1
         text_sensor::TextSensor* m_sensor_deactivation_5_time;  // 1600:1604:2-6 - Abschaltung 5 - Datum/Uhrzeit
 #endif
 
+        // configuration
+        uint16_t m_request_delay;
+        uint16_t m_response_timeout;
+        uint16_t m_max_retries;
+
+        // helpers
         char m_response_buffer[255];
         size_t m_cursor;
         uint16_t m_received_responses;
         bool m_response_ready;
         bool m_slot_block;
+        uint16_t m_retry_count;
+        size_t m_current_request;
+        SimpleTimer m_timer;
     };
 }  // namespace esphome::luxtronik_v1
