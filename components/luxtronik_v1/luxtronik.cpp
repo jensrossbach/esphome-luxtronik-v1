@@ -98,7 +98,7 @@ namespace esphome::luxtronik_v1
                                                     RESPONSE_HEATING_MODE|
                                                     RESPONSE_HOT_WATER_MODE;
 
-    enum class DeviceType
+    enum class DeviceType : uint8_t
     {
         ERC =  0,
         SW1 =  1,
@@ -117,14 +117,14 @@ namespace esphome::luxtronik_v1
         WZS = 14
     };
 
-    enum class BivalenceLevel
+    enum class BivalenceLevel : uint8_t
     {
         SINGLE_COMPRESSOR = 1,
         DUAL_COMPRESSOR   = 2,
         ADDITIONAL_HEATER = 3
     };
 
-    enum class OperationalState
+    enum class OperationalState : uint8_t
     {
         HEAT          = 0,
         HOT_WATER     = 1,
@@ -134,7 +134,7 @@ namespace esphome::luxtronik_v1
         STANDBY       = 5
     };
 
-    enum class OperationalMode
+    enum class OperationalMode : uint8_t
     {
         AUTO          = 0,
         SECOND_HEATER = 1,
@@ -150,69 +150,63 @@ namespace esphome::luxtronik_v1
                     uint16_t max_retries)
         : PollingComponent()
         , m_device(uart)
-#ifdef USE_SENSOR
-        , m_sensor_flow_temperature(nullptr)
-        , m_sensor_return_temperature(nullptr)
-        , m_sensor_return_set_temperature(nullptr)
-        , m_sensor_hot_gas_temperature(nullptr)
-        , m_sensor_outside_temperature(nullptr)
-        , m_sensor_hot_water_temperature(nullptr)
-        , m_sensor_hot_water_set_temperature(nullptr)
-        , m_sensor_heat_source_input_temperature(nullptr)
-        , m_sensor_heat_source_output_temperature(nullptr)
-        , m_sensor_mixed_circuit_1_temperature(nullptr)
-        , m_sensor_mixed_circuit_1_set_temperature(nullptr)
-        , m_sensor_remote_adjuster_temperature(nullptr)
-#endif
-#ifdef USE_BINARY_SENSOR
-        , m_sensor_defrost_brine_flow(nullptr)
-        , m_sensor_power_provider_lock_period(nullptr)
-        , m_sensor_high_pressure_state(nullptr)
-        , m_sensor_engine_protection(nullptr)
-        , m_sensor_low_pressure_state(nullptr)
-        , m_sensor_external_power(nullptr)
-        , m_sensor_defrost_valve(nullptr)
-        , m_sensor_hot_water_pump(nullptr)
-        , m_sensor_floor_heating_pump(nullptr)
-        , m_sensor_heating_pump(nullptr)
-        , m_sensor_housing_ventilation(nullptr)
-        , m_sensor_ventilation_pump(nullptr)
-        , m_sensor_compressor_1(nullptr)
-        , m_sensor_compressor_2(nullptr)
-        , m_sensor_extra_pump(nullptr)
-        , m_sensor_secondary_heater_1(nullptr)
-        , m_sensor_secondary_heater_2_failure(nullptr)
-        , m_sensor_device_communication(nullptr)
-#endif
-#ifdef USE_TEXT_SENSOR
-        , m_sensor_mixer_1_state(nullptr)
-        , m_sensor_device_type(nullptr)
-        , m_sensor_firmware_version(nullptr)
-        , m_sensor_bivalence_level(nullptr)
-        , m_sensor_operational_state(nullptr)
-        , m_sensor_heating_mode(nullptr)
-        , m_sensor_hot_water_mode(nullptr)
-        , m_sensor_error_1_code(nullptr)
-        , m_sensor_error_2_code(nullptr)
-        , m_sensor_error_3_code(nullptr)
-        , m_sensor_error_4_code(nullptr)
-        , m_sensor_error_5_code(nullptr)
-        , m_sensor_error_1_time(nullptr)
-        , m_sensor_error_2_time(nullptr)
-        , m_sensor_error_3_time(nullptr)
-        , m_sensor_error_4_time(nullptr)
-        , m_sensor_error_5_time(nullptr)
-        , m_sensor_deactivation_1_code(nullptr)
-        , m_sensor_deactivation_2_code(nullptr)
-        , m_sensor_deactivation_3_code(nullptr)
-        , m_sensor_deactivation_4_code(nullptr)
-        , m_sensor_deactivation_5_code(nullptr)
-        , m_sensor_deactivation_1_time(nullptr)
-        , m_sensor_deactivation_2_time(nullptr)
-        , m_sensor_deactivation_3_time(nullptr)
-        , m_sensor_deactivation_4_time(nullptr)
-        , m_sensor_deactivation_5_time(nullptr)
-#endif
+        , m_sensor_flow_temperature()
+        , m_sensor_return_temperature()
+        , m_sensor_return_set_temperature()
+        , m_sensor_hot_gas_temperature()
+        , m_sensor_outside_temperature()
+        , m_sensor_hot_water_temperature()
+        , m_sensor_hot_water_set_temperature()
+        , m_sensor_heat_source_input_temperature()
+        , m_sensor_heat_source_output_temperature()
+        , m_sensor_mixed_circuit_1_temperature()
+        , m_sensor_mixed_circuit_1_set_temperature()
+        , m_sensor_remote_adjuster_temperature()
+        , m_sensor_defrost_brine_flow()
+        , m_sensor_power_provider_lock_period()
+        , m_sensor_high_pressure_state()
+        , m_sensor_engine_protection()
+        , m_sensor_low_pressure_state()
+        , m_sensor_external_power()
+        , m_sensor_defrost_valve()
+        , m_sensor_hot_water_pump()
+        , m_sensor_floor_heating_pump()
+        , m_sensor_heating_pump()
+        , m_sensor_mixer_1_state()
+        , m_sensor_housing_ventilation()
+        , m_sensor_ventilation_pump()
+        , m_sensor_compressor_1()
+        , m_sensor_compressor_2()
+        , m_sensor_extra_pump()
+        , m_sensor_secondary_heater_1()
+        , m_sensor_secondary_heater_2_failure()
+        , m_sensor_device_type()
+        , m_sensor_firmware_version()
+        , m_sensor_bivalence_level()
+        , m_sensor_operational_state()
+        , m_sensor_heating_mode()
+        , m_sensor_hot_water_mode()
+        , m_sensor_error_1_code()
+        , m_sensor_error_2_code()
+        , m_sensor_error_3_code()
+        , m_sensor_error_4_code()
+        , m_sensor_error_5_code()
+        , m_sensor_error_1_time()
+        , m_sensor_error_2_time()
+        , m_sensor_error_3_time()
+        , m_sensor_error_4_time()
+        , m_sensor_error_5_time()
+        , m_sensor_deactivation_1_code()
+        , m_sensor_deactivation_2_code()
+        , m_sensor_deactivation_3_code()
+        , m_sensor_deactivation_4_code()
+        , m_sensor_deactivation_5_code()
+        , m_sensor_deactivation_1_time()
+        , m_sensor_deactivation_2_time()
+        , m_sensor_deactivation_3_time()
+        , m_sensor_deactivation_4_time()
+        , m_sensor_deactivation_5_time()
+        , m_sensor_device_communication()
         , m_request_delay(request_delay)
         , m_response_timeout(response_timeout)
         , m_max_retries(max_retries)
@@ -225,6 +219,25 @@ namespace esphome::luxtronik_v1
         , m_current_request(0)
         , m_timer()
     {
+    }
+
+    void Luxtronik::update()
+    {
+        m_timer.cancel();
+
+        if (m_received_responses != RESPONSE_ALL)
+        {
+            ESP_LOGW(TAG, "No full response from Luxtronik in last update cycle:  RESP %04X", m_received_responses);
+        }
+
+        m_sensor_device_communication.set_state(m_received_responses != RESPONSE_ALL);
+
+        m_received_responses = RESPONSE_NONE;
+        m_retry_count = 0;
+
+        // request temperatures
+        m_current_request = 0;
+        request_data();
     }
 
     void Luxtronik::loop()
@@ -286,30 +299,6 @@ namespace esphome::luxtronik_v1
         }
     }
 
-    void Luxtronik::update()
-    {
-        m_timer.cancel();
-
-        if (m_received_responses != RESPONSE_ALL)
-        {
-            ESP_LOGW(TAG, "No full response from Luxtronik in last update cycle:  RESP %04X", m_received_responses);
-        }
-
-#ifdef USE_BINARY_SENSOR
-        if (m_sensor_device_communication != nullptr)
-        {
-            m_sensor_device_communication->publish_state(m_received_responses != RESPONSE_ALL);
-        }
-#endif
-
-        m_received_responses = RESPONSE_NONE;
-        m_retry_count = 0;
-
-        // request temperatures
-        m_current_request = 0;
-        request_data();
-    }
-
     void Luxtronik::dump_config()
     {
         ESP_LOGCONFIG(TAG, "Luxtronik V1");
@@ -319,67 +308,67 @@ namespace esphome::luxtronik_v1
         ESP_LOGCONFIG(TAG, "  Max. number of retries: %u", m_max_retries);
 
 #ifdef USE_SENSOR
-        LOG_SENSOR("", "Flow Temperture Sensor", m_sensor_flow_temperature);
-        LOG_SENSOR("", "Return Temperture Sensor", m_sensor_return_temperature);
-        LOG_SENSOR("", "Return Set-Temperture Sensor", m_sensor_return_set_temperature);
-        LOG_SENSOR("", "Hot Gas Temperture Sensor", m_sensor_hot_gas_temperature);
-        LOG_SENSOR("", "Hot Water Temperture Sensor", m_sensor_hot_water_temperature);
-        LOG_SENSOR("", "Hot Water Set-Temperture Sensor", m_sensor_hot_water_set_temperature);
-        LOG_SENSOR("", "Outside Temperture Sensor", m_sensor_outside_temperature);
-        LOG_SENSOR("", "Heat-Source Input Temperture Sensor", m_sensor_heat_source_input_temperature);
-        LOG_SENSOR("", "Heat-Source Output Temperture Sensor", m_sensor_heat_source_output_temperature);
-        LOG_SENSOR("", "Mixed Circuit 1 Temperture Sensor", m_sensor_mixed_circuit_1_temperature);
-        LOG_SENSOR("", "Mixed Circuit 1 Set-Temperture Sensor", m_sensor_mixed_circuit_1_set_temperature);
-        LOG_SENSOR("", "Remote Adjuster Temperture Sensor", m_sensor_remote_adjuster_temperature);
+        LOG_SENSOR("", "Flow Temperture Sensor", m_sensor_flow_temperature.get_sensor());
+        LOG_SENSOR("", "Return Temperture Sensor", m_sensor_return_temperature.get_sensor());
+        LOG_SENSOR("", "Return Set-Temperture Sensor", m_sensor_return_set_temperature.get_sensor());
+        LOG_SENSOR("", "Hot Gas Temperture Sensor", m_sensor_hot_gas_temperature.get_sensor());
+        LOG_SENSOR("", "Hot Water Temperture Sensor", m_sensor_hot_water_temperature.get_sensor());
+        LOG_SENSOR("", "Hot Water Set-Temperture Sensor", m_sensor_hot_water_set_temperature.get_sensor());
+        LOG_SENSOR("", "Outside Temperture Sensor", m_sensor_outside_temperature.get_sensor());
+        LOG_SENSOR("", "Heat-Source Input Temperture Sensor", m_sensor_heat_source_input_temperature.get_sensor());
+        LOG_SENSOR("", "Heat-Source Output Temperture Sensor", m_sensor_heat_source_output_temperature.get_sensor());
+        LOG_SENSOR("", "Mixed Circuit 1 Temperture Sensor", m_sensor_mixed_circuit_1_temperature.get_sensor());
+        LOG_SENSOR("", "Mixed Circuit 1 Set-Temperture Sensor", m_sensor_mixed_circuit_1_set_temperature.get_sensor());
+        LOG_SENSOR("", "Remote Adjuster Temperture Sensor", m_sensor_remote_adjuster_temperature.get_sensor());
 #endif
 
 #ifdef USE_BINARY_SENSOR
-        LOG_BINARY_SENSOR("", "Defrost/Brine/Flow Sensor", m_sensor_defrost_brine_flow);
-        LOG_BINARY_SENSOR("", "Power Provider Lock Period Sensor", m_sensor_power_provider_lock_period);
-        LOG_BINARY_SENSOR("", "Low Pressure State Sensor", m_sensor_low_pressure_state);
-        LOG_BINARY_SENSOR("", "High Pressure State Sensor", m_sensor_high_pressure_state);
-        LOG_BINARY_SENSOR("", "Engine Protection Sensor", m_sensor_engine_protection);
-        LOG_BINARY_SENSOR("", "External Power Sensor", m_sensor_external_power);
-        LOG_BINARY_SENSOR("", "Defrost Valve Sensor", m_sensor_defrost_valve);
-        LOG_BINARY_SENSOR("", "Hot Water Pump Sensor", m_sensor_hot_water_pump);
-        LOG_BINARY_SENSOR("", "Heating Pump Sensor", m_sensor_heating_pump);
-        LOG_BINARY_SENSOR("", "Floor Heating Pump Sensor", m_sensor_floor_heating_pump);
-        LOG_BINARY_SENSOR("", "Ventilation/Pump Sensor", m_sensor_ventilation_pump);
-        LOG_BINARY_SENSOR("", "Housing Ventilation Sensor", m_sensor_housing_ventilation);
-        LOG_BINARY_SENSOR("", "Compressor 1 Sensor", m_sensor_compressor_1);
-        LOG_BINARY_SENSOR("", "Compressor 2 Sensor", m_sensor_compressor_2);
-        LOG_BINARY_SENSOR("", "Extra Pump Sensor", m_sensor_extra_pump);
-        LOG_BINARY_SENSOR("", "Secondary Heater 1 Sensor", m_sensor_secondary_heater_1);
-        LOG_BINARY_SENSOR("", "Secondary Heater 2 Failure Sensor", m_sensor_secondary_heater_2_failure);
-        LOG_BINARY_SENSOR("", "Device Communication Sensor", m_sensor_device_communication);
+        LOG_BINARY_SENSOR("", "Defrost/Brine/Flow Sensor", m_sensor_defrost_brine_flow.get_sensor());
+        LOG_BINARY_SENSOR("", "Power Provider Lock Period Sensor", m_sensor_power_provider_lock_period.get_sensor());
+        LOG_BINARY_SENSOR("", "Low Pressure State Sensor", m_sensor_low_pressure_state.get_sensor());
+        LOG_BINARY_SENSOR("", "High Pressure State Sensor", m_sensor_high_pressure_state.get_sensor());
+        LOG_BINARY_SENSOR("", "Engine Protection Sensor", m_sensor_engine_protection.get_sensor());
+        LOG_BINARY_SENSOR("", "External Power Sensor", m_sensor_external_power.get_sensor());
+        LOG_BINARY_SENSOR("", "Defrost Valve Sensor", m_sensor_defrost_valve.get_sensor());
+        LOG_BINARY_SENSOR("", "Hot Water Pump Sensor", m_sensor_hot_water_pump.get_sensor());
+        LOG_BINARY_SENSOR("", "Heating Pump Sensor", m_sensor_heating_pump.get_sensor());
+        LOG_BINARY_SENSOR("", "Floor Heating Pump Sensor", m_sensor_floor_heating_pump.get_sensor());
+        LOG_BINARY_SENSOR("", "Ventilation/Pump Sensor", m_sensor_ventilation_pump.get_sensor());
+        LOG_BINARY_SENSOR("", "Housing Ventilation Sensor", m_sensor_housing_ventilation.get_sensor());
+        LOG_BINARY_SENSOR("", "Compressor 1 Sensor", m_sensor_compressor_1.get_sensor());
+        LOG_BINARY_SENSOR("", "Compressor 2 Sensor", m_sensor_compressor_2.get_sensor());
+        LOG_BINARY_SENSOR("", "Extra Pump Sensor", m_sensor_extra_pump.get_sensor());
+        LOG_BINARY_SENSOR("", "Secondary Heater 1 Sensor", m_sensor_secondary_heater_1.get_sensor());
+        LOG_BINARY_SENSOR("", "Secondary Heater 2 Failure Sensor", m_sensor_secondary_heater_2_failure.get_sensor());
+        LOG_BINARY_SENSOR("", "Device Communication Sensor", m_sensor_device_communication.get_sensor());
 #endif
 
 #ifdef USE_TEXT_SENSOR
-        LOG_TEXT_SENSOR("", "Mixer 1 Sensor", m_sensor_mixer_1_state);
-        LOG_TEXT_SENSOR("", "Device Type Sensor", m_sensor_device_type);
-        LOG_TEXT_SENSOR("", "Firmware Version Sensor", m_sensor_firmware_version);
-        LOG_TEXT_SENSOR("", "Bivalence Level Sensor", m_sensor_bivalence_level);
-        LOG_TEXT_SENSOR("", "Operational State Sensor", m_sensor_operational_state);
-        LOG_TEXT_SENSOR("", "Error 1 Code Sensor", m_sensor_error_1_code);
-        LOG_TEXT_SENSOR("", "Error 2 Code Sensor", m_sensor_error_2_code);
-        LOG_TEXT_SENSOR("", "Error 3 Code Sensor", m_sensor_error_3_code);
-        LOG_TEXT_SENSOR("", "Error 4 Code Sensor", m_sensor_error_4_code);
-        LOG_TEXT_SENSOR("", "Error 5 Code Sensor", m_sensor_error_5_code);
-        LOG_TEXT_SENSOR("", "Error 1 Time Sensor", m_sensor_error_1_time);
-        LOG_TEXT_SENSOR("", "Error 2 Time Sensor", m_sensor_error_2_time);
-        LOG_TEXT_SENSOR("", "Error 3 Time Sensor", m_sensor_error_3_time);
-        LOG_TEXT_SENSOR("", "Error 4 Time Sensor", m_sensor_error_4_time);
-        LOG_TEXT_SENSOR("", "Error 5 Time Sensor", m_sensor_error_5_time);
-        LOG_TEXT_SENSOR("", "Deactivation 1 Code Sensor", m_sensor_deactivation_1_code);
-        LOG_TEXT_SENSOR("", "Deactivation 2 Code Sensor", m_sensor_deactivation_2_code);
-        LOG_TEXT_SENSOR("", "Deactivation 3 Code Sensor", m_sensor_deactivation_3_code);
-        LOG_TEXT_SENSOR("", "Deactivation 4 Code Sensor", m_sensor_deactivation_4_code);
-        LOG_TEXT_SENSOR("", "Deactivation 5 Code Sensor", m_sensor_deactivation_5_time);
-        LOG_TEXT_SENSOR("", "Deactivation 1 Time Sensor", m_sensor_deactivation_1_time);
-        LOG_TEXT_SENSOR("", "Deactivation 2 Time Sensor", m_sensor_deactivation_2_time);
-        LOG_TEXT_SENSOR("", "Deactivation 3 Time Sensor", m_sensor_deactivation_3_time);
-        LOG_TEXT_SENSOR("", "Deactivation 4 Time Sensor", m_sensor_deactivation_4_time);
-        LOG_TEXT_SENSOR("", "Deactivation 5 Time Sensor", m_sensor_deactivation_5_code);
+        LOG_TEXT_SENSOR("", "Mixer 1 Sensor", m_sensor_mixer_1_state.get_sensor());
+        LOG_TEXT_SENSOR("", "Device Type Sensor", m_sensor_device_type.get_sensor());
+        LOG_TEXT_SENSOR("", "Firmware Version Sensor", m_sensor_firmware_version.get_sensor());
+        LOG_TEXT_SENSOR("", "Bivalence Level Sensor", m_sensor_bivalence_level.get_sensor());
+        LOG_TEXT_SENSOR("", "Operational State Sensor", m_sensor_operational_state.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 1 Code Sensor", m_sensor_error_1_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 2 Code Sensor", m_sensor_error_2_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 3 Code Sensor", m_sensor_error_3_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 4 Code Sensor", m_sensor_error_4_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 5 Code Sensor", m_sensor_error_5_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 1 Time Sensor", m_sensor_error_1_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 2 Time Sensor", m_sensor_error_2_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 3 Time Sensor", m_sensor_error_3_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 4 Time Sensor", m_sensor_error_4_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Error 5 Time Sensor", m_sensor_error_5_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 1 Code Sensor", m_sensor_deactivation_1_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 2 Code Sensor", m_sensor_deactivation_2_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 3 Code Sensor", m_sensor_deactivation_3_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 4 Code Sensor", m_sensor_deactivation_4_code.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 5 Code Sensor", m_sensor_deactivation_5_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 1 Time Sensor", m_sensor_deactivation_1_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 2 Time Sensor", m_sensor_deactivation_2_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 3 Time Sensor", m_sensor_deactivation_3_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 4 Time Sensor", m_sensor_deactivation_4_time.get_sensor());
+        LOG_TEXT_SENSOR("", "Deactivation 5 Time Sensor", m_sensor_deactivation_5_code.get_sensor());
 #endif
     }
 
@@ -465,147 +454,51 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_flow_temperature != nullptr)
-            {
-                m_sensor_flow_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_flow_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_return_temperature != nullptr)
-            {
-                m_sensor_return_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_return_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_return_set_temperature != nullptr)
-            {
-                m_sensor_return_set_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_return_set_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_hot_gas_temperature != nullptr)
-            {
-                m_sensor_hot_gas_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_hot_gas_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_outside_temperature != nullptr)
-            {
-                m_sensor_outside_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_outside_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_hot_water_temperature != nullptr)
-            {
-                m_sensor_hot_water_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_hot_water_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_hot_water_set_temperature != nullptr)
-            {
-                m_sensor_hot_water_set_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_hot_water_set_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_heat_source_input_temperature != nullptr)
-            {
-                m_sensor_heat_source_input_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_heat_source_input_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_heat_source_output_temperature != nullptr)
-            {
-                m_sensor_heat_source_output_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_heat_source_output_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_mixed_circuit_1_temperature != nullptr)
-            {
-                m_sensor_mixed_circuit_1_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_mixed_circuit_1_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_mixed_circuit_1_set_temperature != nullptr)
-            {
-                m_sensor_mixed_circuit_1_set_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_mixed_circuit_1_set_temperature.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_SENSOR
-            if (m_sensor_remote_adjuster_temperature != nullptr)
-            {
-                m_sensor_remote_adjuster_temperature->
-                    publish_state(
-                        get_temperature(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_remote_adjuster_temperature.set_state(response, start, end);
 
             m_received_responses |= RESPONSE_TEMPERATURES;
 
@@ -622,75 +515,27 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_defrost_brine_flow != nullptr)
-            {
-                m_sensor_defrost_brine_flow->
-                    publish_state(
-                        get_binary_state(  // on = defrost ending or flow rate ok (depending on device type)
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_defrost_brine_flow.set_state(response, start, end);  // on = defrost ending or flow rate ok (depending on device type)
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_power_provider_lock_period != nullptr)
-            {
-                m_sensor_power_provider_lock_period->
-                    publish_state(
-                        get_binary_state(  // off = lock period, on = not locked
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_power_provider_lock_period.set_state(response, start, end);  // off = lock period, on = not locked
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_high_pressure_state != nullptr)
-            {
-                m_sensor_high_pressure_state->
-                    publish_state(
-                        get_binary_state(  // off = pressure ok, on = not ok
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_high_pressure_state.set_state(response, start, end);  // off = pressure ok, on = not ok
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_engine_protection != nullptr)
-            {
-                m_sensor_engine_protection->
-                    publish_state(
-                        !get_binary_state(  // on = engine protection ok, off = not ok
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_engine_protection.set_state(response, start, end, true);  // on = engine protection ok, off = not ok
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_low_pressure_state != nullptr)
-            {
-                m_sensor_low_pressure_state->
-                    publish_state(
-                        !get_binary_state(  // on = pressure ok, off = not ok
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_low_pressure_state.set_state(response, start, end, true);  // on = pressure ok, off = not ok
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_external_power != nullptr)
-            {
-                m_sensor_external_power->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_external_power.set_state(response, start, end);
 
             m_received_responses |= RESPONSE_INPUTS;
 
@@ -707,157 +552,63 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_defrost_valve != nullptr)
-            {
-                m_sensor_defrost_valve->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_defrost_valve.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_hot_water_pump != nullptr)
-            {
-                m_sensor_hot_water_pump->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_hot_water_pump.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_floor_heating_pump != nullptr)
-            {
-                m_sensor_floor_heating_pump->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_floor_heating_pump.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_heating_pump != nullptr)
-            {
-                m_sensor_heating_pump->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_heating_pump.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            bool mixerOpen = get_binary_state(response.substr(start, end - start));
+            bool mixerOpen = get_binary_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            bool mixerClose = get_binary_state(response.substr(start, end - start));
+            bool mixerClose = get_binary_state(response, start, end);
 
-#ifdef USE_TEXT_SENSOR
             // merge the two separate states (Mischer 1 fährt auf, Mischer 1 fährt zu) into one sensor
-            if (m_sensor_mixer_1_state != nullptr)
-            {
-                m_sensor_mixer_1_state->
-                    publish_state(
-                        mixerOpen
-                            ? "opening"
-                            : mixerClose
-                                ? "closing"
-                                : "idle");
-            }
-#endif
+            m_sensor_mixer_1_state.set_state(
+                    mixerOpen
+                        ? "opening"
+                        : mixerClose
+                            ? "closing"
+                            : "idle");
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_housing_ventilation != nullptr)
-            {
-                m_sensor_housing_ventilation->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_housing_ventilation.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_ventilation_pump != nullptr)
-            {
-                m_sensor_ventilation_pump->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_ventilation_pump.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_compressor_1 != nullptr)
-            {
-                m_sensor_compressor_1->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_compressor_1.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_compressor_2 != nullptr)
-            {
-                m_sensor_compressor_2->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_compressor_2.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_extra_pump != nullptr)
-            {
-                m_sensor_extra_pump->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_extra_pump.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_secondary_heater_1 != nullptr)
-            {
-                m_sensor_secondary_heater_1->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_secondary_heater_1.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor_secondary_heater_2_failure != nullptr)
-            {
-                m_sensor_secondary_heater_2_failure->
-                    publish_state(
-                        get_binary_state(
-                            response.substr(start, end - start)));
-            }
-#endif
+            m_sensor_secondary_heater_2_failure.set_state(response, start, end);
 
             m_received_responses |= RESPONSE_OUTPUTS;
 
@@ -870,7 +621,6 @@ namespace esphome::luxtronik_v1
 
             if ((response.length() >= MIN_SLOT_LENGTH) && starts_with(response, TYPE_ERRORS_SLOT))
             {
-#ifdef USE_TEXT_SENSOR
                 char slotID = response.at(INDEX_SLOT_ID);
                 switch (slotID)
                 {
@@ -880,7 +630,6 @@ namespace esphome::luxtronik_v1
                     case SLOT_4_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_error_4_code, m_sensor_error_4_time); break; }
                     case SLOT_5_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_error_5_code, m_sensor_error_5_time); break; }
                 }
-#endif
             }
             else if (!m_slot_block)
             {
@@ -901,7 +650,6 @@ namespace esphome::luxtronik_v1
 
             if ((response.length() >= MIN_SLOT_LENGTH) && starts_with(response, TYPE_DEACTIVATIONS_SLOT))
             {
-#ifdef USE_TEXT_SENSOR
                 char slotID = response.at(INDEX_SLOT_ID);
                 switch (slotID)
                 {
@@ -911,7 +659,6 @@ namespace esphome::luxtronik_v1
                     case SLOT_4_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_deactivation_4_code, m_sensor_deactivation_4_time); break; }
                     case SLOT_5_ID: { parse_slot(response.substr(INDEX_SLOT_START), m_sensor_deactivation_5_code, m_sensor_deactivation_5_time); break; }
                 }
-#endif
             }
             else if (!m_slot_block)
             {
@@ -930,90 +677,85 @@ namespace esphome::luxtronik_v1
         {
             m_timer.cancel();
 
-            int32_t value = 0;
-            std::string text = "";
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
             // skip number of elements
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor_device_type != nullptr)
+
+            if (m_sensor_device_type.has_sensor())
             {
-                value = std::atoi(response.substr(start, end - start).c_str());
+                std::string state = "";
+                int32_t value = get_number(response, start, end);
+
                 switch (static_cast<DeviceType>(value))
                 {
-                    case DeviceType::ERC: { text = "ERC";                 break; }
-                    case DeviceType::SW1: { text = "SW1";                 break; }
-                    case DeviceType::SW2: { text = "SW2";                 break; }
-                    case DeviceType::WW1: { text = "WW1";                 break; }
-                    case DeviceType::WW2: { text = "WW2";                 break; }
-                    case DeviceType::L1I: { text = "L1I";                 break; }
-                    case DeviceType::L2I: { text = "L2I";                 break; }
-                    case DeviceType::L1A: { text = "L1A";                 break; }
-                    case DeviceType::L2A: { text = "L2A";                 break; }
-                    case DeviceType::KSW: { text = "KSW";                 break; }
-                    case DeviceType::KLW: { text = "KLW";                 break; }
-                    case DeviceType::SWC: { text = "SWC";                 break; }
-                    case DeviceType::LWC: { text = "LWC";                 break; }
-                    case DeviceType::L2G: { text = "L2G";                 break; }
-                    case DeviceType::WZS: { text = "WZS";                 break; }
-                    default:              { text = std::to_string(value); break; }
+                    case DeviceType::ERC: { state = "ERC";                 break; }
+                    case DeviceType::SW1: { state = "SW1";                 break; }
+                    case DeviceType::SW2: { state = "SW2";                 break; }
+                    case DeviceType::WW1: { state = "WW1";                 break; }
+                    case DeviceType::WW2: { state = "WW2";                 break; }
+                    case DeviceType::L1I: { state = "L1I";                 break; }
+                    case DeviceType::L2I: { state = "L2I";                 break; }
+                    case DeviceType::L1A: { state = "L1A";                 break; }
+                    case DeviceType::L2A: { state = "L2A";                 break; }
+                    case DeviceType::KSW: { state = "KSW";                 break; }
+                    case DeviceType::KLW: { state = "KLW";                 break; }
+                    case DeviceType::SWC: { state = "SWC";                 break; }
+                    case DeviceType::LWC: { state = "LWC";                 break; }
+                    case DeviceType::L2G: { state = "L2G";                 break; }
+                    case DeviceType::WZS: { state = "WZS";                 break; }
+                    default:              { state = std::to_string(value); break; }
                 }
-                m_sensor_device_type->publish_state(text);
+
+                m_sensor_device_type.set_state(state);
             }
-#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor_firmware_version != nullptr)
-            {
-                m_sensor_firmware_version->
-                    publish_state(
-                        response.substr(
-                            start + 1,  // version without 'V' prefix
-                            end - start - 1));
-            }
-#endif
+            m_sensor_firmware_version.set_state(response, start + 1, end);  // skip leading space
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor_bivalence_level != nullptr)
+
+            if (m_sensor_bivalence_level.has_sensor())
             {
-                value = std::atoi(response.substr(start, end - start).c_str());
+                std::string state = "";
+                int32_t value = get_number(response, start, end);
+
                 switch (static_cast<BivalenceLevel>(value))
                 {
-                    case BivalenceLevel::SINGLE_COMPRESSOR: { text = "single_compressor";   break; }
-                    case BivalenceLevel::DUAL_COMPRESSOR:   { text = "dual_compressor";     break; }
-                    case BivalenceLevel::ADDITIONAL_HEATER: { text = "additional_heater";   break; }
-                    default:                                { text = std::to_string(value); break; }
+                    case BivalenceLevel::SINGLE_COMPRESSOR: { state = "single_compressor";   break; }
+                    case BivalenceLevel::DUAL_COMPRESSOR:   { state = "dual_compressor";     break; }
+                    case BivalenceLevel::ADDITIONAL_HEATER: { state = "additional_heater";   break; }
+                    default:                                { state = std::to_string(value); break; }
                 }
-                m_sensor_bivalence_level->publish_state(text);
+
+                m_sensor_bivalence_level.set_state(state);
             }
-#endif
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor_operational_state != nullptr)
+
+            if (m_sensor_operational_state.has_sensor())
             {
-                value = std::atoi(response.substr(start, end - start).c_str());
+                std::string state = "";
+                int32_t value = get_number(response, start, end);
+
                 switch (static_cast<OperationalState>(value))
                 {
-                    case OperationalState::HEAT:          { text = "heat";                break; }
-                    case OperationalState::HOT_WATER:     { text = "hot_water";           break; }
-                    case OperationalState::SWIMMING_POOL: { text = "swimming_pool";       break; }
-                    case OperationalState::PROVIDER_LOCK: { text = "provider_lock";       break; }
-                    case OperationalState::DEFROST:       { text = "defrost";             break; }
-                    case OperationalState::STANDBY:       { text = "standby";             break; }
-                    default:                              { text = std::to_string(value); break; }
+                    case OperationalState::HEAT:          { state = "heat";                break; }
+                    case OperationalState::HOT_WATER:     { state = "hot_water";           break; }
+                    case OperationalState::SWIMMING_POOL: { state = "swimming_pool";       break; }
+                    case OperationalState::PROVIDER_LOCK: { state = "provider_lock";       break; }
+                    case OperationalState::DEFROST:       { state = "defrost";             break; }
+                    case OperationalState::STANDBY:       { state = "standby";             break; }
+                    default:                              { state = std::to_string(value); break; }
                 }
-                m_sensor_operational_state->publish_state(text);
+
+                m_sensor_operational_state.set_state(state);
             }
-#endif
 
             m_received_responses |= RESPONSE_INFORMATION;
 
@@ -1024,30 +766,30 @@ namespace esphome::luxtronik_v1
         {
             m_timer.cancel();
 
-            int32_t value = 0;
-            std::string text = "";
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
             // skip number of elements
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor_heating_mode != nullptr)
+
+            if (m_sensor_heating_mode.has_sensor())
             {
-                value = std::atoi(response.substr(start, end - start).c_str());
+                std::string state = "";
+                int32_t value = get_number(response, start, end);
+
                 switch (static_cast<OperationalMode>(value))
                 {
-                    case OperationalMode::AUTO:          { text = "auto";                break; }
-                    case OperationalMode::SECOND_HEATER: { text = "second_heater";       break; }
-                    case OperationalMode::PARTY:         { text = "party";               break; }
-                    case OperationalMode::VACATION:      { text = "vacation";            break; }
-                    case OperationalMode::OFF:           { text = "off";                 break; }
-                    default:                             { text = std::to_string(value); break; }
+                    case OperationalMode::AUTO:          { state = "auto";                break; }
+                    case OperationalMode::SECOND_HEATER: { state = "second_heater";       break; }
+                    case OperationalMode::PARTY:         { state = "party";               break; }
+                    case OperationalMode::VACATION:      { state = "vacation";            break; }
+                    case OperationalMode::OFF:           { state = "off";                 break; }
+                    default:                             { state = std::to_string(value); break; }
                 }
-                m_sensor_heating_mode->publish_state(text);
+
+                m_sensor_heating_mode.set_state(state);
             }
-#endif
 
             m_received_responses |= RESPONSE_HEATING_MODE;
 
@@ -1058,37 +800,36 @@ namespace esphome::luxtronik_v1
         {
             m_timer.cancel();
 
-            int32_t value = 0;
-            std::string text = "";
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
             // skip number of elements
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor_hot_water_mode != nullptr)
+
+            if (m_sensor_hot_water_mode.has_sensor())
             {
-                value = std::atoi(response.substr(start, end - start).c_str());
+                std::string state = "";
+                int32_t value = get_number(response, start, end);
+
                 switch (static_cast<OperationalMode>(value))
                 {
-                    case OperationalMode::AUTO:          { text = "auto";                break; }
-                    case OperationalMode::SECOND_HEATER: { text = "second_heater";       break; }
-                    case OperationalMode::PARTY:         { text = "party";               break; }
-                    case OperationalMode::VACATION:      { text = "vacation";            break; }
-                    case OperationalMode::OFF:           { text = "off";                 break; }
-                    default:                             { text = std::to_string(value); break; }
+                    case OperationalMode::AUTO:          { state = "auto";                break; }
+                    case OperationalMode::SECOND_HEATER: { state = "second_heater";       break; }
+                    case OperationalMode::PARTY:         { state = "party";               break; }
+                    case OperationalMode::VACATION:      { state = "vacation";            break; }
+                    case OperationalMode::OFF:           { state = "off";                 break; }
+                    default:                             { state = std::to_string(value); break; }
                 }
-                m_sensor_hot_water_mode->publish_state(text);
+
+                m_sensor_hot_water_mode.set_state(state);
             }
-#endif
 
             m_received_responses |= RESPONSE_HOT_WATER_MODE;
         }
     }
 
-#ifdef USE_TEXT_SENSOR
-    void Luxtronik::parse_slot(const std::string& slot, text_sensor::TextSensor* sensor_code, text_sensor::TextSensor* sensor_time)
+    void Luxtronik::parse_slot(const std::string& slot, StringSensor& sensor_code, StringSensor& sensor_time)
     {
         size_t start = 0;
         size_t end = slot.find(DELIMITER, start);
@@ -1096,47 +837,41 @@ namespace esphome::luxtronik_v1
 
         start = end + 1;
         end = slot.find(DELIMITER, start);
-        if (sensor_code != nullptr)
+        sensor_code.set_state(slot, start, end);
+
+        if (sensor_time.has_sensor())
         {
-            sensor_code->
-                publish_state(
-                    slot.substr(start, end - start));
-        }
-
-        if (sensor_time != nullptr)
-        {
-            std::tm dt = {};
+            std::tm time = {};
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_mday = get_number(slot.substr(start, end - start));
+            time.tm_mday = get_number(slot, start, end);
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_mon = get_number(slot.substr(start, end - start)) - 1;  // convert from range 1-12 to range 0-11
+            time.tm_mon = get_number(slot, start, end) - 1;  // convert from range 1-12 to range 0-11
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_year = get_number(slot.substr(start, end - start)) + 100;  // convert from years since 2000 to years since 1900
+            time.tm_year = get_number(slot, start, end) + 100;  // convert from years since 2000 to years since 1900
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_hour = get_number(slot.substr(start, end - start));
+            time.tm_hour = get_number(slot, start, end);
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            dt.tm_min = get_number(slot.substr(start, end - start));
+            time.tm_min = get_number(slot, start, end);
 
-            dt.tm_isdst = -1;  // auto-detect daylight saving time
-            std::mktime(&dt);  // convert to universal time
+            time.tm_isdst = -1;  // auto-detect daylight saving time
+            std::mktime(&time);  // convert to universal time
 
-            char timeStr[] = "yyyy-mm-ddThh:mm+zzzz";
-            std::strftime(timeStr, sizeof(timeStr), "%Y-%m-%dT%H:%M%z", &dt);
+            char state[] = "yyyy-mm-ddThh:mm+zzzz";
+            std::strftime(state, sizeof(state), "%Y-%m-%dT%H:%M%z", &time);
 
-            sensor_time->publish_state(timeStr);
+            sensor_time.set_state(state);
         }
     }
-#endif
 
     void Luxtronik::clear_uart_buffer()
     {
