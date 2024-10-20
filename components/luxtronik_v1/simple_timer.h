@@ -54,9 +54,12 @@ namespace esphome::luxtronik_v1
             m_running = true;
         }
 
-        void cancel()
+        bool cancel()
         {
+            bool was_running = m_running;
             m_running = false;
+
+            return was_running;
         }
 
         void loop()

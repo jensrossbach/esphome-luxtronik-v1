@@ -46,20 +46,6 @@ namespace esphome::luxtronik_v1
     static constexpr const char* const TYPE_HEATING_MODE       = "3405";
     static constexpr const char* const TYPE_HOT_WATER_MODE     = "3505";
 
-    static constexpr const char* const REQUEST_TYPE[] =
-    {
-        TYPE_TEMPERATURES,
-        TYPE_INPUTS,
-        TYPE_OUTPUTS,
-        TYPE_ERRORS,
-        TYPE_DEACTIVATIONS,
-        TYPE_INFORMATION,
-        TYPE_HEATING_MODE,
-        TYPE_HOT_WATER_MODE
-    };
-
-    static constexpr const size_t NUM_REQUESTS = 8;
-
     static constexpr const char ASCII_CR      = 0x0D;  // cariage return ('\r')
     static constexpr const char ASCII_LF      = 0x0A;  // line feed ('\n')
     static constexpr const char MIN_PRINTABLE = 0x20;
@@ -78,25 +64,6 @@ namespace esphome::luxtronik_v1
     static constexpr const size_t INDEX_RESPONSE_START =  5;
     static constexpr const size_t INDEX_SLOT_ID        =  8;
     static constexpr const size_t INDEX_SLOT_START     = 10;
-
-    static constexpr const uint16_t RESPONSE_TEMPERATURES   = 1 << 0;
-    static constexpr const uint16_t RESPONSE_INPUTS         = 1 << 1;
-    static constexpr const uint16_t RESPONSE_OUTPUTS        = 1 << 2;
-    static constexpr const uint16_t RESPONSE_ERRORS         = 1 << 3;
-    static constexpr const uint16_t RESPONSE_DEACTIVATIONS  = 1 << 4;
-    static constexpr const uint16_t RESPONSE_INFORMATION    = 1 << 5;
-    static constexpr const uint16_t RESPONSE_HEATING_MODE   = 1 << 6;
-    static constexpr const uint16_t RESPONSE_HOT_WATER_MODE = 1 << 7;
-
-    static constexpr const uint16_t RESPONSE_NONE = 0;
-    static constexpr const uint16_t RESPONSE_ALL  = RESPONSE_TEMPERATURES|
-                                                    RESPONSE_INPUTS|
-                                                    RESPONSE_OUTPUTS|
-                                                    RESPONSE_ERRORS|
-                                                    RESPONSE_DEACTIVATIONS|
-                                                    RESPONSE_INFORMATION|
-                                                    RESPONSE_HEATING_MODE|
-                                                    RESPONSE_HOT_WATER_MODE;
 
     enum class DeviceType : uint8_t
     {
@@ -212,31 +179,34 @@ namespace esphome::luxtronik_v1
         , m_max_retries(max_retries)
         , m_response_buffer{}
         , m_cursor(0)
-        , m_received_responses(RESPONSE_ALL)
+        , m_lost_response(false)
         , m_response_ready(false)
         , m_slot_block(false)
         , m_retry_count(0)
-        , m_current_request(0)
+        , m_dataset_list()
+        , m_current_dataset()
         , m_timer()
     {
     }
 
     void Luxtronik::update()
     {
-        m_timer.cancel();
-
-        if (m_received_responses != RESPONSE_ALL)
+        if (m_timer.cancel())
         {
-            ESP_LOGW(TAG, "No full response from Luxtronik in last update cycle:  RESP %04X", m_received_responses);
+            m_lost_response = true;
         }
 
-        m_sensor_device_communication.set_state(m_received_responses != RESPONSE_ALL);
+        if (m_lost_response)
+        {
+            ESP_LOGW(TAG, "Lost response(s) from Luxtronik in last update cycle");
+        }
 
-        m_received_responses = RESPONSE_NONE;
+        m_sensor_device_communication.set_state(m_lost_response);
+
+        m_lost_response = false;
         m_retry_count = 0;
 
-        // request temperatures
-        m_current_request = 0;
+        m_current_dataset = m_dataset_list.begin();
         request_data();
     }
 
@@ -302,6 +272,22 @@ namespace esphome::luxtronik_v1
     void Luxtronik::dump_config()
     {
         ESP_LOGCONFIG(TAG, "Luxtronik V1");
+
+#ifdef ESPHOME_LOG_HAS_CONFIG
+        std::string datasets = "";
+
+        for (const auto& ds : m_dataset_list)
+        {
+            if (!datasets.empty())
+            {
+                datasets += ", ";
+            }
+
+            datasets += ds;
+        }
+
+        ESP_LOGCONFIG(TAG, "  Data sets: %s", datasets.c_str());
+#endif
 
         ESP_LOGCONFIG(TAG, "  Request delay: %u", m_request_delay);
         ESP_LOGCONFIG(TAG, "  Response timeout: %u", m_response_timeout);
@@ -372,12 +358,17 @@ namespace esphome::luxtronik_v1
 #endif
     }
 
-    void Luxtronik::next_request()
+    void Luxtronik::add_dataset(const char* code)
     {
-        ++m_current_request;
+        m_dataset_list.push_back(code);
+    }
+
+    void Luxtronik::next_dataset()
+    {
+        ++m_current_dataset;
         m_retry_count = 0;
 
-        if (m_current_request < NUM_REQUESTS)
+        if (m_current_dataset != m_dataset_list.end())
         {
             m_timer.schedule(
                         std::chrono::milliseconds(m_request_delay),
@@ -385,13 +376,13 @@ namespace esphome::luxtronik_v1
         }
         else
         {
-            m_current_request = 0;
+            m_current_dataset = m_dataset_list.begin();
         }
     }
 
     void Luxtronik::request_data()
     {
-        send_request(REQUEST_TYPE[m_current_request]);
+        send_request(*m_current_dataset);
 
         m_timer.schedule(
                     std::chrono::milliseconds(m_response_timeout),
@@ -400,23 +391,24 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::handle_timeout()
     {
-        ESP_LOGW(TAG, "No response from Luxtronik within %u ms:  REQ %s", m_response_timeout, REQUEST_TYPE[m_current_request]);
+        ESP_LOGW(TAG, "No response from Luxtronik within %u ms:  REQ %s", m_response_timeout, *m_current_dataset);
 
         if (++m_retry_count > m_max_retries)
         {
-            ESP_LOGW(TAG, "Maximum number of retries reached");
+            ESP_LOGW(TAG, "Maximum number of retries reached, skipping data set");
 
-            ++m_current_request;
+            ++m_current_dataset;
             m_retry_count = 0;
+            m_lost_response = true;
         }
 
-        if (m_current_request < NUM_REQUESTS)
+        if (m_current_dataset != m_dataset_list.end())
         {
             request_data();
         }
         else
         {
-            m_current_request = 0;
+            m_current_dataset = m_dataset_list.begin();
         }
     }
 
@@ -500,10 +492,7 @@ namespace esphome::luxtronik_v1
             end = response.find(DELIMITER, start);
             m_sensor_remote_adjuster_temperature.set_state(response, start, end);
 
-            m_received_responses |= RESPONSE_TEMPERATURES;
-
-            // request inputs
-            next_request();
+            next_dataset();
         }
         else if (starts_with(response, TYPE_INPUTS))
         {
@@ -537,10 +526,7 @@ namespace esphome::luxtronik_v1
             end = response.find(DELIMITER, start);
             m_sensor_external_power.set_state(response, start, end);
 
-            m_received_responses |= RESPONSE_INPUTS;
-
-            // request outputs
-            next_request();
+            next_dataset();
         }
         else if (starts_with(response, TYPE_OUTPUTS))
         {
@@ -610,10 +596,7 @@ namespace esphome::luxtronik_v1
             end = response.find(DELIMITER, start);
             m_sensor_secondary_heater_2_failure.set_state(response, start, end);
 
-            m_received_responses |= RESPONSE_OUTPUTS;
-
-            // request errors
-            next_request();
+            next_dataset();
         }
         else if (starts_with(response, TYPE_ERRORS))
         {
@@ -638,10 +621,7 @@ namespace esphome::luxtronik_v1
             else
             {
                 m_slot_block = false;
-                m_received_responses |= RESPONSE_ERRORS;
-
-                // request deactivations
-                next_request();
+                next_dataset();
             }
         }
         else if (starts_with(response, TYPE_DEACTIVATIONS))
@@ -667,10 +647,7 @@ namespace esphome::luxtronik_v1
             else
             {
                 m_slot_block = false;
-                m_received_responses |= RESPONSE_DEACTIVATIONS;
-
-                // request information
-                next_request();
+                next_dataset();
             }
         }
         else if (starts_with(response, TYPE_INFORMATION))
@@ -757,10 +734,7 @@ namespace esphome::luxtronik_v1
                 m_sensor_operational_state.set_state(state);
             }
 
-            m_received_responses |= RESPONSE_INFORMATION;
-
-            // request heating mode
-            next_request();
+            next_dataset();
         }
         else if (starts_with(response, TYPE_HEATING_MODE))
         {
@@ -791,10 +765,7 @@ namespace esphome::luxtronik_v1
                 m_sensor_heating_mode.set_state(state);
             }
 
-            m_received_responses |= RESPONSE_HEATING_MODE;
-
-            // request hot water mode
-            next_request();
+            next_dataset();
         }
         else if (starts_with(response, TYPE_HOT_WATER_MODE))
         {
@@ -824,8 +795,6 @@ namespace esphome::luxtronik_v1
 
                 m_sensor_hot_water_mode.set_state(state);
             }
-
-            m_received_responses |= RESPONSE_HOT_WATER_MODE;
         }
     }
 

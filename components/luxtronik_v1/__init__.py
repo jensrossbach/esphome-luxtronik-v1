@@ -38,17 +38,30 @@ CONF_LUXTRONIK_ID     = "luxtronik_id"
 CONF_REQUEST_DELAY    = "request_delay"
 CONF_RESPONSE_TIMEOUT = "response_timeout"
 CONF_MAX_RETRIES      = "max_retries"
+CONF_INCLUDE_DATASETS = "include_datasets"
 
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
+
+def unique_list(value):
+    if len(value) != len(set(value)):
+        raise cv.Invalid("All values must be unique.")
+    return value
 
 CONFIG_SCHEMA = cv.Schema(
 {
     cv.GenerateID(): cv.declare_id(Luxtronik),
     cv.Optional(CONF_REQUEST_DELAY, default = 0): cv.int_range(min = 0, max = 2000),
     cv.Optional(CONF_RESPONSE_TIMEOUT, default = 2000): cv.int_range(min = 500, max = 5000),
-    cv.Optional(CONF_MAX_RETRIES, default = 5): cv.int_range(min = 0, max = 15)
+    cv.Optional(CONF_MAX_RETRIES, default = 5): cv.int_range(min = 0, max = 15),
+    cv.Optional(
+        CONF_INCLUDE_DATASETS,
+        default = [1100, 1200, 1300, 1500, 1600, 1700, 3405, 3505]):
+        cv.All(
+            cv.ensure_list(cv.one_of(1100, 1200, 1300, 1500, 1600, 1700, 3405, 3505)),
+            cv.Length(min = 1),
+            unique_list)
 }).extend(uart.UART_DEVICE_SCHEMA).extend(cv.polling_component_schema("60s"))
 
 
@@ -61,3 +74,6 @@ async def to_code(config):
                 config[CONF_RESPONSE_TIMEOUT],
                 config[CONF_MAX_RETRIES])
     await cg.register_component(cmp, config)
+
+    for ds in config[CONF_INCLUDE_DATASETS]:
+        cg.add(cmp.add_dataset(str(ds)))
