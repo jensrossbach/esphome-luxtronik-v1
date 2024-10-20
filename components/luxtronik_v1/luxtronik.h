@@ -44,6 +44,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 
 namespace esphome::luxtronik_v1
@@ -60,8 +61,9 @@ namespace esphome::luxtronik_v1
 
         void update() override;
         void loop() override;
-
         void dump_config() override;
+
+        void add_dataset(const char* code);
 
 #ifdef USE_SENSOR
         void set_sensor_flow_temperature(sensor::Sensor* sensor)                        { m_sensor_flow_temperature.set_sensor(sensor);                }
@@ -128,7 +130,7 @@ namespace esphome::luxtronik_v1
 #endif
 
     private:
-        void next_request();
+        void next_dataset();
         void request_data();
         void send_request(const char* req);
         void parse_response(const std::string& response);
@@ -224,11 +226,12 @@ namespace esphome::luxtronik_v1
         // helpers
         char m_response_buffer[255];
         size_t m_cursor;
-        uint16_t m_received_responses;
+        bool m_lost_response;
         bool m_response_ready;
         bool m_slot_block;
         uint16_t m_retry_count;
-        size_t m_current_request;
+        std::vector<const char*> m_dataset_list;
+        std::vector<const char*>::iterator m_current_dataset;
         SimpleTimer m_timer;
     };
 }  // namespace esphome::luxtronik_v1

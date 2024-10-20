@@ -79,13 +79,16 @@ external_components:
 
 Die folgenden generischen Einstellungen können konfiguriert werden:
 
-| Option | Benötigt | Wertebereich | Standardwert | Beschreibung |
-| ------ | -------- | ------------ |------------- | ------------ |
-| `uart_id` | ja | - | - | ID der konfigurierten UART-Komponente (siehe unten) |
-| `update_interval` | nein | Positive Zeitdauer | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
-| `request_delay` | nein | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
-| `response_timeout` | nein | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
-| `max_retries` | nein | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
+| Option | Benötigt | Typ | Wertebereich | Standardwert | Beschreibung |
+| ------ | -------- | --- | ------------ |------------- | ------------ |
+| `uart_id` | ja | ID | - | - | ID der konfigurierten UART-Komponente (siehe unten) |
+| `update_interval` | nein | Zahl | Positive Zeitdauer | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
+| `request_delay` | nein | Zahl | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
+| `response_timeout` | nein | Zahl | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
+| `max_retries` | nein | Zahl | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
+| `include_datasets` | nein | Zahlenliste | 1100, 1200, 1300, 1500, 1600, 1700, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
+
+<sup>1</sup> Es sollte sicher gestellt sein, dass keine Sensoren von ausgelassenen Datensätzen konfiguriert sind, da diese anderenfalls keine Werte erhalten werden. Siehe Abschnitt [Sensoren](#sensoren) um mehr darüber zu erfahren, welche Sensoren in welchen Datensätzen enthalten sind.
 
 ##### Beispiel
 ```yaml
@@ -95,6 +98,13 @@ luxtronik_v1:
   request_delay: 100      # Verzögerung von 100 Millisekunden zwischen den Anfragen
   response_timeout: 3000  # Maximal 3 Sekunden, bis Antwort kommen muss
   max_retries: 10         # Maximal 10 Wiederholungsversuche
+  include_datasets:       # Alle Datensätze außer Fehler und Abschaltungen
+    - 1100
+    - 1200
+    - 1300
+    - 1700
+    - 3405
+    - 3505
 ```
 
 ### UART-Komponente
@@ -171,20 +181,20 @@ Die Luxtronik-Komponente verfügt über verschiedene Sensoren, welche Daten von 
 #### Numerische Sensoren
 Die folgenden numerischen Sensoren können konfiguriert werden:
 
-| Sensor | Geräteklasse | Beschreibung |
-| ------ | ------------ | ------------ |
-| `flow_temperature` | Temperatur | Ist-Temperatur Vorlauf Heizkreis |
-| `return_temperature` | Temperatur | Ist-Temperatur Rücklauf Heizkreis |
-| `return_set_temperature` | Temperatur | Soll-Temperatur Rücklauf Heizkreis |
-| `hot_gas_temperature` | Temperatur | Temperatur Heißgas |
-| `outside_temperature` | Temperatur | Außentemperatur |
-| `hot_water_temperature` | Temperatur | Ist-Temperatur Brauchwarmwasser |
-| `hot_water_set_temperature` | Temperatur | Soll-Temperatur Brauchwarmwasser |
-| `heat_source_input_temperature` | Temperatur | Temperatur Wärmequelleneintritt |
-| `heat_source_output_temperature` | Temperatur | Temperatur Wärmequellenaustritt |
-| `mixed_circuit_1_temperature` | Temperatur | Ist-Temperatur Vorlauf Mischkreis 1 |
-| `mixed_circuit_1_set_temperature` | Temperatur | Soll-Temperatur Vorlauf Mischkreis 1 |
-| `remote_adjuster_temperature` | Temperatur | Temperatur Raumfernversteller |
+| Sensor | Geräteklasse | Datensatz | Beschreibung |
+| ------ | ------------ | --------- | ------------ |
+| `flow_temperature` | `temperature` | 1100 | Ist-Temperatur Vorlauf Heizkreis |
+| `return_temperature` | `temperature` | 1100 |  Ist-Temperatur Rücklauf Heizkreis |
+| `return_set_temperature` | `temperature` | 1100 |  Soll-Temperatur Rücklauf Heizkreis |
+| `hot_gas_temperature` | `temperature` | 1100 |  Temperatur Heißgas |
+| `outside_temperature` | `temperature` | 1100 |  Außentemperatur |
+| `hot_water_temperature` | `temperature` | 1100 |  Ist-Temperatur Brauchwarmwasser |
+| `hot_water_set_temperature` | `temperature` | 1100 |  Soll-Temperatur Brauchwarmwasser |
+| `heat_source_input_temperature` | `temperature` | 1100 |  Temperatur Wärmequelleneintritt |
+| `heat_source_output_temperature` | `temperature` | 1100 |  Temperatur Wärmequellenaustritt |
+| `mixed_circuit_1_temperature` | `temperature` | 1100 |  Ist-Temperatur Vorlauf Mischkreis 1 |
+| `mixed_circuit_1_set_temperature` | `temperature` | 1100 |  Soll-Temperatur Vorlauf Mischkreis 1 |
+| `remote_adjuster_temperature` | `temperature` | 1100 |  Temperatur Raumfernversteller |
 
 Detaillierte Informationen zu den Konfigurationsmöglichkeiten der einzelnen Elemente findest du in der Dokumentation der [ESPHome Sensorkomponenten](https://www.esphome.io/components/sensor).
 
@@ -203,31 +213,31 @@ sensor:
 #### Binäre Sensoren
 Die folgenden binären Sensoren können konfiguriert werden:
 
-| Sensor | Geräteklasse | Beschreibung |
-| ------ | ------------ | ------------ |
-| `defrost_brine_flow` | - | Abtau, Soledruck, Durchfluss |
-| `power_provider_lock_period` | Schloss | Sperrzeit EVU |
-| `low_pressure_state` | Problem | Niederdruckpressostat |
-| `high_pressure_state` | Problem | Hodruckpressostat |
-| `engine_protection` | Problem | Motorschutz |
-| `external_power` | - | Fremdstromanode |
-| `defrost_valve` | - | Abtauventil |
-| `hot_water_pump` | Laufen | Brauchwarmwasserumwälzpumpe |
-| `heating_pump` | Laufen | Heizungsumwälzpumpe |
-| `floor_heating_pump` | Laufen | Fußbodenheizungsumwälzpumpe |
-| `housing_ventilation` | Laufen | Ventilation Wärmepumpengehäuse |
-| `ventilation_pump` | Laufen | Ventilator, Brunnen- oder Soleumwälzpumpe |
-| `compressor_1` | Laufen | Verdichter 1 in Wärmepumpe |
-| `compressor_2` | Laufen | Verdichter 2 in Wärmepumpe |
-| `extra_pump` | Laufen | Zusatzumwälzpumpe - Zirkulationspumpe |
-| `secondary_heater_1` | Laufen | Zweiter Wärmeerzeuger 1 |
-| `secondary_heater_2_failure` | Problem | Zweiter Wärmeerzeuger 2 - Sammelstörung |
+| Sensor | Geräteklasse | Datensatz | Beschreibung |
+| ------ | ------------ | --------- | ------------ |
+| `defrost_brine_flow` | - | 1200 | Abtau, Soledruck, Durchfluss |
+| `power_provider_lock_period` | `lock` | 1200 | Sperrzeit EVU |
+| `low_pressure_state` | `problem` | 1200 | Niederdruckpressostat |
+| `high_pressure_state` | `problem` | 1200 | Hodruckpressostat |
+| `engine_protection` | `problem` | 1200 | Motorschutz |
+| `external_power` | - | 1200 | Fremdstromanode |
+| `defrost_valve` | - | 1300 | Abtauventil |
+| `hot_water_pump` | `running` | 1300 | Brauchwarmwasserumwälzpumpe |
+| `heating_pump` | `running` | 1300 | Heizungsumwälzpumpe |
+| `floor_heating_pump` | `running` | 1300 | Fußbodenheizungsumwälzpumpe |
+| `housing_ventilation` | `running` | 1300 | Ventilation Wärmepumpengehäuse |
+| `ventilation_pump` | `running` | 1300 | Ventilator, Brunnen- oder Soleumwälzpumpe |
+| `compressor_1` | `running` | 1300 | Verdichter 1 in Wärmepumpe |
+| `compressor_2` | `running` | 1300 | Verdichter 2 in Wärmepumpe |
+| `extra_pump` | `running` | 1300 | Zusatzumwälzpumpe - Zirkulationspumpe |
+| `secondary_heater_1` | `running` | 1300 | Zweiter Wärmeerzeuger 1 |
+| `secondary_heater_2_failure` | `problem` | 1300 | Zweiter Wärmeerzeuger 2 - Sammelstörung |
 
 Desweiteren kann folgender diagnostischer Binärsensor konfiguriert werden:
 
 | Sensor | Geräteklasse | Beschreibung |
 | ------ | ------------ | ------------ |
-| `device_communication` | Problem | Zeigt an, ob die Kommunikation mit dem Heizungssteuergerät funktioniert |
+| `device_communication` | `problem` | Zeigt an, ob die Kommunikation mit dem Heizungssteuergerät funktioniert |
 
 Detaillierte Informationen zu den Konfigurationsmöglichkeiten der einzelnen Elemente findest du in der Dokumentation der [ESPHome Binärsensorkomponenten](https://www.esphome.io/components/binary_sensor).
 
@@ -252,35 +262,35 @@ binary_sensor:
 #### Textsensoren
 Die folgenden Textsensoren können konfiguriert werden:
 
-| Sensor | Geräteklasse | Beschreibung |
-| ------ | ------------ | ------------ |
-| `device_type` | - | Wärmepumpentyp |
-| `firmware_version` | - | Software-Stand Firmware |
-| `bivalence_level` | - | Bivalenzstufe |
-| `operational_state` | - | Betriebszustand |
-| `heating_mode` | - | Betriebsart Heizung |
-| `hot_water_mode` | - | Betriebsart Brauchwarmwasser |
-| `mixer_1_state` | - | Zustand Mischer 1 |
-| `error_1_code` | - | Fehler-Code #1 im Fehlerspreicher (ältester) |
-| `error_1_time` | Zeitstempel | Fehlerzeitpunkt #1 im Fehlerspeicher (ältester) |
-| `error_2_code` | - | Fehler-Code #2 im Fehlerspreicher |
-| `error_2_time` | Zeitstempel | Fehlerzeitpunkt #2 im Fehlerspeicher |
-| `error_3_code` | - | Fehler-Code #3 im Fehlerspreicher |
-| `error_3_time` | Zeitstempel | Fehlerzeitpunkt #3 im Fehlerspeicher |
-| `error_4_code` | - | Fehler-Code #4 im Fehlerspreicher |
-| `error_4_time` | Zeitstempel | Fehlerzeitpunkt #4 im Fehlerspeicher |
-| `error_5_code` | - | Fehler-Code #5 im Fehlerspreicher (neuester) |
-| `error_5_time` | Zeitstempel | Fehlerzeitpunkt #5 im Fehlerspeicher (neuester) |
-| `deactivation_1_code` | - | Abschalt-Code #1 im Abschaltungsspeicher (ältester) |
-| `deactivation_1_time` | Zeitstempel | Abschaltzeitpunkt #1 im Abschaltungsspeicher (ältester) |
-| `deactivation_2_code` | - | Abschalt-Code #2 im Abschaltungsspeicher |
-| `deactivation_2_time` | Zeitstempel | Abschaltzeitpunkt #2 im Abschaltungsspeicher |
-| `deactivation_3_code` | - | Abschalt-Code #3 im Abschaltungsspeicher |
-| `deactivation_3_time` | Zeitstempel | Abschaltzeitpunkt #3 im Abschaltungsspeicher |
-| `deactivation_4_code` | - | Abschalt-Code #4 im Abschaltungsspeicher |
-| `deactivation_4_time` | Zeitstempel | Abschaltzeitpunkt #4 im Abschaltungsspeicher |
-| `deactivation_5_code` | - | Abschalt-Code #5 im Abschaltungsspeicher (neuester) |
-| `deactivation_5_time` | Zeitstempel | Abschaltzeitpunkt #5 im Abschaltungsspeicher (neuester) |
+| Sensor | Geräteklasse | Datensatz | Beschreibung |
+| ------ | ------------ | --------- | ------------ |
+| `device_type` | - | 1700 | Wärmepumpentyp |
+| `firmware_version` | - | 1700 | Software-Stand Firmware |
+| `bivalence_level` | - | 1700 | Bivalenzstufe |
+| `operational_state` | - | 1700 | Betriebszustand |
+| `heating_mode` | - | 3405 | Betriebsart Heizung |
+| `hot_water_mode` | - | 3505 | Betriebsart Brauchwarmwasser |
+| `mixer_1_state` | - | 1300 | Zustand Mischer 1 |
+| `error_1_code` | - | 1500 | Fehler-Code #1 im Fehlerspreicher (ältester) |
+| `error_1_time` | `timestamp` | 1500 | Fehlerzeitpunkt #1 im Fehlerspeicher (ältester) |
+| `error_2_code` | - | 1500 | Fehler-Code #2 im Fehlerspreicher |
+| `error_2_time` | `timestamp` | 1500 | Fehlerzeitpunkt #2 im Fehlerspeicher |
+| `error_3_code` | - | 1500 | Fehler-Code #3 im Fehlerspreicher |
+| `error_3_time` | `timestamp` | 1500 | Fehlerzeitpunkt #3 im Fehlerspeicher |
+| `error_4_code` | - | 1500 | Fehler-Code #4 im Fehlerspreicher |
+| `error_4_time` | `timestamp` | 1500 | Fehlerzeitpunkt #4 im Fehlerspeicher |
+| `error_5_code` | - | 1500 | Fehler-Code #5 im Fehlerspreicher (neuester) |
+| `error_5_time` | `timestamp` | 1500 | Fehlerzeitpunkt #5 im Fehlerspeicher (neuester) |
+| `deactivation_1_code` | - | 1600 | Abschalt-Code #1 im Abschaltungsspeicher (ältester) |
+| `deactivation_1_time` | `timestamp` | 1600 | Abschaltzeitpunkt #1 im Abschaltungsspeicher (ältester) |
+| `deactivation_2_code` | - | 1600 | Abschalt-Code #2 im Abschaltungsspeicher |
+| `deactivation_2_time` | `timestamp` | 1600 | Abschaltzeitpunkt #2 im Abschaltungsspeicher |
+| `deactivation_3_code` | - | 1600 | Abschalt-Code #3 im Abschaltungsspeicher |
+| `deactivation_3_time` | `timestamp` | 1600 | Abschaltzeitpunkt #3 im Abschaltungsspeicher |
+| `deactivation_4_code` | - | 1600 | Abschalt-Code #4 im Abschaltungsspeicher |
+| `deactivation_4_time` | `timestamp` | 1600 | Abschaltzeitpunkt #4 im Abschaltungsspeicher |
+| `deactivation_5_code` | - | 1600 | Abschalt-Code #5 im Abschaltungsspeicher (neuester) |
+| `deactivation_5_time` | `timestamp` | 1600 | Abschaltzeitpunkt #5 im Abschaltungsspeicher (neuester) |
 
 Detaillierte Informationen zu den Konfigurationsmöglichkeiten der einzelnen Elemente findest du in der Dokumentation der [ESPHome Textsensorkomponenten](https://www.esphome.io/components/text_sensor).
 
@@ -448,13 +458,16 @@ external_components:
 
 The following generic configuration items can be configured:
 
-| Option | Mandatory | Value Range | Default Value | Description |
-| ------ | --------- | ----------- |-------------- | ----------- |
-| `uart_id` | yes | n/a | n/a | ID of the configured UART component (see below) |
-| `update_interval` | no | Positive duration | 60s | The interval how often the component fetches data from the heating control unit |
-| `request_delay` | no | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
-| `response_timeout` | no | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
-| `max_retries` | no | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
+| Option | Mandatory | Type | Value Range | Default Value | Description |
+| ------ | --------- | ---- | ----------- |-------------- | ----------- |
+| `uart_id` | yes | ID | n/a | n/a | ID of the configured UART component (see below) |
+| `update_interval` | no | Number | Positive duration | 60s | The interval how often the component fetches data from the heating control unit |
+| `request_delay` | no | Number | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
+| `response_timeout` | no | Number | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
+| `max_retries` | no | Number | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
+| `include_datasets` | no | List of numbers | 1100, 1200, 1300, 1500, 1600, 1700, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
+
+<sup>1</sup> It should be ensured that no sensors from omitted data sets are configured, otherwise they will not receive any values. See section [Sensors](#sensors) to find out more about which sensors are contained in which data sets.
 
 ##### Example
 ```yaml
@@ -464,6 +477,13 @@ luxtronik_v1:
   request_delay: 100      # delay of 100 milliseconds between requests
   response_timeout: 3000  # a maximum of 3 seconds until response is expected
   max_retries: 10         # retry a maximum of 10 times
+  include_datasets:       # all data sets except errors and deactivations
+    - 1100
+    - 1200
+    - 1300
+    - 1700
+    - 3405
+    - 3505
 ```
 
 ### UART Component
@@ -540,20 +560,20 @@ The Luxtronik V1 component provides various sensors which expose data from the h
 #### Numeric Sensors
 The following numeric sensors can be configured:
 
-| Sensor | Device Class | Description |
-| ------ | ------------ | ----------- |
-| `flow_temperature` | Temperature | Flow temperature of heating circuit |
-| `return_temperature` | Temperature | Return temperature of heating circuit |
-| `return_set_temperature` | Temperature | Return set-temperature of heating circuit |
-| `hot_gas_temperature` | Temperature | Hot gas temperature |
-| `outside_temperature` | Temperature | Outside temperature |
-| `hot_water_temperature` | Temperature | Temperature of hot water |
-| `hot_water_set_temperature` | Temperature | Set-temperature of hot water |
-| `heat_source_input_temperature` | Temperature | Temperature of heat source input |
-| `heat_source_output_temperature` | Temperature | Temperature of heat source output |
-| `mixed_circuit_1_temperature` | Temperature | Temperature of mixed circuit 1 |
-| `mixed_circuit_1_set_temperature` | Temperature | Set-emperature of mixed circuit 1 |
-| `remote_adjuster_temperature` | Temperature | Temperature of the remote adjuster |
+| Sensor | Device Class | Data Set | Description |
+| ------ | ------------ | -------- | ----------- |
+| `flow_temperature` | `temperature` | 1100 | Flow temperature of heating circuit |
+| `return_temperature` | `temperature` | 1100 | Return temperature of heating circuit |
+| `return_set_temperature` | `temperature` | 1100 | Return set-temperature of heating circuit |
+| `hot_gas_temperature` | `temperature` | 1100 | Hot gas temperature |
+| `outside_temperature` | `temperature` | 1100 | Outside temperature |
+| `hot_water_temperature` | `temperature` | 1100 | Temperature of hot water |
+| `hot_water_set_temperature` | `temperature` | 1100 | Set-temperature of hot water |
+| `heat_source_input_temperature` | `temperature` | 1100 | Temperature of heat source input |
+| `heat_source_output_temperature` | `temperature` | 1100 | Temperature of heat source output |
+| `mixed_circuit_1_temperature` | `temperature` | 1100 | Temperature of mixed circuit 1 |
+| `mixed_circuit_1_set_temperature` | `temperature` | 1100 | Set-emperature of mixed circuit 1 |
+| `remote_adjuster_temperature` | `temperature` | 1100 | Temperature of the remote adjuster |
 
 For detailed configuration options of each item, please refer to ESPHome [sensor component configuration](https://www.esphome.io/components/sensor).
 
@@ -572,31 +592,31 @@ sensor:
 #### Binary Sensors
 The following binary sensors can be configured:
 
-| Sensor | Device Class | Description |
-| ------ | ------------ | ----------- |
-| `defrost_brine_flow` | - | Defrost / brine pressure / flow rate (depending on type of device) |
-| `power_provider_lock_period` | Lock | Power provider lock period |
-| `low_pressure_state` | Problem | Low pressure state |
-| `high_pressure_state` | Problem | High pressure state |
-| `engine_protection` | Problem | Engine protection |
-| `external_power` | - | External power anode |
-| `defrost_valve` | - | Defrost valve |
-| `hot_water_pump` | Running | Hot water circulation pump |
-| `heating_pump` | Running | Heating circulation pump |
-| `floor_heating_pump` | Running | Floor heating circulation pump |
-| `housing_ventilation` | Running | Ventilation for housing |
-| `ventilation_pump` | Running | Ventilation / well or brine circulation pump (depending on type of device) |
-| `compressor_1` | Running | Compressor 1 in heat pump |
-| `compressor_2` | Running | Compressor 2 in heat pump |
-| `extra_pump` | Running | Additional circulation pump |
-| `secondary_heater_1` | Running | Secondary heater |
-| `secondary_heater_2_failure` | Problem | Secondary heater error collector |
+| Sensor | Device Class | Data Set | Description |
+| ------ | ------------ | -------- | ----------- |
+| `defrost_brine_flow` | - | 1200 | Defrost / brine pressure / flow rate (depending on type of device) |
+| `power_provider_lock_period` | `lock` | 1200 | Power provider lock period |
+| `low_pressure_state` | `problem` | 1200 | Low pressure state |
+| `high_pressure_state` | `problem` | 1200 | High pressure state |
+| `engine_protection` | `problem` | 1200 | Engine protection |
+| `external_power` | - | 1200 | External power anode |
+| `defrost_valve` | - | 1300 | Defrost valve |
+| `hot_water_pump` | `running` | 1300 | Hot water circulation pump |
+| `heating_pump` | `running` | 1300 | Heating circulation pump |
+| `floor_heating_pump` | `running` | 1300 | Floor heating circulation pump |
+| `housing_ventilation` | `running` | 1300 | Ventilation for housing |
+| `ventilation_pump` | `running` | 1300 | Ventilation / well or brine circulation pump (depending on type of device) |
+| `compressor_1` | `running` | 1300 | Compressor 1 in heat pump |
+| `compressor_2` | `running` | 1300 | Compressor 2 in heat pump |
+| `extra_pump` | `running` | 1300 | Additional circulation pump |
+| `secondary_heater_1` | `running` | 1300 | Secondary heater |
+| `secondary_heater_2_failure` | `problem` | 1300 | Secondary heater error collector |
 
 Additionally, the following diagnostic binary sensor can be configured:
 
 | Sensor | Device Class | Description |
 | ------ | ------------ | ----------- |
-| `device_communication` | Problem | Indicates if the communication with the heating control unit operates properly |
+| `device_communication` | `problem` | Indicates if the communication with the heating control unit operates properly |
 
 For detailed configuration options of each item, please refer to ESPHome [binary sensor component configuration](https://www.esphome.io/components/binary_sensor).
 
@@ -621,35 +641,35 @@ binary_sensor:
 #### Text Sensors
 The following text sensors can be configured:
 
-| Sensor | Device Class | Description |
-| ------ | ------------ | ----------- |
-| `device_type` | - | Type of heat pump device |
-| `firmware_version` | - | Version of the Luxtronik V1 firmware |
-| `bivalence_level` | - | Bivalence level |
-| `operational_state` | - | State of operation |
-| `heating_mode` | - | Heating mode |
-| `hot_water_mode` | - | Hot water mode |
-| `mixer_1_state` | - | State of mixer 1 |
-| `error_1_code` | - | Error code #1 in error memory (oldest) |
-| `error_1_time` | Timestamp | Error timestamp #1 in error memory (oldest) |
-| `error_2_code` | - | Error code #2 in error memory |
-| `error_2_time` | Timestamp | Error timestamp #2 in error memory |
-| `error_3_code` | - | Error code #3 in error memory |
-| `error_3_time` | Timestamp | Error timestamp #3 in error memory |
-| `error_4_code` | - | Error code #4 in error memory |
-| `error_4_time` | Timestamp | Error timestamp #4 in error memory |
-| `error_5_code` | - | Error code #5 in error memory (newest) |
-| `error_5_time` | Timestamp | Error timestamp #5 in error memory (newest) |
-| `deactivation_1_code` | - | Deactivation code #1 in deaktivation memory (oldest) |
-| `deactivation_1_time` | Timestamp | Deactivation timestamp #1 in deaktivation memory (oldest) |
-| `deactivation_2_code` | - | Deactivation code #2 in deaktivation memory |
-| `deactivation_2_time` | Timestamp | Deactivation timestamp #2 in deaktivation memory |
-| `deactivation_3_code` | - | Deactivation code #3 in deaktivation memory |
-| `deactivation_3_time` | Timestamp | Deactivation timestamp #3 in deaktivation memory |
-| `deactivation_4_code` | - | Deactivation code #4 in deaktivation memory |
-| `deactivation_4_time` | Timestamp | Deactivation timestamp #4 in deaktivation memory |
-| `deactivation_5_code` | - | Deactivation code #5 in deaktivation memory (newest) |
-| `deactivation_5_time` | Timestamp | Deactivation timestamp #5 in deaktivation memory (newest) |
+| Sensor | Device Class | Data Set | Description |
+| ------ | ------------ | -------- | ----------- |
+| `device_type` | - | 1700 | Type of heat pump device |
+| `firmware_version` | - | 1700 | Version of the Luxtronik V1 firmware |
+| `bivalence_level` | - | 1700 | Bivalence level |
+| `operational_state` | - | 1700 | State of operation |
+| `heating_mode` | - | 3405 | Heating mode |
+| `hot_water_mode` | - | 3505 | Hot water mode |
+| `mixer_1_state` | - | 1300 | State of mixer 1 |
+| `error_1_code` | - | 1500 | Error code #1 in error memory (oldest) |
+| `error_1_time` | `timestamp` | 1500 | Error timestamp #1 in error memory (oldest) |
+| `error_2_code` | - | 1500 | Error code #2 in error memory |
+| `error_2_time` | `timestamp` | 1500 | Error timestamp #2 in error memory |
+| `error_3_code` | - | 1500 | Error code #3 in error memory |
+| `error_3_time` | `timestamp` | 1500 | Error timestamp #3 in error memory |
+| `error_4_code` | - | 1500 | Error code #4 in error memory |
+| `error_4_time` | `timestamp` | 1500 | Error timestamp #4 in error memory |
+| `error_5_code` | - | 1500 | Error code #5 in error memory (newest) |
+| `error_5_time` | `timestamp` | 1500 | Error timestamp #5 in error memory (newest) |
+| `deactivation_1_code` | - | 1600 | Deactivation code #1 in deaktivation memory (oldest) |
+| `deactivation_1_time` | `timestamp` | 1600 | Deactivation timestamp #1 in deaktivation memory (oldest) |
+| `deactivation_2_code` | - | 1600 | Deactivation code #2 in deaktivation memory |
+| `deactivation_2_time` | `timestamp` | 1600 | Deactivation timestamp #2 in deaktivation memory |
+| `deactivation_3_code` | - | 1600 | Deactivation code #3 in deaktivation memory |
+| `deactivation_3_time` | `timestamp` | 1600 | Deactivation timestamp #3 in deaktivation memory |
+| `deactivation_4_code` | - | 1600 | Deactivation code #4 in deaktivation memory |
+| `deactivation_4_time` | `timestamp` | 1600 | Deactivation timestamp #4 in deaktivation memory |
+| `deactivation_5_code` | - | 1600 | Deactivation code #5 in deaktivation memory (newest) |
+| `deactivation_5_time` | `timestamp` | 1600 | Deactivation timestamp #5 in deaktivation memory (newest) |
 
 For detailed configuration options of each item, please refer to ESPHome [text sensor component configuration](https://www.esphome.io/components/text_sensor).
 
