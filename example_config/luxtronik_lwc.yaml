@@ -16,7 +16,7 @@ esp32:
 
 # include Luxtronik V1 component (mandatory)
 external_components:
-  - source: github://jensrossbach/esphome-luxtronik-v1
+  - source: github://jensrossbach/esphome-luxtronik-v1@v1.0.1
     components: [luxtronik_v1]
 
 # enable logging (optional)
