@@ -63,68 +63,68 @@ CONFIG_SCHEMA = cv.Schema(
 {
     cv.GenerateID(CONF_LUXTRONIK_ID): cv.use_id(Luxtronik),
     cv.Optional(CONF_DEFROST_BRINE_FLOW): binary_sensor.binary_sensor_schema(
-        icon="mdi:snowflake-off"
+        icon = "mdi:snowflake-off"
     ),
     cv.Optional(CONF_POWER_PROVIDER_LOCK_PERIOD): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_LOCK
+        device_class = DEVICE_CLASS_LOCK
     ),
     cv.Optional(CONF_LOW_PRESSURE_STATE): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_PROBLEM
+        device_class = DEVICE_CLASS_PROBLEM
     ),
     cv.Optional(CONF_HIGH_PRESSURE_STATE): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_PROBLEM
+        device_class = DEVICE_CLASS_PROBLEM
     ),
     cv.Optional(CONF_ENGINE_PROTECTION): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_PROBLEM
+        device_class = DEVICE_CLASS_PROBLEM
     ),
     cv.Optional(CONF_EXTERNAL_POWER): binary_sensor.binary_sensor_schema(
-        icon="mdi:transmission-tower"
+        icon = "mdi:transmission-tower"
     ),
     cv.Optional(CONF_DEFROST_VALVE): binary_sensor.binary_sensor_schema(
-        icon="mdi:pipe-valve"
+        icon = "mdi:pipe-valve"
     ),
     cv.Optional(CONF_HOT_WATER_PUMP): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:pump"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:pump"
     ),
     cv.Optional(CONF_HEATING_PUMP): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:pump"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:pump"
     ),
     cv.Optional(CONF_FLOOR_HEATING_PUMP): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:pump"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:pump"
     ),
     cv.Optional(CONF_VENTILATION_HOUSING): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:fan"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:fan"
     ),
     cv.Optional(CONF_VENTILATION_PUMP): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:fan"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:fan"
     ),
     cv.Optional(CONF_COMPRESSOR_1): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:engine"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:engine"
     ),
     cv.Optional(CONF_COMPRESSOR_2): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:engine"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:engine"
     ),
     cv.Optional(CONF_EXTRA_PUMP): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:pump"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:pump"
     ),
     cv.Optional(CONF_SECONDARY_HEATER_1): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_RUNNING,
-        icon="mdi:heating-coil"
+        device_class = DEVICE_CLASS_RUNNING,
+        icon = "mdi:heating-coil"
     ),
     cv.Optional(CONF_SECONDARY_HEATER_2_FAILURE): binary_sensor.binary_sensor_schema(
-        device_class=DEVICE_CLASS_PROBLEM
+        device_class = DEVICE_CLASS_PROBLEM
     ),
     cv.Optional(CONF_DEVICE_COMMUNICATION): binary_sensor.binary_sensor_schema(
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
-        device_class=DEVICE_CLASS_PROBLEM
+        entity_category = ENTITY_CATEGORY_DIAGNOSTIC,
+        device_class = DEVICE_CLASS_PROBLEM
     )
 })
 
