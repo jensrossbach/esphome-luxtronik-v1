@@ -66,67 +66,77 @@ namespace esphome::luxtronik_v1
         void add_dataset(const char* code);
 
 #ifdef USE_SENSOR
-        void set_sensor_flow_temperature(sensor::Sensor* sensor)                        { m_sensor_flow_temperature.set_sensor(sensor);                }
-        void set_sensor_return_temperature(sensor::Sensor* sensor)                      { m_sensor_return_temperature.set_sensor(sensor);              }
-        void set_sensor_return_set_temperature(sensor::Sensor* sensor)                  { m_sensor_return_set_temperature.set_sensor(sensor);          }
-        void set_sensor_hot_gas_temperature(sensor::Sensor* sensor)                     { m_sensor_hot_gas_temperature.set_sensor(sensor);             }
-        void set_sensor_outside_temperature(sensor::Sensor* sensor)                     { m_sensor_outside_temperature.set_sensor(sensor);             }
-        void set_sensor_hot_water_temperature(sensor::Sensor* sensor)                   { m_sensor_hot_water_temperature.set_sensor(sensor);           }
-        void set_sensor_hot_water_set_temperature(sensor::Sensor* sensor)               { m_sensor_hot_water_set_temperature.set_sensor(sensor);       }
-        void set_sensor_heat_source_input_temperature(sensor::Sensor* sensor)           { m_sensor_heat_source_input_temperature.set_sensor(sensor);   }
-        void set_sensor_heat_source_output_temperature(sensor::Sensor* sensor)          { m_sensor_heat_source_output_temperature.set_sensor(sensor);  }
-        void set_sensor_mixed_circuit_1_temperature(sensor::Sensor* sensor)             { m_sensor_mixed_circuit_1_temperature.set_sensor(sensor);     }
-        void set_sensor_mixed_circuit_1_set_temperature(sensor::Sensor* sensor)         { m_sensor_mixed_circuit_1_set_temperature.set_sensor(sensor); }
-        void set_sensor_remote_adjuster_temperature(sensor::Sensor* sensor)             { m_sensor_remote_adjuster_temperature.set_sensor(sensor);     }
+        void set_sensor_flow_temperature(sensor::Sensor* sensor)                { m_sensor_flow_temperature.set_sensor(sensor);                }
+        void set_sensor_return_temperature(sensor::Sensor* sensor)              { m_sensor_return_temperature.set_sensor(sensor);              }
+        void set_sensor_return_set_temperature(sensor::Sensor* sensor)          { m_sensor_return_set_temperature.set_sensor(sensor);          }
+        void set_sensor_hot_gas_temperature(sensor::Sensor* sensor)             { m_sensor_hot_gas_temperature.set_sensor(sensor);             }
+        void set_sensor_outside_temperature(sensor::Sensor* sensor)             { m_sensor_outside_temperature.set_sensor(sensor);             }
+        void set_sensor_hot_water_temperature(sensor::Sensor* sensor)           { m_sensor_hot_water_temperature.set_sensor(sensor);           }
+        void set_sensor_hot_water_set_temperature(sensor::Sensor* sensor)       { m_sensor_hot_water_set_temperature.set_sensor(sensor);       }
+        void set_sensor_heat_source_input_temperature(sensor::Sensor* sensor)   { m_sensor_heat_source_input_temperature.set_sensor(sensor);   }
+        void set_sensor_heat_source_output_temperature(sensor::Sensor* sensor)  { m_sensor_heat_source_output_temperature.set_sensor(sensor);  }
+        void set_sensor_mixed_circuit_1_temperature(sensor::Sensor* sensor)     { m_sensor_mixed_circuit_1_temperature.set_sensor(sensor);     }
+        void set_sensor_mixed_circuit_1_set_temperature(sensor::Sensor* sensor) { m_sensor_mixed_circuit_1_set_temperature.set_sensor(sensor); }
+        void set_sensor_remote_adjuster_temperature(sensor::Sensor* sensor)     { m_sensor_remote_adjuster_temperature.set_sensor(sensor);     }
+        void set_sensor_impulses_compressor_1(sensor::Sensor* sensor)           { m_sensor_impulses_compressor_1.set_sensor(sensor);           }
+        void set_sensor_impulses_compressor_2(sensor::Sensor* sensor)           { m_sensor_impulses_compressor_2.set_sensor(sensor);           }
 #endif
 #ifdef USE_BINARY_SENSOR
-        void set_sensor_defrost_brine_flow(binary_sensor::BinarySensor* sensor)         { m_sensor_defrost_brine_flow.set_sensor(sensor);              }
-        void set_sensor_power_provider_lock_period(binary_sensor::BinarySensor* sensor) { m_sensor_power_provider_lock_period.set_sensor(sensor);      }
-        void set_sensor_high_pressure_state(binary_sensor::BinarySensor* sensor)        { m_sensor_high_pressure_state.set_sensor(sensor);             }
-        void set_sensor_engine_protection(binary_sensor::BinarySensor* sensor)          { m_sensor_engine_protection.set_sensor(sensor);               }
-        void set_sensor_low_pressure_state(binary_sensor::BinarySensor* sensor)         { m_sensor_low_pressure_state.set_sensor(sensor);              }
-        void set_sensor_external_power(binary_sensor::BinarySensor* sensor)             { m_sensor_external_power.set_sensor(sensor);                  }
-        void set_sensor_defrost_valve(binary_sensor::BinarySensor* sensor)              { m_sensor_defrost_valve.set_sensor(sensor);                   }
-        void set_sensor_hot_water_pump(binary_sensor::BinarySensor* sensor)             { m_sensor_hot_water_pump.set_sensor(sensor);                  }
-        void set_sensor_floor_heating_pump(binary_sensor::BinarySensor* sensor)         { m_sensor_floor_heating_pump.set_sensor(sensor);              }
-        void set_sensor_heating_pump(binary_sensor::BinarySensor* sensor)               { m_sensor_heating_pump.set_sensor(sensor);                    }
-        void set_sensor_housing_ventilation(binary_sensor::BinarySensor* sensor)        { m_sensor_housing_ventilation.set_sensor(sensor);             }
-        void set_sensor_ventilation_pump(binary_sensor::BinarySensor* sensor)           { m_sensor_ventilation_pump.set_sensor(sensor);                }
-        void set_sensor_compressor_1(binary_sensor::BinarySensor* sensor)               { m_sensor_compressor_1.set_sensor(sensor);                    }
-        void set_sensor_compressor_2(binary_sensor::BinarySensor* sensor)               { m_sensor_compressor_2.set_sensor(sensor);                    }
-        void set_sensor_extra_pump(binary_sensor::BinarySensor* sensor)                 { m_sensor_extra_pump.set_sensor(sensor);                      }
-        void set_sensor_secondary_heater_1(binary_sensor::BinarySensor* sensor)         { m_sensor_secondary_heater_1.set_sensor(sensor);              }
-        void set_sensor_secondary_heater_2_failure(binary_sensor::BinarySensor* sensor) { m_sensor_secondary_heater_2_failure.set_sensor(sensor);      }
-        void set_sensor_device_communication(binary_sensor::BinarySensor* sensor)       { m_sensor_device_communication.set_sensor(sensor);            }
+        void set_sensor_defrost_brine_flow(binary_sensor::BinarySensor* sensor)         { m_sensor_defrost_brine_flow.set_sensor(sensor);         }
+        void set_sensor_power_provider_lock_period(binary_sensor::BinarySensor* sensor) { m_sensor_power_provider_lock_period.set_sensor(sensor); }
+        void set_sensor_high_pressure_state(binary_sensor::BinarySensor* sensor)        { m_sensor_high_pressure_state.set_sensor(sensor);        }
+        void set_sensor_engine_protection(binary_sensor::BinarySensor* sensor)          { m_sensor_engine_protection.set_sensor(sensor);          }
+        void set_sensor_low_pressure_state(binary_sensor::BinarySensor* sensor)         { m_sensor_low_pressure_state.set_sensor(sensor);         }
+        void set_sensor_external_power(binary_sensor::BinarySensor* sensor)             { m_sensor_external_power.set_sensor(sensor);             }
+        void set_sensor_defrost_valve(binary_sensor::BinarySensor* sensor)              { m_sensor_defrost_valve.set_sensor(sensor);              }
+        void set_sensor_hot_water_pump(binary_sensor::BinarySensor* sensor)             { m_sensor_hot_water_pump.set_sensor(sensor);             }
+        void set_sensor_floor_heating_pump(binary_sensor::BinarySensor* sensor)         { m_sensor_floor_heating_pump.set_sensor(sensor);         }
+        void set_sensor_heating_pump(binary_sensor::BinarySensor* sensor)               { m_sensor_heating_pump.set_sensor(sensor);               }
+        void set_sensor_housing_ventilation(binary_sensor::BinarySensor* sensor)        { m_sensor_housing_ventilation.set_sensor(sensor);        }
+        void set_sensor_ventilation_pump(binary_sensor::BinarySensor* sensor)           { m_sensor_ventilation_pump.set_sensor(sensor);           }
+        void set_sensor_compressor_1(binary_sensor::BinarySensor* sensor)               { m_sensor_compressor_1.set_sensor(sensor);               }
+        void set_sensor_compressor_2(binary_sensor::BinarySensor* sensor)               { m_sensor_compressor_2.set_sensor(sensor);               }
+        void set_sensor_extra_pump(binary_sensor::BinarySensor* sensor)                 { m_sensor_extra_pump.set_sensor(sensor);                 }
+        void set_sensor_secondary_heater_1(binary_sensor::BinarySensor* sensor)         { m_sensor_secondary_heater_1.set_sensor(sensor);         }
+        void set_sensor_secondary_heater_2_failure(binary_sensor::BinarySensor* sensor) { m_sensor_secondary_heater_2_failure.set_sensor(sensor); }
+        void set_sensor_device_communication(binary_sensor::BinarySensor* sensor)       { m_sensor_device_communication.set_sensor(sensor);       }
 #endif
 #ifdef USE_TEXT_SENSOR
-        void set_sensor_mixer_1_state(text_sensor::TextSensor* sensor)                  { m_sensor_mixer_1_state.set_sensor(sensor);                   }
-        void set_sensor_device_type(text_sensor::TextSensor* sensor)                    { m_sensor_device_type.set_sensor(sensor);                     }
-        void set_sensor_firmware_version(text_sensor::TextSensor* sensor)               { m_sensor_firmware_version.set_sensor(sensor);                }
-        void set_sensor_bivalence_level(text_sensor::TextSensor* sensor)                { m_sensor_bivalence_level.set_sensor(sensor);                 }
-        void set_sensor_operational_state(text_sensor::TextSensor* sensor)              { m_sensor_operational_state.set_sensor(sensor);               }
-        void set_sensor_heating_mode(text_sensor::TextSensor* sensor)                   { m_sensor_heating_mode.set_sensor(sensor);                    }
-        void set_sensor_hot_water_mode(text_sensor::TextSensor* sensor)                 { m_sensor_hot_water_mode.set_sensor(sensor);                  }
-        void set_sensor_error_1_code(text_sensor::TextSensor* sensor)                   { m_sensor_error_1_code.set_sensor(sensor);                    }
-        void set_sensor_error_2_code(text_sensor::TextSensor* sensor)                   { m_sensor_error_2_code.set_sensor(sensor);                    }
-        void set_sensor_error_3_code(text_sensor::TextSensor* sensor)                   { m_sensor_error_3_code.set_sensor(sensor);                    }
-        void set_sensor_error_4_code(text_sensor::TextSensor* sensor)                   { m_sensor_error_4_code.set_sensor(sensor);                    }
-        void set_sensor_error_5_code(text_sensor::TextSensor* sensor)                   { m_sensor_error_5_code.set_sensor(sensor);                    }
-        void set_sensor_error_1_time(text_sensor::TextSensor* sensor)                   { m_sensor_error_1_time.set_sensor(sensor);                    }
-        void set_sensor_error_2_time(text_sensor::TextSensor* sensor)                   { m_sensor_error_2_time.set_sensor(sensor);                    }
-        void set_sensor_error_3_time(text_sensor::TextSensor* sensor)                   { m_sensor_error_3_time.set_sensor(sensor);                    }
-        void set_sensor_error_4_time(text_sensor::TextSensor* sensor)                   { m_sensor_error_4_time.set_sensor(sensor);                    }
-        void set_sensor_error_5_time(text_sensor::TextSensor* sensor)                   { m_sensor_error_5_time.set_sensor(sensor);                    }
-        void set_sensor_deactivation_1_code(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_1_code.set_sensor(sensor);             }
-        void set_sensor_deactivation_2_code(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_2_code.set_sensor(sensor);             }
-        void set_sensor_deactivation_3_code(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_3_code.set_sensor(sensor);             }
-        void set_sensor_deactivation_4_code(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_4_code.set_sensor(sensor);             }
-        void set_sensor_deactivation_5_code(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_5_code.set_sensor(sensor);             }
-        void set_sensor_deactivation_1_time(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_1_time.set_sensor(sensor);             }
-        void set_sensor_deactivation_2_time(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_2_time.set_sensor(sensor);             }
-        void set_sensor_deactivation_3_time(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_3_time.set_sensor(sensor);             }
-        void set_sensor_deactivation_4_time(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_4_time.set_sensor(sensor);             }
-        void set_sensor_deactivation_5_time(text_sensor::TextSensor* sensor)            { m_sensor_deactivation_5_time.set_sensor(sensor);             }
+        void set_sensor_mixer_1_state(text_sensor::TextSensor* sensor)                       { m_sensor_mixer_1_state.set_sensor(sensor);                       }
+        void set_sensor_device_type(text_sensor::TextSensor* sensor)                         { m_sensor_device_type.set_sensor(sensor);                         }
+        void set_sensor_firmware_version(text_sensor::TextSensor* sensor)                    { m_sensor_firmware_version.set_sensor(sensor);                    }
+        void set_sensor_bivalence_level(text_sensor::TextSensor* sensor)                     { m_sensor_bivalence_level.set_sensor(sensor);                     }
+        void set_sensor_operational_state(text_sensor::TextSensor* sensor)                   { m_sensor_operational_state.set_sensor(sensor);                   }
+        void set_sensor_heating_mode(text_sensor::TextSensor* sensor)                        { m_sensor_heating_mode.set_sensor(sensor);                        }
+        void set_sensor_hot_water_mode(text_sensor::TextSensor* sensor)                      { m_sensor_hot_water_mode.set_sensor(sensor);                      }
+        void set_sensor_error_1_code(text_sensor::TextSensor* sensor)                        { m_sensor_error_1_code.set_sensor(sensor);                        }
+        void set_sensor_error_2_code(text_sensor::TextSensor* sensor)                        { m_sensor_error_2_code.set_sensor(sensor);                        }
+        void set_sensor_error_3_code(text_sensor::TextSensor* sensor)                        { m_sensor_error_3_code.set_sensor(sensor);                        }
+        void set_sensor_error_4_code(text_sensor::TextSensor* sensor)                        { m_sensor_error_4_code.set_sensor(sensor);                        }
+        void set_sensor_error_5_code(text_sensor::TextSensor* sensor)                        { m_sensor_error_5_code.set_sensor(sensor);                        }
+        void set_sensor_error_1_time(text_sensor::TextSensor* sensor)                        { m_sensor_error_1_time.set_sensor(sensor);                        }
+        void set_sensor_error_2_time(text_sensor::TextSensor* sensor)                        { m_sensor_error_2_time.set_sensor(sensor);                        }
+        void set_sensor_error_3_time(text_sensor::TextSensor* sensor)                        { m_sensor_error_3_time.set_sensor(sensor);                        }
+        void set_sensor_error_4_time(text_sensor::TextSensor* sensor)                        { m_sensor_error_4_time.set_sensor(sensor);                        }
+        void set_sensor_error_5_time(text_sensor::TextSensor* sensor)                        { m_sensor_error_5_time.set_sensor(sensor);                        }
+        void set_sensor_deactivation_1_code(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_1_code.set_sensor(sensor);                 }
+        void set_sensor_deactivation_2_code(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_2_code.set_sensor(sensor);                 }
+        void set_sensor_deactivation_3_code(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_3_code.set_sensor(sensor);                 }
+        void set_sensor_deactivation_4_code(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_4_code.set_sensor(sensor);                 }
+        void set_sensor_deactivation_5_code(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_5_code.set_sensor(sensor);                 }
+        void set_sensor_deactivation_1_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_1_time.set_sensor(sensor);                 }
+        void set_sensor_deactivation_2_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_2_time.set_sensor(sensor);                 }
+        void set_sensor_deactivation_3_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_3_time.set_sensor(sensor);                 }
+        void set_sensor_deactivation_4_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_4_time.set_sensor(sensor);                 }
+        void set_sensor_deactivation_5_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_5_time.set_sensor(sensor);                 }
+
+        void set_sensor_operating_hours_compressor_1(text_sensor::TextSensor* sensor, int32_t format)        { m_sensor_operating_hours_compressor_1.set_sensor(sensor, format);        }
+        void set_sensor_average_operating_time_compressor_1(text_sensor::TextSensor* sensor, int32_t format) { m_sensor_average_operating_time_compressor_1.set_sensor(sensor, format); }
+        void set_sensor_operating_hours_compressor_2(text_sensor::TextSensor* sensor, int32_t format)        { m_sensor_operating_hours_compressor_2.set_sensor(sensor, format);        }
+        void set_sensor_average_operating_time_compressor_2(text_sensor::TextSensor* sensor, int32_t format) { m_sensor_average_operating_time_compressor_2.set_sensor(sensor, format); }
+        void set_sensor_operating_hours_secondary_heater_1(text_sensor::TextSensor* sensor, int32_t format)  { m_sensor_operating_hours_secondary_heater_1.set_sensor(sensor, format);  }
+        void set_sensor_operating_hours_secondary_heater_2(text_sensor::TextSensor* sensor, int32_t format)  { m_sensor_operating_hours_secondary_heater_2.set_sensor(sensor, format);  }
+        void set_sensor_operating_hours_heat_pump(text_sensor::TextSensor* sensor, int32_t format)           { m_sensor_operating_hours_heat_pump.set_sensor(sensor, format);           }
 #endif
 
     private:
@@ -190,6 +200,17 @@ namespace esphome::luxtronik_v1
         // modes
         StringSensor m_sensor_heating_mode;    // 3405:2 - Betriebsart Heizung
         StringSensor m_sensor_hot_water_mode;  // 3505:2 - Betriebsart Brauchwarmwasser
+
+        // operating hours
+        DurationSensor m_sensor_operating_hours_compressor_1;         // 1450:2  - Betriebsstunden Verdichter 1
+        NumericSensor  m_sensor_impulses_compressor_1;                // 1450:3  - Impulse Verdichter 1
+        DurationSensor m_sensor_average_operating_time_compressor_1;  // 1450:4  - Durchschnittliche Laufzeit Verdichter 1
+        DurationSensor m_sensor_operating_hours_compressor_2;         // 1450:5  - Betriebsstunden Verdichter 2
+        NumericSensor  m_sensor_impulses_compressor_2;                // 1450:6  - Impulse Verdichter 2
+        DurationSensor m_sensor_average_operating_time_compressor_2;  // 1450:7  - Durchschnittliche Laufzeit Verdichter 2
+        DurationSensor m_sensor_operating_hours_secondary_heater_1;   // 1450:8  - Betriebsstunden Zweiter Wärmeerzeuger 1
+        DurationSensor m_sensor_operating_hours_secondary_heater_2;   // 1450:9  - Betriebsstunden Zweiter Wärmeerzeuger 2
+        DurationSensor m_sensor_operating_hours_heat_pump;            // 1450:10 - Betriebsstunden Wärmepumpe
 
         // errors
         StringSensor m_sensor_error_1_code;  // 1500:1500:2   - Fehler 1 - Code

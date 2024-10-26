@@ -86,7 +86,7 @@ Die folgenden generischen Einstellungen können konfiguriert werden:
 | `request_delay` | nein | Zahl | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
 | `response_timeout` | nein | Zahl | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
 | `max_retries` | nein | Zahl | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
-| `include_datasets` | nein | Zahlenliste | 1100, 1200, 1300, 1500, 1600, 1700, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
+| `include_datasets` | nein | Zahlenliste | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
 
 <sup>1</sup> Es sollte sicher gestellt sein, dass keine Sensoren von ausgelassenen Datensätzen konfiguriert sind, da diese anderenfalls keine Werte erhalten werden. Siehe Abschnitt [Sensoren](#sensoren) um mehr darüber zu erfahren, welche Sensoren in welchen Datensätzen enthalten sind.
 
@@ -102,6 +102,7 @@ luxtronik_v1:
     - 1100
     - 1200
     - 1300
+    - 1450
     - 1700
     - 3405
     - 3505
@@ -195,6 +196,8 @@ Die folgenden numerischen Sensoren können konfiguriert werden:
 | `mixed_circuit_1_temperature` | `temperature` | 1100 |  Ist-Temperatur Vorlauf Mischkreis 1 |
 | `mixed_circuit_1_set_temperature` | `temperature` | 1100 |  Soll-Temperatur Vorlauf Mischkreis 1 |
 | `remote_adjuster_temperature` | `temperature` | 1100 |  Temperatur Raumfernversteller |
+| `impulses_compressor_1` | - | 1450 |  Impulse Verdichter 1 |
+| `impulses_compressor_2` | - | 1450 |  Impulse Verdichter 2 |
 
 Detaillierte Informationen zu den Konfigurationsmöglichkeiten der einzelnen Elemente findest du in der Dokumentation der [ESPHome Sensorkomponenten](https://www.esphome.io/components/sensor).
 
@@ -271,6 +274,13 @@ Die folgenden Textsensoren können konfiguriert werden:
 | `heating_mode` | - | 3405 | Betriebsart Heizung |
 | `hot_water_mode` | - | 3505 | Betriebsart Brauchwarmwasser |
 | `mixer_1_state` | - | 1300 | Zustand Mischer 1 |
+| `operating_hours_compressor_1` | - | 1450 | Betriebsstunden Verdichter 1 |
+| `average_operating_time_compressor_1` | - | 1450 | Durchschnittliche Laufzeit Verdichter 1 |
+| `operating_hours_compressor_2` | - | 1450 | Betriebsstunden Verdichter 2 |
+| `average_operating_time_compressor_2` | - | 1450 | Durchschnittliche Laufzeit Verdichter 2 |
+| `operating_hours_secondary_heater_1` | - | 1450 | Betriebsstunden Zweiter Wärmeerzeuger 1 |
+| `operating_hours_secondary_heater_2` | - | 1450 | Betriebsstunden Zweiter Wärmeerzeuger 2 |
+| `operating_hours_heat_pump` | - | 1450 | Betriebsstunden Wärmepumpe |
 | `error_1_code` | - | 1500 | Fehler-Code #1 im Fehlerspreicher (ältester) |
 | `error_1_time` | `timestamp` | 1500 | Fehlerzeitpunkt #1 im Fehlerspeicher (ältester) |
 | `error_2_code` | - | 1500 | Fehler-Code #2 im Fehlerspreicher |
@@ -345,6 +355,16 @@ Die Sensoren `heating_mode` und `hot_water_mode` bieten die folgenden Werte:
 | `vacation` | Ferien |
 | `off` | Aus |
 
+Die Sensoren `operating_hours_compressor_1`, `average_operating_time_compressor_1`, `operating_hours_compressor_2`, `average_operating_time_compressor_2`, `operating_hours_secondary_heater_1`, `operating_hours_secondary_heater_2` und `operating_hours_heat_pump`
+unterstützen das zusätzliche Konfigurationselement `duration_format`, mit dem angegeben werden kann, wie die Zeitspanne im Sensor formatiert wird. Das Konfigurationselement kann folgende Werte annehmen:
+
+| Wert | Beschreibung |
+| ---- | ------------ |
+| `iso_8601` | Die Zeitspanne wird als Zeichenkette mit einer Dauer nach ISO-8601 formatiert |
+| `human_readable` | Die Zeitspanne wird als visuell lesbare Zeichenkette mit durch Doppelpunkte getrennte Stunden, Minuten und Sekunden formatiert |
+
+Wenn das Konfigurationselement weggelassen wird, wird der Wert `human_readable` verwendet.
+
 ##### Beispiel
 ```yaml
 text_sensor:
@@ -373,6 +393,20 @@ text_sensor:
           - defrost -> Abtauen
           - swimming_pool -> Schwimmbad
           - provider_lock -> EVU-Sperre
+    operating_hours_compressor_1:
+      name: Betriebsstunden Verdichter
+      duration_format: iso_8601
+    average_operating_time_compressor_1:
+      name: Durchschnittliche Laufzeit Verdichter
+      duration_format: iso_8601
+    error_5_code:
+      name: Letzter Fehler - Code
+    error_5_time:
+      name: Letzter Fehler - Zeit
+    deactivation_5_code:
+      name: Letzte Abschaltung - Code
+    deactivation_5_time:
+      name: Letzte Abschaltung - Zeit
 ```
 
 ## Luxtronik-Konfiguration
@@ -465,7 +499,7 @@ The following generic configuration items can be configured:
 | `request_delay` | no | Number | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
 | `response_timeout` | no | Number | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
 | `max_retries` | no | Number | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
-| `include_datasets` | no | List of numbers | 1100, 1200, 1300, 1500, 1600, 1700, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
+| `include_datasets` | no | List of numbers | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
 
 <sup>1</sup> It should be ensured that no sensors from omitted data sets are configured, otherwise they will not receive any values. See section [Sensors](#sensors) to find out more about which sensors are contained in which data sets.
 
@@ -481,6 +515,7 @@ luxtronik_v1:
     - 1100
     - 1200
     - 1300
+    - 1450
     - 1700
     - 3405
     - 3505
@@ -574,6 +609,8 @@ The following numeric sensors can be configured:
 | `mixed_circuit_1_temperature` | `temperature` | 1100 | Temperature of mixed circuit 1 |
 | `mixed_circuit_1_set_temperature` | `temperature` | 1100 | Set-emperature of mixed circuit 1 |
 | `remote_adjuster_temperature` | `temperature` | 1100 | Temperature of the remote adjuster |
+| `impulses_compressor_1` | - | 1450 |  Number of impulses of compressor 1 |
+| `impulses_compressor_2` | - | 1450 |  Number of impulses of compressor 2 |
 
 For detailed configuration options of each item, please refer to ESPHome [sensor component configuration](https://www.esphome.io/components/sensor).
 
@@ -650,6 +687,13 @@ The following text sensors can be configured:
 | `heating_mode` | - | 3405 | Heating mode |
 | `hot_water_mode` | - | 3505 | Hot water mode |
 | `mixer_1_state` | - | 1300 | State of mixer 1 |
+| `operating_hours_compressor_1` | - | 1450 | Operating hours of compressor 1 |
+| `average_operating_time_compressor_1` | - | 1450 | Average operating time of compressor 1 |
+| `operating_hours_compressor_2` | - | 1450 | Operating hours of compressor 2 |
+| `average_operating_time_compressor_2` | - | 1450 | Average operating time of compressor 2 |
+| `operating_hours_secondary_heater_1` | - | 1450 | Operating hours of secondary heater 1 |
+| `operating_hours_secondary_heater_2` | - | 1450 | Operating hours of secondary heater 2 |
+| `operating_hours_heat_pump` | - | 1450 | Operating hours of heat pump |
 | `error_1_code` | - | 1500 | Error code #1 in error memory (oldest) |
 | `error_1_time` | `timestamp` | 1500 | Error timestamp #1 in error memory (oldest) |
 | `error_2_code` | - | 1500 | Error code #2 in error memory |
@@ -724,6 +768,15 @@ The sensors `heating_mode` and `hot_water_mode` provide the following values:
 | `vacation` | Vacation mode |
 | `off` | Off |
 
+The sensors `operating_hours_compressor_1`, `average_operating_time_compressor_1`, `operating_hours_compressor_2`, `average_operating_time_compressor_2`, `operating_hours_secondary_heater_1`, `operating_hours_secondary_heater_2` and `operating_hours_heat_pump` support the additional configuration item `duration_format` which specifies how the time period is formatted in the sensor. The configuration item can take the following values:
+
+| Value | Description |
+| ---- | ------------ |
+| `iso_8601` | Time period is formatted as ISO-8601 duration string |
+| `human_readable` | Time period is formatted as a human readable string with hours, minutes and seconds separated by colons |
+
+If the configuration item is omitted, it defaults to `human_readable`.
+
 ##### Example
 ```yaml
 text_sensor:
@@ -752,6 +805,20 @@ text_sensor:
           - defrost -> Abtauen
           - swimming_pool -> Schwimmbad
           - provider_lock -> EVU-Sperre
+    operating_hours_compressor_1:
+      name: Betriebsstunden Verdichter
+      duration_format: iso_8601
+    average_operating_time_compressor_1:
+      name: Durchschnittliche Laufzeit Verdichter
+      duration_format: iso_8601
+    error_5_code:
+      name: Letzter Fehler - Code
+    error_5_time:
+      name: Letzter Fehler - Zeit
+    deactivation_5_code:
+      name: Letzte Abschaltung - Code
+    deactivation_5_time:
+      name: Letzte Abschaltung - Zeit
 ```
 
 ## Luxtronik Configuration

@@ -37,6 +37,7 @@ namespace esphome::luxtronik_v1
     static constexpr const char* const TYPE_TEMPERATURES       = "1100";
     static constexpr const char* const TYPE_INPUTS             = "1200";
     static constexpr const char* const TYPE_OUTPUTS            = "1300";
+    static constexpr const char* const TYPE_OPERATING_HOURS    = "1450";
     static constexpr const char* const TYPE_ERRORS             = "1500";
     static constexpr const char* const TYPE_ERRORS_SLOT        = "1500;150";
     static constexpr const char* const TYPE_DEACTIVATIONS      = "1600";
@@ -153,6 +154,15 @@ namespace esphome::luxtronik_v1
         , m_sensor_operational_state()
         , m_sensor_heating_mode()
         , m_sensor_hot_water_mode()
+        , m_sensor_operating_hours_compressor_1()
+        , m_sensor_impulses_compressor_1()
+        , m_sensor_average_operating_time_compressor_1()
+        , m_sensor_operating_hours_compressor_2()
+        , m_sensor_impulses_compressor_2()
+        , m_sensor_average_operating_time_compressor_2()
+        , m_sensor_operating_hours_secondary_heater_1()
+        , m_sensor_operating_hours_secondary_heater_2()
+        , m_sensor_operating_hours_heat_pump()
         , m_sensor_error_1_code()
         , m_sensor_error_2_code()
         , m_sensor_error_3_code()
@@ -293,69 +303,75 @@ namespace esphome::luxtronik_v1
         ESP_LOGCONFIG(TAG, "  Response timeout: %u", m_response_timeout);
         ESP_LOGCONFIG(TAG, "  Max. number of retries: %u", m_max_retries);
 
-#ifdef USE_SENSOR
-        LOG_SENSOR("", "Flow Temperture Sensor", m_sensor_flow_temperature.get_sensor());
-        LOG_SENSOR("", "Return Temperture Sensor", m_sensor_return_temperature.get_sensor());
-        LOG_SENSOR("", "Return Set-Temperture Sensor", m_sensor_return_set_temperature.get_sensor());
-        LOG_SENSOR("", "Hot Gas Temperture Sensor", m_sensor_hot_gas_temperature.get_sensor());
-        LOG_SENSOR("", "Hot Water Temperture Sensor", m_sensor_hot_water_temperature.get_sensor());
-        LOG_SENSOR("", "Hot Water Set-Temperture Sensor", m_sensor_hot_water_set_temperature.get_sensor());
-        LOG_SENSOR("", "Outside Temperture Sensor", m_sensor_outside_temperature.get_sensor());
-        LOG_SENSOR("", "Heat-Source Input Temperture Sensor", m_sensor_heat_source_input_temperature.get_sensor());
-        LOG_SENSOR("", "Heat-Source Output Temperture Sensor", m_sensor_heat_source_output_temperature.get_sensor());
-        LOG_SENSOR("", "Mixed Circuit 1 Temperture Sensor", m_sensor_mixed_circuit_1_temperature.get_sensor());
-        LOG_SENSOR("", "Mixed Circuit 1 Set-Temperture Sensor", m_sensor_mixed_circuit_1_set_temperature.get_sensor());
-        LOG_SENSOR("", "Remote Adjuster Temperture Sensor", m_sensor_remote_adjuster_temperature.get_sensor());
-#endif
+        LOG_TEMPERATURE_SENSOR("Flow Temperture Sensor", m_sensor_flow_temperature);
+        LOG_TEMPERATURE_SENSOR("Return Temperture Sensor", m_sensor_return_temperature);
+        LOG_TEMPERATURE_SENSOR("Return Set-Temperture Sensor", m_sensor_return_set_temperature);
+        LOG_TEMPERATURE_SENSOR("Hot Gas Temperture Sensor", m_sensor_hot_gas_temperature);
+        LOG_TEMPERATURE_SENSOR("Hot Water Temperture Sensor", m_sensor_hot_water_temperature);
+        LOG_TEMPERATURE_SENSOR("Hot Water Set-Temperture Sensor", m_sensor_hot_water_set_temperature);
+        LOG_TEMPERATURE_SENSOR("Outside Temperture Sensor", m_sensor_outside_temperature);
+        LOG_TEMPERATURE_SENSOR("Heat-Source Input Temperture Sensor", m_sensor_heat_source_input_temperature);
+        LOG_TEMPERATURE_SENSOR("Heat-Source Output Temperture Sensor", m_sensor_heat_source_output_temperature);
+        LOG_TEMPERATURE_SENSOR("Mixed Circuit 1 Temperture Sensor", m_sensor_mixed_circuit_1_temperature);
+        LOG_TEMPERATURE_SENSOR("Mixed Circuit 1 Set-Temperture Sensor", m_sensor_mixed_circuit_1_set_temperature);
+        LOG_TEMPERATURE_SENSOR("Remote Adjuster Temperture Sensor", m_sensor_remote_adjuster_temperature);
 
-#ifdef USE_BINARY_SENSOR
-        LOG_BINARY_SENSOR("", "Defrost/Brine/Flow Sensor", m_sensor_defrost_brine_flow.get_sensor());
-        LOG_BINARY_SENSOR("", "Power Provider Lock Period Sensor", m_sensor_power_provider_lock_period.get_sensor());
-        LOG_BINARY_SENSOR("", "Low Pressure State Sensor", m_sensor_low_pressure_state.get_sensor());
-        LOG_BINARY_SENSOR("", "High Pressure State Sensor", m_sensor_high_pressure_state.get_sensor());
-        LOG_BINARY_SENSOR("", "Engine Protection Sensor", m_sensor_engine_protection.get_sensor());
-        LOG_BINARY_SENSOR("", "External Power Sensor", m_sensor_external_power.get_sensor());
-        LOG_BINARY_SENSOR("", "Defrost Valve Sensor", m_sensor_defrost_valve.get_sensor());
-        LOG_BINARY_SENSOR("", "Hot Water Pump Sensor", m_sensor_hot_water_pump.get_sensor());
-        LOG_BINARY_SENSOR("", "Heating Pump Sensor", m_sensor_heating_pump.get_sensor());
-        LOG_BINARY_SENSOR("", "Floor Heating Pump Sensor", m_sensor_floor_heating_pump.get_sensor());
-        LOG_BINARY_SENSOR("", "Ventilation/Pump Sensor", m_sensor_ventilation_pump.get_sensor());
-        LOG_BINARY_SENSOR("", "Housing Ventilation Sensor", m_sensor_housing_ventilation.get_sensor());
-        LOG_BINARY_SENSOR("", "Compressor 1 Sensor", m_sensor_compressor_1.get_sensor());
-        LOG_BINARY_SENSOR("", "Compressor 2 Sensor", m_sensor_compressor_2.get_sensor());
-        LOG_BINARY_SENSOR("", "Extra Pump Sensor", m_sensor_extra_pump.get_sensor());
-        LOG_BINARY_SENSOR("", "Secondary Heater 1 Sensor", m_sensor_secondary_heater_1.get_sensor());
-        LOG_BINARY_SENSOR("", "Secondary Heater 2 Failure Sensor", m_sensor_secondary_heater_2_failure.get_sensor());
-        LOG_BINARY_SENSOR("", "Device Communication Sensor", m_sensor_device_communication.get_sensor());
-#endif
+        LOG_NUMERIC_SENSOR("Impulses Compressor 1 Sensor", m_sensor_impulses_compressor_1);
+        LOG_NUMERIC_SENSOR("Impulses Compressor 2 Sensor", m_sensor_impulses_compressor_2);
 
-#ifdef USE_TEXT_SENSOR
-        LOG_TEXT_SENSOR("", "Mixer 1 Sensor", m_sensor_mixer_1_state.get_sensor());
-        LOG_TEXT_SENSOR("", "Device Type Sensor", m_sensor_device_type.get_sensor());
-        LOG_TEXT_SENSOR("", "Firmware Version Sensor", m_sensor_firmware_version.get_sensor());
-        LOG_TEXT_SENSOR("", "Bivalence Level Sensor", m_sensor_bivalence_level.get_sensor());
-        LOG_TEXT_SENSOR("", "Operational State Sensor", m_sensor_operational_state.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 1 Code Sensor", m_sensor_error_1_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 2 Code Sensor", m_sensor_error_2_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 3 Code Sensor", m_sensor_error_3_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 4 Code Sensor", m_sensor_error_4_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 5 Code Sensor", m_sensor_error_5_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 1 Time Sensor", m_sensor_error_1_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 2 Time Sensor", m_sensor_error_2_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 3 Time Sensor", m_sensor_error_3_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 4 Time Sensor", m_sensor_error_4_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Error 5 Time Sensor", m_sensor_error_5_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 1 Code Sensor", m_sensor_deactivation_1_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 2 Code Sensor", m_sensor_deactivation_2_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 3 Code Sensor", m_sensor_deactivation_3_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 4 Code Sensor", m_sensor_deactivation_4_code.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 5 Code Sensor", m_sensor_deactivation_5_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 1 Time Sensor", m_sensor_deactivation_1_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 2 Time Sensor", m_sensor_deactivation_2_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 3 Time Sensor", m_sensor_deactivation_3_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 4 Time Sensor", m_sensor_deactivation_4_time.get_sensor());
-        LOG_TEXT_SENSOR("", "Deactivation 5 Time Sensor", m_sensor_deactivation_5_code.get_sensor());
-#endif
+        LOG_BOOL_SENSOR("Defrost/Brine/Flow Sensor", m_sensor_defrost_brine_flow);
+        LOG_BOOL_SENSOR("Power Provider Lock Period Sensor", m_sensor_power_provider_lock_period);
+        LOG_BOOL_SENSOR("Low Pressure State Sensor", m_sensor_low_pressure_state);
+        LOG_BOOL_SENSOR("High Pressure State Sensor", m_sensor_high_pressure_state);
+        LOG_BOOL_SENSOR("Engine Protection Sensor", m_sensor_engine_protection);
+        LOG_BOOL_SENSOR("External Power Sensor", m_sensor_external_power);
+        LOG_BOOL_SENSOR("Defrost Valve Sensor", m_sensor_defrost_valve);
+        LOG_BOOL_SENSOR("Hot Water Pump Sensor", m_sensor_hot_water_pump);
+        LOG_BOOL_SENSOR("Heating Pump Sensor", m_sensor_heating_pump);
+        LOG_BOOL_SENSOR("Floor Heating Pump Sensor", m_sensor_floor_heating_pump);
+        LOG_BOOL_SENSOR("Ventilation/Pump Sensor", m_sensor_ventilation_pump);
+        LOG_BOOL_SENSOR("Housing Ventilation Sensor", m_sensor_housing_ventilation);
+        LOG_BOOL_SENSOR("Compressor 1 Sensor", m_sensor_compressor_1);
+        LOG_BOOL_SENSOR("Compressor 2 Sensor", m_sensor_compressor_2);
+        LOG_BOOL_SENSOR("Extra Pump Sensor", m_sensor_extra_pump);
+        LOG_BOOL_SENSOR("Secondary Heater 1 Sensor", m_sensor_secondary_heater_1);
+        LOG_BOOL_SENSOR("Secondary Heater 2 Failure Sensor", m_sensor_secondary_heater_2_failure);
+        LOG_BOOL_SENSOR("Device Communication Sensor", m_sensor_device_communication);
+
+        LOG_STRING_SENSOR("Device Type Sensor", m_sensor_device_type);
+        LOG_STRING_SENSOR("Firmware Version Sensor", m_sensor_firmware_version);
+        LOG_STRING_SENSOR("Bivalence Level Sensor", m_sensor_bivalence_level);
+        LOG_STRING_SENSOR("Operational State Sensor", m_sensor_operational_state);
+        LOG_STRING_SENSOR("Mixer 1 Sensor", m_sensor_mixer_1_state);
+
+        LOG_DURATION_SENSOR("Operating Hours Compressor 1 Sensor", m_sensor_operating_hours_compressor_1);
+        LOG_DURATION_SENSOR("Average Operating Time Compressor 1 Sensor", m_sensor_average_operating_time_compressor_1);
+        LOG_DURATION_SENSOR("Operating Hours Compressor 2 Sensor", m_sensor_operating_hours_compressor_2);
+        LOG_DURATION_SENSOR("Average Operating Time Compressor 2 Sensor", m_sensor_average_operating_time_compressor_2);
+        LOG_DURATION_SENSOR("Operating Hours Secondary Heater 1 Sensor", m_sensor_operating_hours_secondary_heater_1);
+        LOG_DURATION_SENSOR("Operating Hours Secondary Heater 2 Sensor", m_sensor_operating_hours_secondary_heater_2);
+        LOG_DURATION_SENSOR("Operating Hours Heat Pump Sensor", m_sensor_operating_hours_heat_pump);
+
+        LOG_STRING_SENSOR("Error 1 Code Sensor", m_sensor_error_1_code);
+        LOG_STRING_SENSOR("Error 2 Code Sensor", m_sensor_error_2_code);
+        LOG_STRING_SENSOR("Error 3 Code Sensor", m_sensor_error_3_code);
+        LOG_STRING_SENSOR("Error 4 Code Sensor", m_sensor_error_4_code);
+        LOG_STRING_SENSOR("Error 5 Code Sensor", m_sensor_error_5_code);
+        LOG_STRING_SENSOR("Error 1 Time Sensor", m_sensor_error_1_time);
+        LOG_STRING_SENSOR("Error 2 Time Sensor", m_sensor_error_2_time);
+        LOG_STRING_SENSOR("Error 3 Time Sensor", m_sensor_error_3_time);
+        LOG_STRING_SENSOR("Error 4 Time Sensor", m_sensor_error_4_time);
+        LOG_STRING_SENSOR("Error 5 Time Sensor", m_sensor_error_5_time);
+        LOG_STRING_SENSOR("Deactivation 1 Code Sensor", m_sensor_deactivation_1_code);
+        LOG_STRING_SENSOR("Deactivation 2 Code Sensor", m_sensor_deactivation_2_code);
+        LOG_STRING_SENSOR("Deactivation 3 Code Sensor", m_sensor_deactivation_3_code);
+        LOG_STRING_SENSOR("Deactivation 4 Code Sensor", m_sensor_deactivation_4_code);
+        LOG_STRING_SENSOR("Deactivation 5 Code Sensor", m_sensor_deactivation_5_time);
+        LOG_STRING_SENSOR("Deactivation 1 Time Sensor", m_sensor_deactivation_1_time);
+        LOG_STRING_SENSOR("Deactivation 2 Time Sensor", m_sensor_deactivation_2_time);
+        LOG_STRING_SENSOR("Deactivation 3 Time Sensor", m_sensor_deactivation_3_time);
+        LOG_STRING_SENSOR("Deactivation 4 Time Sensor", m_sensor_deactivation_4_time);
+        LOG_STRING_SENSOR("Deactivation 5 Time Sensor", m_sensor_deactivation_5_code);
     }
 
     void Luxtronik::add_dataset(const char* code)
@@ -595,6 +611,52 @@ namespace esphome::luxtronik_v1
             start = end + 1;
             end = response.find(DELIMITER, start);
             m_sensor_secondary_heater_2_failure.set_state(response, start, end);
+
+            next_dataset();
+        }
+        else if (starts_with(response, TYPE_OPERATING_HOURS))
+        {
+            m_timer.cancel();
+
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_operating_hours_compressor_1.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_impulses_compressor_1.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_average_operating_time_compressor_1.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_operating_hours_compressor_2.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_impulses_compressor_2.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_average_operating_time_compressor_2.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_operating_hours_secondary_heater_1.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_operating_hours_secondary_heater_2.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_operating_hours_heat_pump.set_state(response, start, end);
 
             next_dataset();
         }

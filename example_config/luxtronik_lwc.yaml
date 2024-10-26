@@ -92,6 +92,10 @@ sensor:
       name: Soll-Temperatur Vorlauf Mischkreis 1
     remote_adjuster_temperature:
       name: Temperatur Raumfernversteller
+    impulses_compressor_1:
+      name: Impulse Verdichter 1
+    impulses_compressor_2:
+      name: Impulse Verdichter 2
   - platform: wifi_signal
     name: Wi-Fi Signal
     update_interval: 60s
@@ -210,6 +214,20 @@ text_sensor:
           - idle -> Keine Ansteuerung
           - opening -> Fährt auf
           - closing -> Fährt zu
+    operating_hours_compressor_1:
+      name: Betriebsstunden Verdichter 1
+    average_operating_time_compressor_1:
+      name: Durchschnittliche Laufzeit Verdichter 1
+    operating_hours_compressor_2:
+      name: Betriebsstunden Verdichter 2
+    average_operating_time_compressor_2:
+      name: Durchschnittliche Laufzeit Verdichter 2
+    operating_hours_secondary_heater_1:
+      name: Betriebsstunden Zweiter Wärmeerzeuger 1
+    operating_hours_secondary_heater_2:
+      name: Betriebsstunden Zweiter Wärmeerzeuger 2
+    operating_hours_heat_pump:
+      name: Betriebsstunden Wärmepumpe
     error_1_code:
       name: Fehler 1 - Code
     error_1_time:
