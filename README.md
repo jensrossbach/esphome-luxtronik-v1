@@ -60,14 +60,24 @@ Es gibt bereits ähnliche Projekte zum Auslesen der seriellen Schnittstelle des 
 - https://wiki.fhem.de/wiki/Luxtronik_1_in_FHEM (nicht ESPHome-basiert)
 
 ## Software-Konfiguration
-Um eine ESPHome-Firmware zu erstellen, muss eine YAML-basierte Konfigurationsdatei erstellt werden. Du kannst die in diesem Repository bereitgestellte [Beispielkonfigurationsdatei](example_config/luxtronik_lwc.yaml) als Ausgangspunkt verwenden und sie an deine Bedürfnisse anpassen. Weitere Informationen zum Schreiben von ESPHome-Firmware-Konfigurationsdateien findest du in der [ESPHome-Dokumentation](https://www.esphome.io).
+Um eine ESPHome-Firmware zu erstellen, muss eine YAML-basierte Konfigurationsdatei erstellt werden. Du kannst die in diesem Repository bereitgestellte [Beispielkonfigurationsdatei](example_config/luxtronik_lwc.yaml) als Ausgangspunkt verwenden und sie an deine Bedürfnisse anpassen.
+
+Prinzipiell gibt es zwei Möglichkeiten, die ESPHome-Firmware zu bauen:
+
+1. [Über Home Assistant mit dem ESPHome Device Compiler Add-on](https://www.esphome.io/guides/getting_started_hassio)
+2. [Über die Kommandozeile mit dem ESPHome Python-Paket](https://www.esphome.io/guides/getting_started_command_line)
+
+Für welche Methode du dich entscheiden solltest, hängt davon ab, wie vertraut du mit ESPHome bist und ob du lieber mit einer grafischen Benutzeroberfläche oder mit der Kommandozeile arbeitest. Außerdem könnte die Leistungsfähigkeit des Hosts, auf dem du die Firmware baust, eine Rolle spielen, um den Vorgang zu beschleunigen.
+
+> [!NOTE]
+> Es ist **nicht** nötig, dieses Repository zu kopieren ("forken") und die Anpassungen an der Beispielkonfiguration im kopierten Repository vorzunehmen. Stattdessen reicht es aus, die Beispielkonfiguration lokal zu speichern und anzupassen oder die angepasste Konfiguration auf deinem Home Assistant Host abzulegen (sollte die Erstellung der ESPHome-Firmware mithilfe des ESPHome Device Compiler Add-ons erwünscht sein).
 
 Die folgenden Abschnitte beschreiben die wichtigsten Komponenten, die in der Firmware-Konfigurationsdatei enthalten sind.
 
 ### Luxtronik-Komponente
 Die Komponente Luxtronik-V1 ist unabdingbar und muss hinzugefügt werden, um ihre Sensoren zu verwenden.
 
-Da es sich um eine individuelle Komponente handelt, die nicht Teil von ESPHome ist, muss sie explizit importiert werden. Am einfachsten ist es, die Komponente direkt aus diesem Repository zu laden.
+Da es sich um eine benutzerdefinierte Komponente handelt, die nicht Teil von ESPHome ist, muss sie explizit importiert werden. Am einfachsten ist es, die Komponente direkt aus diesem Repository zu laden.
 
 ##### Beispiel
 
@@ -77,16 +87,20 @@ external_components:
     components: [luxtronik_v1]
 ```
 
+> [!TIP]
+> Im obigen Beispiel wird der neueste Stand der Komponente aus dem `main` Branch des Repositories geladen. Ich empfehle aber, mittels Versionsnummer auf einen freigegebenen Stand zu verweisen, um mehr Kontrolle darüber zu haben, welcher Software-Stand verwendet wird und um besser auf "breaking changes" reagieren zu können. Siehe Beispielkonfiguration, wie das gemacht werden kann.
+
 Die folgenden generischen Einstellungen können konfiguriert werden:
 
-| Option | Benötigt | Typ | Wertebereich | Standardwert | Beschreibung |
-| ------ | -------- | --- | ------------ |------------- | ------------ |
-| `uart_id` | ja | ID | - | - | ID der konfigurierten UART-Komponente (siehe unten) |
-| `update_interval` | nein | Zahl | Positive Zeitdauer | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
-| `request_delay` | nein | Zahl | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
-| `response_timeout` | nein | Zahl | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
-| `max_retries` | nein | Zahl | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
-| `include_datasets` | nein | Zahlenliste | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
+| Option | Typ | Benötigt | Wertebereich | Standardwert | Beschreibung |
+| ------ | --- | -------- | ------------ |------------- | ------------ |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | nein | - | - | Instanz der Luxtronik-Komponente |
+| `uart_id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | ja | - | - | Konfigurierte [UART-Komponente](#uart-komponente) zum Abrufen der Daten von der Luxtronik Heizungssteuerung |
+| `update_interval` | Zahl | nein | Positive Zeitdauer | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
+| `request_delay` | Zahl | nein | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
+| `response_timeout` | Zahl | nein | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
+| `max_retries` | Zahl | nein | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
+| `include_datasets` | Zahlenliste | nein | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
 
 <sup>1</sup> Es sollte sicher gestellt sein, dass keine Sensoren von ausgelassenen Datensätzen konfiguriert sind, da diese anderenfalls keine Werte erhalten werden. Siehe Abschnitt [Sensoren](#sensoren) um mehr darüber zu erfahren, welche Sensoren in welchen Datensätzen enthalten sind.
 
@@ -473,7 +487,17 @@ There are similar projects for reading out the serial interface of the Luxtronik
 - https://wiki.fhem.de/wiki/Luxtronik_1_in_FHEM (not ESPHome based)
 
 ## Software Setup
-To build an ESPHome firmware, you have to create a YAML based configuration file. You can use the [example configuration file](example_config/luxtronik_lwc.yaml) provided in this repository as a starting point and adapt it to your needs. For more information about writing ESPHome firmware configuration files, please refer to the [ESPHome documentation](https://www.esphome.io).
+To build an ESPHome firmware, you have to create a YAML based configuration file. You can use the [example configuration file](example_config/luxtronik_lwc.yaml) provided in this repository as a starting point and adapt it to your needs.
+
+In principle, there are two ways to build the ESPHome firmware:
+
+1. [Via Home Assistant with the ESPHome Device Compiler add-on](https://www.esphome.io/guides/getting_started_hassio)
+2. [Via the command line with the ESPHome Python package](https://www.esphome.io/guides/getting_started_command_line)
+
+Which method you should choose depends on how familiar you are with ESPHome and whether you prefer to work with a graphical user interface or the command line. In addition, the performance of the host on which you are building the firmware could play a role in speeding up the process.
+
+> [!NOTE]
+> It is **not** necessary to fork this repository and do the adaptations to the example configuration directly inside the forked repository. Instead, it is sufficient to save and adapt the example configuration locally or store it on your Home Assistant host (if you wish to build the ESPHome firmware with the ESPHome Device Compiler add-on).
 
 The following sections describe the most notable components contained in the firmware configuration file.
 
@@ -492,14 +516,15 @@ external_components:
 
 The following generic configuration items can be configured:
 
-| Option | Mandatory | Type | Value Range | Default Value | Description |
-| ------ | --------- | ---- | ----------- |-------------- | ----------- |
-| `uart_id` | yes | ID | n/a | n/a | ID of the configured UART component (see below) |
-| `update_interval` | no | Number | Positive duration | 60s | The interval how often the component fetches data from the heating control unit |
-| `request_delay` | no | Number | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
-| `response_timeout` | no | Number | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
-| `max_retries` | no | Number | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
-| `include_datasets` | no | List of numbers | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
+| Option | Type | Mandatory | Value Range | Default Value | Description |
+| ------ | ---- | --------- | ----------- |-------------- | ----------- |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | no | n/a | n/a | Luxtronik component instance |
+| `uart_id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | yes | n/a | n/a | Configured [UART component](#uart-component) for retrieving data from the Luxtronik heating control unit |
+| `update_interval` | Number | no | Positive duration | 60s | The interval how often the component fetches data from the heating control unit |
+| `request_delay` | Number | no | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
+| `response_timeout` | Number | no | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
+| `max_retries` | Number | no | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
+| `include_datasets` | List of numbers | no | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
 
 <sup>1</sup> It should be ensured that no sensors from omitted data sets are configured, otherwise they will not receive any values. See section [Sensors](#sensors) to find out more about which sensors are contained in which data sets.
 
