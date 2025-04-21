@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jens-Uwe Rossbach
+ * Copyright (c) 2024-2025 Jens-Uwe Rossbach
  *
  * This code is licensed under the MIT License.
  *
@@ -66,20 +66,29 @@ namespace esphome::luxtronik_v1
         void add_dataset(const char* code);
 
 #ifdef USE_SENSOR
-        void set_sensor_flow_temperature(sensor::Sensor* sensor)                { m_sensor_flow_temperature.set_sensor(sensor);                }
-        void set_sensor_return_temperature(sensor::Sensor* sensor)              { m_sensor_return_temperature.set_sensor(sensor);              }
-        void set_sensor_return_set_temperature(sensor::Sensor* sensor)          { m_sensor_return_set_temperature.set_sensor(sensor);          }
-        void set_sensor_hot_gas_temperature(sensor::Sensor* sensor)             { m_sensor_hot_gas_temperature.set_sensor(sensor);             }
-        void set_sensor_outside_temperature(sensor::Sensor* sensor)             { m_sensor_outside_temperature.set_sensor(sensor);             }
-        void set_sensor_hot_water_temperature(sensor::Sensor* sensor)           { m_sensor_hot_water_temperature.set_sensor(sensor);           }
-        void set_sensor_hot_water_set_temperature(sensor::Sensor* sensor)       { m_sensor_hot_water_set_temperature.set_sensor(sensor);       }
-        void set_sensor_heat_source_input_temperature(sensor::Sensor* sensor)   { m_sensor_heat_source_input_temperature.set_sensor(sensor);   }
-        void set_sensor_heat_source_output_temperature(sensor::Sensor* sensor)  { m_sensor_heat_source_output_temperature.set_sensor(sensor);  }
-        void set_sensor_mixed_circuit_1_temperature(sensor::Sensor* sensor)     { m_sensor_mixed_circuit_1_temperature.set_sensor(sensor);     }
-        void set_sensor_mixed_circuit_1_set_temperature(sensor::Sensor* sensor) { m_sensor_mixed_circuit_1_set_temperature.set_sensor(sensor); }
-        void set_sensor_remote_adjuster_temperature(sensor::Sensor* sensor)     { m_sensor_remote_adjuster_temperature.set_sensor(sensor);     }
-        void set_sensor_impulses_compressor_1(sensor::Sensor* sensor)           { m_sensor_impulses_compressor_1.set_sensor(sensor);           }
-        void set_sensor_impulses_compressor_2(sensor::Sensor* sensor)           { m_sensor_impulses_compressor_2.set_sensor(sensor);           }
+        void set_sensor_flow_temperature(sensor::Sensor* sensor)                 { m_sensor_flow_temperature.set_sensor(sensor);                 }
+        void set_sensor_return_temperature(sensor::Sensor* sensor)               { m_sensor_return_temperature.set_sensor(sensor);               }
+        void set_sensor_return_set_temperature(sensor::Sensor* sensor)           { m_sensor_return_set_temperature.set_sensor(sensor);           }
+        void set_sensor_hot_gas_temperature(sensor::Sensor* sensor)              { m_sensor_hot_gas_temperature.set_sensor(sensor);              }
+        void set_sensor_outside_temperature(sensor::Sensor* sensor)              { m_sensor_outside_temperature.set_sensor(sensor);              }
+        void set_sensor_hot_water_temperature(sensor::Sensor* sensor)            { m_sensor_hot_water_temperature.set_sensor(sensor);            }
+        void set_sensor_hot_water_set_temperature(sensor::Sensor* sensor)        { m_sensor_hot_water_set_temperature.set_sensor(sensor);        }
+        void set_sensor_heat_source_input_temperature(sensor::Sensor* sensor)    { m_sensor_heat_source_input_temperature.set_sensor(sensor);    }
+        void set_sensor_heat_source_output_temperature(sensor::Sensor* sensor)   { m_sensor_heat_source_output_temperature.set_sensor(sensor);   }
+        void set_sensor_mixed_circuit_1_temperature(sensor::Sensor* sensor)      { m_sensor_mixed_circuit_1_temperature.set_sensor(sensor);      }
+        void set_sensor_mixed_circuit_1_set_temperature(sensor::Sensor* sensor)  { m_sensor_mixed_circuit_1_set_temperature.set_sensor(sensor);  }
+        void set_sensor_remote_adjuster_temperature(sensor::Sensor* sensor)      { m_sensor_remote_adjuster_temperature.set_sensor(sensor);      }
+        void set_sensor_heating_curve_offset(sensor::Sensor* sensor)             { m_sensor_heating_curve_offset.set_sensor(sensor);             }
+        void set_sensor_heating_curve_endpoint(sensor::Sensor* sensor)           { m_sensor_heating_curve_endpoint.set_sensor(sensor);           }
+        void set_sensor_heating_curve_parallel_shift(sensor::Sensor* sensor)     { m_sensor_heating_curve_parallel_shift.set_sensor(sensor);     }
+        void set_sensor_heating_curve_night_setback(sensor::Sensor* sensor)      { m_sensor_heating_curve_night_setback.set_sensor(sensor);      }
+        void set_sensor_heating_curve_constant_return(sensor::Sensor* sensor)    { m_sensor_heating_curve_constant_return.set_sensor(sensor);    }
+        void set_sensor_heating_curve_mc1_end_point(sensor::Sensor* sensor)      { m_sensor_heating_curve_mc1_end_point.set_sensor(sensor);      }
+        void set_sensor_heating_curve_mc1_parallel_shift(sensor::Sensor* sensor) { m_sensor_heating_curve_mc1_parallel_shift.set_sensor(sensor); }
+        void set_sensor_heating_curve_mc1_night_setback(sensor::Sensor* sensor)  { m_sensor_heating_curve_mc1_night_setback.set_sensor(sensor);  }
+        void set_sensor_heating_curve_mc1_constant_flow(sensor::Sensor* sensor)  { m_sensor_heating_curve_mc1_constant_flow.set_sensor(sensor);  }
+        void set_sensor_impulses_compressor_1(sensor::Sensor* sensor)            { m_sensor_impulses_compressor_1.set_sensor(sensor);            }
+        void set_sensor_impulses_compressor_2(sensor::Sensor* sensor)            { m_sensor_impulses_compressor_2.set_sensor(sensor);            }
 #endif
 #ifdef USE_BINARY_SENSOR
         void set_sensor_defrost_brine_flow(binary_sensor::BinarySensor* sensor)         { m_sensor_defrost_brine_flow.set_sensor(sensor);         }
@@ -196,6 +205,17 @@ namespace esphome::luxtronik_v1
         StringSensor m_sensor_firmware_version;   // 1700:3 - Software-Stand Firmware
         StringSensor m_sensor_bivalence_level;    // 1700:4 - Bivalenzstufe
         StringSensor m_sensor_operational_state;  // 1700:5 - Betriebszustand
+
+        // heat curve
+        TemperatureSensor m_sensor_heating_curve_offset;              // 3400:2  - Abweichung Heizkurve
+        TemperatureSensor m_sensor_heating_curve_endpoint;            // 3400:3  - Heizkurve Endpunt
+        TemperatureSensor m_sensor_heating_curve_parallel_shift;      // 3400:4  - Heizkurve Parallelverschiebung
+        TemperatureSensor m_sensor_heating_curve_night_setback;       // 3400:5  - Heizkurve Nachtabsenkung
+        TemperatureSensor m_sensor_heating_curve_constant_return;     // 3400:6  - Heizkurve Festwert Rücklauf
+        TemperatureSensor m_sensor_heating_curve_mc1_end_point;       // 3400:7  - Heizkurve MK1 Endpunt
+        TemperatureSensor m_sensor_heating_curve_mc1_parallel_shift;  // 3400:8  - Heizkurve MK1 Parallelverschiebung
+        TemperatureSensor m_sensor_heating_curve_mc1_night_setback;   // 3400:9  - Heizkurve MK1 Nachtabsenkung
+        TemperatureSensor m_sensor_heating_curve_mc1_constant_flow;   // 3400:10 - Heizkurve MK1 Festwert Vorlauf
 
         // modes
         StringSensor m_sensor_heating_mode;    // 3405:2 - Betriebsart Heizung
