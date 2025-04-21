@@ -100,7 +100,7 @@ Die folgenden generischen Einstellungen können konfiguriert werden:
 | `request_delay` | Zahl | nein | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
 | `response_timeout` | Zahl | nein | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
 | `max_retries` | Zahl | nein | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
-| `include_datasets` | Zahlenliste | nein | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
+| `include_datasets` | Zahlenliste | nein | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3400, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
 
 <sup>1</sup> Es sollte sicher gestellt sein, dass keine Sensoren von ausgelassenen Datensätzen konfiguriert sind, da diese anderenfalls keine Werte erhalten werden. Siehe Abschnitt [Sensoren](#sensoren) um mehr darüber zu erfahren, welche Sensoren in welchen Datensätzen enthalten sind.
 
@@ -118,6 +118,7 @@ luxtronik_v1:
     - 1300
     - 1450
     - 1700
+    - 3400
     - 3405
     - 3505
 ```
@@ -199,17 +200,26 @@ Die folgenden numerischen Sensoren können konfiguriert werden:
 | Sensor | Geräteklasse | Datensatz | Beschreibung |
 | ------ | ------------ | --------- | ------------ |
 | `flow_temperature` | `temperature` | 1100 | Ist-Temperatur Vorlauf Heizkreis |
-| `return_temperature` | `temperature` | 1100 |  Ist-Temperatur Rücklauf Heizkreis |
-| `return_set_temperature` | `temperature` | 1100 |  Soll-Temperatur Rücklauf Heizkreis |
-| `hot_gas_temperature` | `temperature` | 1100 |  Temperatur Heißgas |
-| `outside_temperature` | `temperature` | 1100 |  Außentemperatur |
-| `hot_water_temperature` | `temperature` | 1100 |  Ist-Temperatur Brauchwarmwasser |
-| `hot_water_set_temperature` | `temperature` | 1100 |  Soll-Temperatur Brauchwarmwasser |
-| `heat_source_input_temperature` | `temperature` | 1100 |  Temperatur Wärmequelleneintritt |
-| `heat_source_output_temperature` | `temperature` | 1100 |  Temperatur Wärmequellenaustritt |
-| `mixed_circuit_1_temperature` | `temperature` | 1100 |  Ist-Temperatur Vorlauf Mischkreis 1 |
-| `mixed_circuit_1_set_temperature` | `temperature` | 1100 |  Soll-Temperatur Vorlauf Mischkreis 1 |
-| `remote_adjuster_temperature` | `temperature` | 1100 |  Temperatur Raumfernversteller |
+| `return_temperature` | `temperature` | 1100 | Ist-Temperatur Rücklauf Heizkreis |
+| `return_set_temperature` | `temperature` | 1100 | Soll-Temperatur Rücklauf Heizkreis |
+| `hot_gas_temperature` | `temperature` | 1100 | Temperatur Heißgas |
+| `outside_temperature` | `temperature` | 1100 | Außentemperatur |
+| `hot_water_temperature` | `temperature` | 1100 | Ist-Temperatur Brauchwarmwasser |
+| `hot_water_set_temperature` | `temperature` | 1100 | Soll-Temperatur Brauchwarmwasser |
+| `heat_source_input_temperature` | `temperature` | 1100 | Temperatur Wärmequelleneintritt |
+| `heat_source_output_temperature` | `temperature` | 1100 | Temperatur Wärmequellenaustritt |
+| `mixed_circuit_1_temperature` | `temperature` | 1100 | Ist-Temperatur Vorlauf Mischkreis 1 |
+| `mixed_circuit_1_set_temperature` | `temperature` | 1100 | Soll-Temperatur Vorlauf Mischkreis 1 |
+| `remote_adjuster_temperature` | `temperature` | 1100 | Temperatur Raumfernversteller |
+| `heating_curve_offset` | `temperature` | 3400 | Abweichung Heizkurve |
+| `heating_curve_endpoint` | `temperature` | 3400 | Heizkurve Endpunkt |
+| `heating_curve_parallel_shift` | `temperature` | 3400 | Heizkurve Parallelverschiebung |
+| `heating_curve_night_setback` | `temperature` | 3400 | Heizkurve Nachtabsenkung |
+| `heating_curve_constant_return` | `temperature` | 3400 | Heizkurve Festwert Rücklauf |
+| `heating_curve_mc1_end_point` | `temperature` | 3400 | Heizkurve Mischkreis 1 Endpunkt |
+| `heating_curve_mc1_parallel_shift` | `temperature` | 3400 | Heizkurve Mischkreis 1 Parallelverschiebung |
+| `heating_curve_mc1_night_setback` | `temperature` | 3400 | Heizkurve Mischkreis 1 Nachtabsenkung |
+| `heating_curve_mc1_constant_flow` | `temperature` | 3400 | Heizkurve Mischkreis 1 Festwert Vorlauf |
 | `impulses_compressor_1` | - | 1450 |  Impulse Verdichter 1 |
 | `impulses_compressor_2` | - | 1450 |  Impulse Verdichter 2 |
 
@@ -524,7 +534,7 @@ The following generic configuration items can be configured:
 | `request_delay` | Number | no | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
 | `response_timeout` | Number | no | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
 | `max_retries` | Number | no | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
-| `include_datasets` | List of numbers | no | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
+| `include_datasets` | List of numbers | no | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3400, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
 
 <sup>1</sup> It should be ensured that no sensors from omitted data sets are configured, otherwise they will not receive any values. See section [Sensors](#sensors) to find out more about which sensors are contained in which data sets.
 
@@ -542,6 +552,7 @@ luxtronik_v1:
     - 1300
     - 1450
     - 1700
+    - 3400
     - 3405
     - 3505
 ```
@@ -634,6 +645,15 @@ The following numeric sensors can be configured:
 | `mixed_circuit_1_temperature` | `temperature` | 1100 | Temperature of mixed circuit 1 |
 | `mixed_circuit_1_set_temperature` | `temperature` | 1100 | Set-emperature of mixed circuit 1 |
 | `remote_adjuster_temperature` | `temperature` | 1100 | Temperature of the remote adjuster |
+| `heating_curve_offset` | `temperature` | 3400 | Offset heating curve |
+| `heating_curve_endpoint` | `temperature` | 3400 | Heating curve endpoint |
+| `heating_curve_parallel_shift` | `temperature` | 3400 | Heating curve parallel shift |
+| `heating_curve_night_setback` | `temperature` | 3400 | Heating curve night setback |
+| `heating_curve_constant_return` | `temperature` | 3400 | Heating curve constant return |
+| `heating_curve_mc1_end_point` | `temperature` | 3400 | Heating curve mixed circuit 1 endpoint |
+| `heating_curve_mc1_parallel_shift` | `temperature` | 3400 | Heating curve mixed circuit 1 parallel shift |
+| `heating_curve_mc1_night_setback` | `temperature` | 3400 | Heating curve mixed circuit 1 night setback |
+| `heating_curve_mc1_constant_flow` | `temperature` | 3400 | Heating curve mixed circuit 1 constant flow |
 | `impulses_compressor_1` | - | 1450 |  Number of impulses of compressor 1 |
 | `impulses_compressor_2` | - | 1450 |  Number of impulses of compressor 2 |
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jens-Uwe Rossbach
+ * Copyright (c) 2024-2025 Jens-Uwe Rossbach
  *
  * This code is licensed under the MIT License.
  *
@@ -44,6 +44,7 @@ namespace esphome::luxtronik_v1
     static constexpr const char* const TYPE_DEACTIVATIONS_SLOT = "1600;160";
     static constexpr const char* const TYPE_INFORMATION        = "1700";
     static constexpr const char* const TYPE_ALL                = "1800";
+    static constexpr const char* const TYPE_HEATING_CURVE      = "3400";
     static constexpr const char* const TYPE_HEATING_MODE       = "3405";
     static constexpr const char* const TYPE_HOT_WATER_MODE     = "3505";
 
@@ -152,6 +153,15 @@ namespace esphome::luxtronik_v1
         , m_sensor_firmware_version()
         , m_sensor_bivalence_level()
         , m_sensor_operational_state()
+        , m_sensor_heating_curve_offset()
+        , m_sensor_heating_curve_endpoint()
+        , m_sensor_heating_curve_parallel_shift()
+        , m_sensor_heating_curve_night_setback()
+        , m_sensor_heating_curve_constant_return()
+        , m_sensor_heating_curve_mc1_end_point()
+        , m_sensor_heating_curve_mc1_parallel_shift()
+        , m_sensor_heating_curve_mc1_night_setback()
+        , m_sensor_heating_curve_mc1_constant_flow()
         , m_sensor_heating_mode()
         , m_sensor_hot_water_mode()
         , m_sensor_operating_hours_compressor_1()
@@ -343,6 +353,19 @@ namespace esphome::luxtronik_v1
         LOG_STRING_SENSOR("Bivalence Level Sensor", m_sensor_bivalence_level);
         LOG_STRING_SENSOR("Operational State Sensor", m_sensor_operational_state);
         LOG_STRING_SENSOR("Mixer 1 Sensor", m_sensor_mixer_1_state);
+
+        LOG_TEMPERATURE_SENSOR("Heating Curve Offset Sensor", m_sensor_heating_curve_offset);
+        LOG_TEMPERATURE_SENSOR("Heating Curve Endpoint Sensor", m_sensor_heating_curve_endpoint);
+        LOG_TEMPERATURE_SENSOR("Heating Curve Parallel Shift Sensor", m_sensor_heating_curve_parallel_shift);
+        LOG_TEMPERATURE_SENSOR("Heating Curve Night Setback Sensor", m_sensor_heating_curve_night_setback);
+        LOG_TEMPERATURE_SENSOR("Heating Curve Constant Return Sensor", m_sensor_heating_curve_constant_return);
+        LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Endpoint Sensor", m_sensor_heating_curve_mc1_end_point);
+        LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Parallel Shift Sensor", m_sensor_heating_curve_mc1_parallel_shift);
+        LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Night Setback Sensor", m_sensor_heating_curve_mc1_night_setback);
+        LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Constant Flow Sensor", m_sensor_heating_curve_mc1_constant_flow);
+
+        LOG_STRING_SENSOR("Heating Mode Sensor", m_sensor_heating_mode);
+        LOG_STRING_SENSOR("Hot Water Mode Sensor", m_sensor_hot_water_mode);
 
         LOG_DURATION_SENSOR("Operating Hours Compressor 1 Sensor", m_sensor_operating_hours_compressor_1);
         LOG_DURATION_SENSOR("Average Operating Time Compressor 1 Sensor", m_sensor_average_operating_time_compressor_1);
@@ -795,6 +818,52 @@ namespace esphome::luxtronik_v1
 
                 m_sensor_operational_state.set_state(state);
             }
+
+            next_dataset();
+        }
+        else if (starts_with(response, TYPE_HEATING_CURVE))
+        {
+            m_timer.cancel();
+
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_offset.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_endpoint.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_parallel_shift.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_night_setback.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_constant_return.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_end_point.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_parallel_shift.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_night_setback.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_constant_flow.set_state(response, start, end);
 
             next_dataset();
         }

@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Jens-Uwe Rossbach
+# Copyright (c) 2024-2025 Jens-Uwe Rossbach
 #
 # This code is licensed under the MIT License.
 #
@@ -57,9 +57,9 @@ CONFIG_SCHEMA = cv.Schema(
     cv.Optional(CONF_MAX_RETRIES, default = 5): cv.int_range(min = 0, max = 15),
     cv.Optional(
         CONF_INCLUDE_DATASETS,
-        default = [1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505]):
+        default = [1100, 1200, 1300, 1450, 1500, 1600, 1700, 3400, 3405, 3505]):
         cv.All(
-            cv.ensure_list(cv.one_of(1100, 1200, 1300, 1450, 1500, 1600, 1700, 3405, 3505)),
+            cv.ensure_list(cv.one_of(1100, 1200, 1300, 1450, 1500, 1600, 1700, 3400, 3405, 3505)),
             cv.Length(min = 1),
             unique_list)
 }).extend(uart.UART_DEVICE_SCHEMA).extend(cv.polling_component_schema("60s"))
