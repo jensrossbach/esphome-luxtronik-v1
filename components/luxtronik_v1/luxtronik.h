@@ -26,6 +26,7 @@
 #pragma once
 
 #include "luxtronik_sensor.h"
+#include "simple_queue.h"
 #include "simple_timer.h"
 
 #include "esphome/core/defines.h"
@@ -151,7 +152,7 @@ namespace esphome::luxtronik_v1
     private:
         void next_dataset();
         void request_data();
-        void send_request(const char* req);
+        void send_request(const std::string& request);
         void parse_response(const std::string& response);
         void handle_timeout();
         void clear_uart_buffer();
@@ -272,7 +273,7 @@ namespace esphome::luxtronik_v1
         bool m_slot_block;
         uint16_t m_retry_count;
         std::vector<const char*> m_dataset_list;
-        std::vector<const char*>::iterator m_current_dataset;
+        SimpleQueue<std::string> m_request_queue;
         SimpleTimer m_timer;
     };
 }  // namespace esphome::luxtronik_v1

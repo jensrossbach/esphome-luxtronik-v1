@@ -46,6 +46,7 @@ namespace esphome::luxtronik_v1
     static constexpr const char* const TYPE_ALL                = "1800";
     static constexpr const char* const TYPE_HEATING_CURVE      = "3400";
     static constexpr const char* const TYPE_HEATING_MODE       = "3405";
+    static constexpr const char* const TYPE_HOT_WATER_CONFIG   = "3501";
     static constexpr const char* const TYPE_HOT_WATER_MODE     = "3505";
 
     static constexpr const char ASCII_CR      = 0x0D;  // cariage return ('\r')
@@ -204,7 +205,7 @@ namespace esphome::luxtronik_v1
         , m_slot_block(false)
         , m_retry_count(0)
         , m_dataset_list()
-        , m_current_dataset()
+        , m_request_queue()
         , m_timer()
     {
     }
@@ -225,8 +226,14 @@ namespace esphome::luxtronik_v1
 
         m_lost_response = false;
         m_retry_count = 0;
+        m_request_queue.clear();
 
-        m_current_dataset = m_dataset_list.begin();
+        // push all configured periodic datasets into the queue
+        for (const char* dataset : m_dataset_list)
+        {
+            m_request_queue.push_back(dataset);
+        }
+
         request_data();
     }
 
@@ -404,56 +411,49 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::next_dataset()
     {
-        ++m_current_dataset;
         m_retry_count = 0;
+        m_request_queue.pop_front();
 
-        if (m_current_dataset != m_dataset_list.end())
+        if (!m_request_queue.empty())
         {
             m_timer.schedule(
                         std::chrono::milliseconds(m_request_delay),
                         [this]() { request_data(); });
         }
-        else
-        {
-            m_current_dataset = m_dataset_list.begin();
-        }
     }
 
     void Luxtronik::request_data()
     {
-        send_request(*m_current_dataset);
+        if (!m_request_queue.empty())
+        {
+            send_request(m_request_queue.front());
 
-        m_timer.schedule(
-                    std::chrono::milliseconds(m_response_timeout),
-                    [this]() { handle_timeout(); });
+            m_timer.schedule(
+                        std::chrono::milliseconds(m_response_timeout),
+                        [this]() { handle_timeout(); });
+        }
     }
 
     void Luxtronik::handle_timeout()
     {
-        ESP_LOGW(TAG, "No response from Luxtronik within %u ms:  REQ %s", m_response_timeout, *m_current_dataset);
+        ESP_LOGW(TAG, "No response from Luxtronik within %u ms:  REQ %s", m_response_timeout, m_request_queue.front().c_str());
 
         if (++m_retry_count > m_max_retries)
         {
             ESP_LOGW(TAG, "Maximum number of retries reached, skipping data set");
 
-            ++m_current_dataset;
+            m_request_queue.pop_front();
+
             m_retry_count = 0;
             m_lost_response = true;
         }
 
-        if (m_current_dataset != m_dataset_list.end())
-        {
-            request_data();
-        }
-        else
-        {
-            m_current_dataset = m_dataset_list.begin();
-        }
+        request_data();
     }
 
-    void Luxtronik::send_request(const char* request)
+    void Luxtronik::send_request(const std::string& request)
     {
-        ESP_LOGD(TAG, "Sending request:  DATA %s  TRY #%u", request, m_retry_count + 1);
+        ESP_LOGD(TAG, "Sending request:  DATA %s  TRY #%u", request.c_str(), m_retry_count + 1);
 
         // ensure we start with a clean state
         clear_uart_buffer();
@@ -461,7 +461,7 @@ namespace esphome::luxtronik_v1
         m_response_ready = false;
         m_slot_block = false;
 
-        m_device.write_str(request);
+        m_device.write_str(request.c_str());
         m_device.write_byte(ASCII_CR);
         m_device.write_byte(ASCII_LF);
     }
@@ -926,6 +926,8 @@ namespace esphome::luxtronik_v1
 
                 m_sensor_hot_water_mode.set_state(state);
             }
+
+            next_dataset();
         }
     }
 
