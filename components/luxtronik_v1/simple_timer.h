@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Jens-Uwe Rossbach
+ * Copyright (c) 2024-2025 Jens-Uwe Rossbach
  *
  * This code is licensed under the MIT License.
  *
@@ -52,6 +52,11 @@ namespace esphome::luxtronik_v1
             m_callback = std::move(cb);
 
             m_running = true;
+        }
+
+        bool is_running() const
+        {
+            return m_running;
         }
 
         bool cancel()

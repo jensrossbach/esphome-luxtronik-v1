@@ -28,6 +28,7 @@
 
 #include <chrono>
 #include <ctime>
+#include <cmath>
 
 
 namespace esphome::luxtronik_v1
@@ -49,6 +50,11 @@ namespace esphome::luxtronik_v1
     static constexpr const char* const TYPE_HOT_WATER_CONFIG   = "3501";
     static constexpr const char* const TYPE_HOT_WATER_MODE     = "3505";
 
+    static constexpr const char* const TYPE_STORE_CONFIG      = "999";
+    static constexpr const char* const TYPE_STORE_CONFIG_ACK  = "993";
+    static constexpr const char* const TYPE_STORE_CONFIG_NACK = "778;1;999";
+    static constexpr const char* const TYPE_STORE_CONFIG_SEQ  = "999993993999";
+
     static constexpr const char ASCII_CR      = 0x0D;  // cariage return ('\r')
     static constexpr const char ASCII_LF      = 0x0A;  // line feed ('\n')
     static constexpr const char MIN_PRINTABLE = 0x20;
@@ -67,6 +73,8 @@ namespace esphome::luxtronik_v1
     static constexpr const size_t INDEX_RESPONSE_START =  5;
     static constexpr const size_t INDEX_SLOT_ID        =  8;
     static constexpr const size_t INDEX_SLOT_START     = 10;
+
+    static constexpr const uint16_t STORE_SEQ_TIMEOUT = 5000;
 
     enum class DeviceType : uint8_t
     {
@@ -204,6 +212,7 @@ namespace esphome::luxtronik_v1
         , m_response_ready(false)
         , m_slot_block(false)
         , m_retry_count(0)
+        , m_store_config_ack()
         , m_dataset_list()
         , m_request_queue()
         , m_timer()
@@ -212,21 +221,13 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::update()
     {
-        if (m_timer.cancel())
-        {
-            m_lost_response = true;
-        }
-
         if (m_lost_response)
         {
             ESP_LOGW(TAG, "Lost response(s) from Luxtronik in last update cycle");
         }
 
         m_sensor_device_communication.set_state(m_lost_response);
-
         m_lost_response = false;
-        m_retry_count = 0;
-        m_request_queue.clear();
 
         // push all configured periodic datasets into the queue
         for (const char* dataset : m_dataset_list)
@@ -234,7 +235,10 @@ namespace esphome::luxtronik_v1
             m_request_queue.push_back(dataset);
         }
 
-        request_data();
+        if (!m_timer.is_running())
+        {
+            request_data();
+        }
     }
 
     void Luxtronik::loop()
@@ -411,7 +415,6 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::next_dataset()
     {
-        m_retry_count = 0;
         m_request_queue.pop_front();
 
         if (!m_request_queue.empty())
@@ -468,16 +471,44 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::parse_response(const std::string& response)
     {
-        if (response.length() < MIN_RESPONSE_LENGTH)
+        if ((response.length() < MIN_RESPONSE_LENGTH) &&
+            (response != TYPE_STORE_CONFIG) &&
+            (response != TYPE_STORE_CONFIG_ACK))
         {
             return;
         }
 
         ESP_LOGD(TAG, "Retrieved response:  DATA %s", response.c_str());
 
-        if (starts_with(response, TYPE_TEMPERATURES))
+        if ((response == TYPE_STORE_CONFIG) || (response == TYPE_STORE_CONFIG_ACK))
         {
-            m_timer.cancel();
+            ack_response();
+            m_store_config_ack += response;
+
+            if (m_store_config_ack == TYPE_STORE_CONFIG_SEQ)
+            {
+                m_store_config_ack = "";
+
+                ESP_LOGD(TAG, "Configuration successfully stored");
+                next_dataset();
+            }
+            else
+            {
+                // ensure we continue latest 5s after last received response
+                m_timer.schedule(
+                            std::chrono::milliseconds(STORE_SEQ_TIMEOUT),
+                            [this]()
+                            {
+                                ESP_LOGW(TAG, "No full acknowledge received after storing configuration");
+
+                                m_request_queue.pop_front();
+                                request_data();
+                            });
+            }
+        }
+        else if (starts_with(response, TYPE_TEMPERATURES))
+        {
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -535,7 +566,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_INPUTS))
         {
-            m_timer.cancel();
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -569,7 +600,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_OUTPUTS))
         {
-            m_timer.cancel();
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -639,7 +670,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_OPERATING_HOURS))
         {
-            m_timer.cancel();
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -685,7 +716,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_ERRORS))
         {
-            m_timer.cancel();
+            ack_response();
 
             if ((response.length() >= MIN_SLOT_LENGTH) && starts_with(response, TYPE_ERRORS_SLOT))
             {
@@ -711,7 +742,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_DEACTIVATIONS))
         {
-            m_timer.cancel();
+            ack_response();
 
             if ((response.length() >= MIN_SLOT_LENGTH) && starts_with(response, TYPE_DEACTIVATIONS_SLOT))
             {
@@ -737,7 +768,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_INFORMATION))
         {
-            m_timer.cancel();
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -823,7 +854,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_HEATING_CURVE))
         {
-            m_timer.cancel();
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -869,7 +900,7 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_HEATING_MODE))
         {
-            m_timer.cancel();
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -898,9 +929,23 @@ namespace esphome::luxtronik_v1
 
             next_dataset();
         }
+        else if (starts_with(response, TYPE_HOT_WATER_CONFIG))
+        {
+            ack_response();
+
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_hot_water_set_temperature.set_state(response, start, end);
+
+            next_dataset();
+        }
         else if (starts_with(response, TYPE_HOT_WATER_MODE))
         {
-            m_timer.cancel();
+            ack_response();
 
             size_t start = INDEX_RESPONSE_START;
             size_t end = response.find(DELIMITER, start);
@@ -926,6 +971,13 @@ namespace esphome::luxtronik_v1
 
                 m_sensor_hot_water_mode.set_state(state);
             }
+
+            next_dataset();
+        }
+        else if (response == TYPE_STORE_CONFIG_NACK)
+        {
+            ack_response();
+            ESP_LOGW(TAG, "Configuration storing request refused, maybe double request");
 
             next_dataset();
         }
@@ -972,6 +1024,27 @@ namespace esphome::luxtronik_v1
             std::strftime(state, sizeof(state), "%Y-%m-%dT%H:%M%z", &time);
 
             sensor_time.set_state(state);
+        }
+    }
+
+    void Luxtronik::set_hot_water_set_temperature(float value)
+    {
+        if ((value >= 0) && (value < 100))
+        {
+            ESP_LOGD(TAG, "Queuing requests for setting hot water set temperature:  VAL %.1f °C", value);
+
+            m_request_queue.push_back(TYPE_HOT_WATER_CONFIG);
+            m_request_queue.push_back(std::string(TYPE_HOT_WATER_CONFIG) + ";1;" + std::to_string(static_cast<uint32_t>(std::floor(value * 10))));
+            m_request_queue.push_back(TYPE_STORE_CONFIG);
+
+            if (!m_timer.is_running())
+            {
+                request_data();
+            }
+        }
+        else
+        {
+            ESP_LOGW(TAG, "Invalid value for hot water set temperature:  VAL %.1f °C", value);
         }
     }
 

@@ -65,6 +65,7 @@ namespace esphome::luxtronik_v1
         void dump_config() override;
 
         void add_dataset(const char* code);
+        void set_hot_water_set_temperature(float value);
 
 #ifdef USE_SENSOR
         void set_sensor_flow_temperature(sensor::Sensor* sensor)                 { m_sensor_flow_temperature.set_sensor(sensor);                 }
@@ -157,6 +158,12 @@ namespace esphome::luxtronik_v1
         void handle_timeout();
         void clear_uart_buffer();
         void parse_slot(const std::string& slot, StringSensor& sensor_code, StringSensor& sensor_time);
+
+        void ack_response()
+        {
+            m_timer.cancel();
+            m_retry_count = 0;
+        }
 
         static int32_t get_number(const std::string& input_str, uint16_t start, uint16_t end)       { return std::atoi(input_str.substr(start, end - start).c_str()); }
         static bool    get_binary_state(const std::string& input_str, uint16_t start, uint16_t end) { return input_str.substr(start, end - start) != "0";             }
@@ -272,6 +279,7 @@ namespace esphome::luxtronik_v1
         bool m_response_ready;
         bool m_slot_block;
         uint16_t m_retry_count;
+        std::string m_store_config_ack;
         std::vector<const char*> m_dataset_list;
         SimpleQueue<std::string> m_request_queue;
         SimpleTimer m_timer;

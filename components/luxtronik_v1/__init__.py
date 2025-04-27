@@ -24,10 +24,12 @@
 import esphome.codegen           as cg
 import esphome.config_validation as cv
 
+from esphome            import automation
 from esphome.components import uart
 from esphome.const      import (
     CONF_ID,
-    CONF_UART_ID
+    CONF_UART_ID,
+    CONF_VALUE
 )
 
 
@@ -43,6 +45,7 @@ CONF_INCLUDE_DATASETS = "include_datasets"
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
+SetHotWaterSetTemperatureAction = luxtronik_ns.class_("SetHotWaterSetTemperatureAction", automation.Action)
 
 def unique_list(value):
     if len(value) != len(set(value)):
@@ -77,3 +80,20 @@ async def to_code(config):
 
     for ds in config[CONF_INCLUDE_DATASETS]:
         cg.add(cmp.add_dataset(str(ds)))
+
+@automation.register_action(
+    "luxtronik_v1.set_hot_water_set_temperature",
+    SetHotWaterSetTemperatureAction,
+    cv.Schema(
+    {
+        cv.Required(CONF_ID): cv.use_id(Luxtronik),
+        cv.Required(CONF_VALUE): cv.templatable(cv.positive_float)
+    }))
+async def set_hot_water_set_temperature_action_to_code(config, action_id, template_arg, args):
+    parent = await cg.get_variable(config[CONF_ID])
+    act = cg.new_Pvariable(action_id, template_arg, parent)
+
+    tmpl = await cg.templatable(config[CONF_VALUE], args, float)
+    cg.add(act.set_hot_water_set_temperature_value(tmpl))
+
+    return act
