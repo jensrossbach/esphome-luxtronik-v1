@@ -19,6 +19,7 @@ Dieses Projekt wurde stark von der [Luxtronik V1 ESPHome-Komponente](https://git
     - [Numerische Sensoren](#numerische-sensoren)
     - [Binäre Sensoren](#binäre-sensoren)
     - [Textsensoren](#textsensoren)
+  - [Aktionen](#aktionen)
 - [Luxtronik-Konfiguration](#luxtronik-konfiguration)
 - [Hilfe/Unterstützung](SUPPORT.md)
 - [Mitwirkung](CONTRIBUTING.md)
@@ -433,6 +434,21 @@ text_sensor:
       name: Letzte Abschaltung - Zeit
 ```
 
+### Aktionen
+Die Luxtronik-Komponente stellt Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
+
+#### Soll-Temperatur für Brauchwarmwasser setzen
+| Aktion | Beschreibung |
+| ------ | ------------ |
+| `luxtronik_v1.set_hot_water_set_temperature` | Setzt die Soll-Temperatur für Brauchwarmwasser auf den angegebenen Wert |
+
+##### Parameter
+| Parameter | Typ | Bereich | Beschreibung |
+| --------- | --- | ------- | ------------ |
+| `value` | `float` | 0.0&nbsp;...&nbsp;99.0 | Zielwert für die Soll-Temperatur des Brauchwarmwassers in °C |
+
+Anstelle eines festen Zahlenwerts kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
+
 ## Luxtronik-Konfiguration
 Um die serielle Schnittstelle des Luxtronik V1 Heizungssteuergeräts nutzen zu können, muss diese zunächst freigeschaltet werden. Dazu musst du im Menü der Luxtronik Benutzerschnittstelle zu _Service_ -> _Einstellungen_ -> _Datenzugang_ navigieren und die PIN `9445` eingeben. Daraufhin navigiere zu _Service_ -> _Diagnoseprogramme_ und aktiviere die Option "Standard".
 
@@ -456,6 +472,7 @@ This project was heavily inspired by the [Luxtronik V1 ESPHome component](https:
     - [Numeric Sensors](#numeric-sensors)
     - [Binary Sensors](#binary-sensors)
     - [Text Sensors](#text-sensors)
+  - [Actions](#actions)
 - [Luxtronik Configuration](#luxtronik-configuration)
 - [Help/Support](SUPPORT.md#-getting-support-for-esphome-luxtronik-v1)
 - [Contributing](CONTRIBUTING.md#contributing-to-esphome-luxtronik-v1)
@@ -865,6 +882,21 @@ text_sensor:
     deactivation_5_time:
       name: Letzte Abschaltung - Zeit
 ```
+
+### Actions
+The Luxtronik component provides actions for programming the Luxtronik heating control unit.
+
+#### Set Energy Meter
+| Action | Description |
+| ------ | ----------- |
+| `luxtronik_v1.set_hot_water_set_temperature` | Sets the hot water set temperature to the given value |
+
+##### Parameters
+| Parameter | Type | Range | Description |
+| --------- | ---- | ----- | ----------- |
+| `value` | `float` | 0.0&nbsp;...&nbsp;99.0 | Target value for the hot water set temperature in °C |
+
+Instead of a fixed numeric value, it is also possible to specify a lambda expression that returns the value to be passed to the action.
 
 ## Luxtronik Configuration
 In order to use the serial interface of the Luxtronik V1 heating control unit, it needs to be unlocked first. To do this, navigate to _Service_ -> _Einstellungen_ -> _Datenzugang_ and enter the PIN `9445`. After that, navigate to _Service_ -> _Diagnoseprogramme_ and activate the option "Standard".

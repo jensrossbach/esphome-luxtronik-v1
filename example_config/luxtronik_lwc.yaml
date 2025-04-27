@@ -63,6 +63,7 @@ uart:
 
 # Luxtronik V1 component (mandatory)
 luxtronik_v1:
+  id: luxtronik_heat_pump
   uart_id: uart_bus
 
 # numeric sensors (not needed sensors can be removed)
@@ -289,3 +290,29 @@ text_sensor:
   - platform: wifi_info
     ip_address:
       name: IP Adresse
+
+number:
+  # number input for setting hot water set temperature
+  - platform: template
+    id: hot_water_set_temperature_value
+    name: Soll-Temperatur Brauchwarmwasser
+    icon: mdi:coolant-temperature
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    min_value: 20.0
+    max_value: 65.0
+    step: 0.5
+
+button:
+  # button for sending hot water set temperature to Luxtronik heating control unit
+  - platform: template
+    name: Brauchwarmwasser Soll-Temperatur setzen
+    icon: mdi:download
+    entity_category: config
+    on_press:
+      - luxtronik_v1.set_hot_water_set_temperature:
+          id: luxtronik_heat_pump
+          value: !lambda "return id(hot_water_set_temperature_value).state;"
