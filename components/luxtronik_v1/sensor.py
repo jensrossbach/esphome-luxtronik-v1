@@ -52,12 +52,12 @@ CONF_HEAT_SOURCE_OUTPUT_TEMPERATURE   = "heat_source_output_temperature"
 CONF_MIXED_CIRCUIT_1_TEMPERATURE      = "mixed_circuit_1_temperature"
 CONF_MIXED_CIRCUIT_1_SET_TEMPERATURE  = "mixed_circuit_1_set_temperature"
 CONF_REMOTE_ADJUSTER_TEMPERATURE      = "remote_adjuster_temperature"
-CONF_HEATING_CURVE_OFFSET             = "heating_curve_offset"
-CONF_HEATING_CURVE_ENDPOINT           = "heating_curve_endpoint"
-CONF_HEATING_CURVE_PARALLEL_SHIFT     = "heating_curve_parallel_shift"
-CONF_HEATING_CURVE_NIGHT_SETBACK      = "heating_curve_night_setback"
-CONF_HEATING_CURVE_CONSTANT_RETURN    = "heating_curve_constant_return"
-CONF_HEATING_CURVE_MC1_END_POINT      = "heating_curve_mc1_end_point"
+CONF_HEATING_CURVE_HC_RETURN_OFFSET   = "heating_curve_hc_return_offset"
+CONF_HEATING_CURVE_HC_ENDPOINT        = "heating_curve_hc_endpoint"
+CONF_HEATING_CURVE_HC_PARALLEL_SHIFT  = "heating_curve_hc_parallel_shift"
+CONF_HEATING_CURVE_HC_NIGHT_SETBACK   = "heating_curve_hc_night_setback"
+CONF_HEATING_CURVE_HC_CONSTANT_RETURN = "heating_curve_hc_constant_return"
+CONF_HEATING_CURVE_MC1_ENDPOINT       = "heating_curve_mc1_endpoint"
 CONF_HEATING_CURVE_MC1_PARALLEL_SHIFT = "heating_curve_mc1_parallel_shift"
 CONF_HEATING_CURVE_MC1_NIGHT_SETBACK  = "heating_curve_mc1_night_setback"
 CONF_HEATING_CURVE_MC1_CONSTANT_FLOW  = "heating_curve_mc1_constant_flow"
@@ -147,42 +147,42 @@ CONFIG_SCHEMA = cv.Schema(
         unit_of_measurement = UNIT_CELSIUS,
         accuracy_decimals = 1
     ),
-    cv.Optional(CONF_HEATING_CURVE_OFFSET): sensor.sensor_schema(
+    cv.Optional(CONF_HEATING_CURVE_HC_RETURN_OFFSET): sensor.sensor_schema(
         device_class = DEVICE_CLASS_TEMPERATURE,
         state_class = STATE_CLASS_MEASUREMENT,
         unit_of_measurement = UNIT_CELSIUS,
         accuracy_decimals = 1,
         icon = "mdi:plus-minus-variant"
     ),
-    cv.Optional(CONF_HEATING_CURVE_ENDPOINT): sensor.sensor_schema(
+    cv.Optional(CONF_HEATING_CURVE_HC_ENDPOINT): sensor.sensor_schema(
         device_class = DEVICE_CLASS_TEMPERATURE,
         state_class = STATE_CLASS_MEASUREMENT,
         unit_of_measurement = UNIT_CELSIUS,
         accuracy_decimals = 1,
         icon = "mdi:arrow-collapse-right"
     ),
-    cv.Optional(CONF_HEATING_CURVE_PARALLEL_SHIFT): sensor.sensor_schema(
+    cv.Optional(CONF_HEATING_CURVE_HC_PARALLEL_SHIFT): sensor.sensor_schema(
         device_class = DEVICE_CLASS_TEMPERATURE,
         state_class = STATE_CLASS_MEASUREMENT,
         unit_of_measurement = UNIT_CELSIUS,
         accuracy_decimals = 1,
         icon = "mdi:arrow-expand"
     ),
-    cv.Optional(CONF_HEATING_CURVE_NIGHT_SETBACK): sensor.sensor_schema(
+    cv.Optional(CONF_HEATING_CURVE_HC_NIGHT_SETBACK): sensor.sensor_schema(
         device_class = DEVICE_CLASS_TEMPERATURE,
         state_class = STATE_CLASS_MEASUREMENT,
         unit_of_measurement = UNIT_CELSIUS,
         accuracy_decimals = 1,
         icon = "mdi:moon-waning-crescent"
     ),
-    cv.Optional(CONF_HEATING_CURVE_CONSTANT_RETURN): sensor.sensor_schema(
+    cv.Optional(CONF_HEATING_CURVE_HC_CONSTANT_RETURN): sensor.sensor_schema(
         device_class = DEVICE_CLASS_TEMPERATURE,
         state_class = STATE_CLASS_MEASUREMENT,
         unit_of_measurement = UNIT_CELSIUS,
         accuracy_decimals = 1,
         icon = "mdi:format-vertical-align-center"
     ),
-    cv.Optional(CONF_HEATING_CURVE_MC1_END_POINT): sensor.sensor_schema(
+    cv.Optional(CONF_HEATING_CURVE_MC1_ENDPOINT): sensor.sensor_schema(
         device_class = DEVICE_CLASS_TEMPERATURE,
         state_class = STATE_CLASS_MEASUREMENT,
         unit_of_measurement = UNIT_CELSIUS,

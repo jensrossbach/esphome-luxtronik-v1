@@ -162,12 +162,12 @@ namespace esphome::luxtronik_v1
         , m_sensor_firmware_version()
         , m_sensor_bivalence_level()
         , m_sensor_operational_state()
-        , m_sensor_heating_curve_offset()
-        , m_sensor_heating_curve_endpoint()
-        , m_sensor_heating_curve_parallel_shift()
-        , m_sensor_heating_curve_night_setback()
-        , m_sensor_heating_curve_constant_return()
-        , m_sensor_heating_curve_mc1_end_point()
+        , m_sensor_heating_curve_hc_return_offset()
+        , m_sensor_heating_curve_hc_endpoint()
+        , m_sensor_heating_curve_hc_parallel_shift()
+        , m_sensor_heating_curve_hc_night_setback()
+        , m_sensor_heating_curve_hc_constant_return()
+        , m_sensor_heating_curve_mc1_endpoint()
         , m_sensor_heating_curve_mc1_parallel_shift()
         , m_sensor_heating_curve_mc1_night_setback()
         , m_sensor_heating_curve_mc1_constant_flow()
@@ -365,12 +365,12 @@ namespace esphome::luxtronik_v1
         LOG_STRING_SENSOR("Operational State Sensor", m_sensor_operational_state);
         LOG_STRING_SENSOR("Mixer 1 Sensor", m_sensor_mixer_1_state);
 
-        LOG_TEMPERATURE_SENSOR("Heating Curve Offset Sensor", m_sensor_heating_curve_offset);
-        LOG_TEMPERATURE_SENSOR("Heating Curve Endpoint Sensor", m_sensor_heating_curve_endpoint);
-        LOG_TEMPERATURE_SENSOR("Heating Curve Parallel Shift Sensor", m_sensor_heating_curve_parallel_shift);
-        LOG_TEMPERATURE_SENSOR("Heating Curve Night Setback Sensor", m_sensor_heating_curve_night_setback);
-        LOG_TEMPERATURE_SENSOR("Heating Curve Constant Return Sensor", m_sensor_heating_curve_constant_return);
-        LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Endpoint Sensor", m_sensor_heating_curve_mc1_end_point);
+        LOG_TEMPERATURE_SENSOR("Heating Curve HC Return Offset Sensor", m_sensor_heating_curve_hc_return_offset);
+        LOG_TEMPERATURE_SENSOR("Heating Curve HC Endpoint Sensor", m_sensor_heating_curve_hc_endpoint);
+        LOG_TEMPERATURE_SENSOR("Heating Curve HC Parallel Shift Sensor", m_sensor_heating_curve_hc_parallel_shift);
+        LOG_TEMPERATURE_SENSOR("Heating Curve HC Night Setback Sensor", m_sensor_heating_curve_hc_night_setback);
+        LOG_TEMPERATURE_SENSOR("Heating Curve HC Constant Return Sensor", m_sensor_heating_curve_hc_constant_return);
+        LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Endpoint Sensor", m_sensor_heating_curve_mc1_endpoint);
         LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Parallel Shift Sensor", m_sensor_heating_curve_mc1_parallel_shift);
         LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Night Setback Sensor", m_sensor_heating_curve_mc1_night_setback);
         LOG_TEMPERATURE_SENSOR("Heating Curve MC1 Constant Flow Sensor", m_sensor_heating_curve_mc1_constant_flow);
@@ -862,27 +862,27 @@ namespace esphome::luxtronik_v1
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            m_sensor_heating_curve_offset.set_state(response, start, end);
+            m_sensor_heating_curve_hc_return_offset.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            m_sensor_heating_curve_endpoint.set_state(response, start, end);
+            m_sensor_heating_curve_hc_endpoint.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            m_sensor_heating_curve_parallel_shift.set_state(response, start, end);
+            m_sensor_heating_curve_hc_parallel_shift.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            m_sensor_heating_curve_night_setback.set_state(response, start, end);
+            m_sensor_heating_curve_hc_night_setback.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            m_sensor_heating_curve_constant_return.set_state(response, start, end);
+            m_sensor_heating_curve_hc_constant_return.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);
-            m_sensor_heating_curve_mc1_end_point.set_state(response, start, end);
+            m_sensor_heating_curve_mc1_endpoint.set_state(response, start, end);
 
             start = end + 1;
             end = response.find(DELIMITER, start);

@@ -93,17 +93,17 @@ sensor:
       name: Soll-Temperatur Vorlauf Mischkreis 1
     remote_adjuster_temperature:
       name: Temperatur Raumfernversteller
-    heating_curve_offset:
-      name: Abweichung Heizkurve
-    heating_curve_endpoint:
-      name: Heizkurve Endpunkt
-    heating_curve_parallel_shift:
-      name: Heizkurve Parallelverschiebung
-    heating_curve_night_setback:
-      name: Heizkurve Nachtabsenkung
-    heating_curve_constant_return:
-      name: Heizkurve Festwert Rücklauf
-    heating_curve_mc1_end_point:
+    heating_curve_hc_return_offset:
+      name: Heizkurve Heizkreis Abweichung Rücklauf
+    heating_curve_hc_endpoint:
+      name: Heizkurve Heizkreis Endpunkt
+    heating_curve_hc_parallel_shift:
+      name: Heizkurve Heizkreis Parallelverschiebung
+    heating_curve_hc_night_setback:
+      name: Heizkurve Heizkreis Nachtabsenkung
+    heating_curve_hc_constant_return:
+      name: Heizkurve Heizkreis Festwert Rücklauf
+    heating_curve_mc1_endpoint:
       name: Heizkurve Mischkreis 1 Endpunkt
     heating_curve_mc1_parallel_shift:
       name: Heizkurve Mischkreis 1 Parallelverschiebung
