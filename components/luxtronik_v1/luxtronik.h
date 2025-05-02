@@ -80,12 +80,12 @@ namespace esphome::luxtronik_v1
         void set_sensor_mixed_circuit_1_temperature(sensor::Sensor* sensor)      { m_sensor_mixed_circuit_1_temperature.set_sensor(sensor);      }
         void set_sensor_mixed_circuit_1_set_temperature(sensor::Sensor* sensor)  { m_sensor_mixed_circuit_1_set_temperature.set_sensor(sensor);  }
         void set_sensor_remote_adjuster_temperature(sensor::Sensor* sensor)      { m_sensor_remote_adjuster_temperature.set_sensor(sensor);      }
-        void set_sensor_heating_curve_offset(sensor::Sensor* sensor)             { m_sensor_heating_curve_offset.set_sensor(sensor);             }
-        void set_sensor_heating_curve_endpoint(sensor::Sensor* sensor)           { m_sensor_heating_curve_endpoint.set_sensor(sensor);           }
-        void set_sensor_heating_curve_parallel_shift(sensor::Sensor* sensor)     { m_sensor_heating_curve_parallel_shift.set_sensor(sensor);     }
-        void set_sensor_heating_curve_night_setback(sensor::Sensor* sensor)      { m_sensor_heating_curve_night_setback.set_sensor(sensor);      }
-        void set_sensor_heating_curve_constant_return(sensor::Sensor* sensor)    { m_sensor_heating_curve_constant_return.set_sensor(sensor);    }
-        void set_sensor_heating_curve_mc1_end_point(sensor::Sensor* sensor)      { m_sensor_heating_curve_mc1_end_point.set_sensor(sensor);      }
+        void set_sensor_heating_curve_hc_return_offset(sensor::Sensor* sensor)   { m_sensor_heating_curve_hc_return_offset.set_sensor(sensor);   }
+        void set_sensor_heating_curve_hc_endpoint(sensor::Sensor* sensor)        { m_sensor_heating_curve_hc_endpoint.set_sensor(sensor);        }
+        void set_sensor_heating_curve_hc_parallel_shift(sensor::Sensor* sensor)  { m_sensor_heating_curve_hc_parallel_shift.set_sensor(sensor);  }
+        void set_sensor_heating_curve_hc_night_setback(sensor::Sensor* sensor)   { m_sensor_heating_curve_hc_night_setback.set_sensor(sensor);   }
+        void set_sensor_heating_curve_hc_constant_return(sensor::Sensor* sensor) { m_sensor_heating_curve_hc_constant_return.set_sensor(sensor); }
+        void set_sensor_heating_curve_mc1_endpoint(sensor::Sensor* sensor)       { m_sensor_heating_curve_mc1_endpoint.set_sensor(sensor);       }
         void set_sensor_heating_curve_mc1_parallel_shift(sensor::Sensor* sensor) { m_sensor_heating_curve_mc1_parallel_shift.set_sensor(sensor); }
         void set_sensor_heating_curve_mc1_night_setback(sensor::Sensor* sensor)  { m_sensor_heating_curve_mc1_night_setback.set_sensor(sensor);  }
         void set_sensor_heating_curve_mc1_constant_flow(sensor::Sensor* sensor)  { m_sensor_heating_curve_mc1_constant_flow.set_sensor(sensor);  }
@@ -215,12 +215,12 @@ namespace esphome::luxtronik_v1
         StringSensor m_sensor_operational_state;  // 1700:5 - Betriebszustand
 
         // heat curve
-        TemperatureSensor m_sensor_heating_curve_offset;              // 3400:2  - Abweichung Heizkurve
-        TemperatureSensor m_sensor_heating_curve_endpoint;            // 3400:3  - Heizkurve Endpunt
-        TemperatureSensor m_sensor_heating_curve_parallel_shift;      // 3400:4  - Heizkurve Parallelverschiebung
-        TemperatureSensor m_sensor_heating_curve_night_setback;       // 3400:5  - Heizkurve Nachtabsenkung
-        TemperatureSensor m_sensor_heating_curve_constant_return;     // 3400:6  - Heizkurve Festwert Rücklauf
-        TemperatureSensor m_sensor_heating_curve_mc1_end_point;       // 3400:7  - Heizkurve MK1 Endpunt
+        TemperatureSensor m_sensor_heating_curve_hc_return_offset;    // 3400:2  - Heizkurve HK Abweichung Rücklauf
+        TemperatureSensor m_sensor_heating_curve_hc_endpoint;         // 3400:3  - Heizkurve HK Endpunkt
+        TemperatureSensor m_sensor_heating_curve_hc_parallel_shift;   // 3400:4  - Heizkurve HK Parallelverschiebung
+        TemperatureSensor m_sensor_heating_curve_hc_night_setback;    // 3400:5  - Heizkurve HK Nachtabsenkung
+        TemperatureSensor m_sensor_heating_curve_hc_constant_return;  // 3400:6  - Heizkurve HK Festwert Rücklauf
+        TemperatureSensor m_sensor_heating_curve_mc1_endpoint;        // 3400:7  - Heizkurve MK1 Endpunkt
         TemperatureSensor m_sensor_heating_curve_mc1_parallel_shift;  // 3400:8  - Heizkurve MK1 Parallelverschiebung
         TemperatureSensor m_sensor_heating_curve_mc1_night_setback;   // 3400:9  - Heizkurve MK1 Nachtabsenkung
         TemperatureSensor m_sensor_heating_curve_mc1_constant_flow;   // 3400:10 - Heizkurve MK1 Festwert Vorlauf

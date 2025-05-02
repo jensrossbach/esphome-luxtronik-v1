@@ -212,12 +212,12 @@ Die folgenden numerischen Sensoren können konfiguriert werden:
 | `mixed_circuit_1_temperature` | `temperature` | 1100 | Ist-Temperatur Vorlauf Mischkreis 1 |
 | `mixed_circuit_1_set_temperature` | `temperature` | 1100 | Soll-Temperatur Vorlauf Mischkreis 1 |
 | `remote_adjuster_temperature` | `temperature` | 1100 | Temperatur Raumfernversteller |
-| `heating_curve_offset` | `temperature` | 3400 | Abweichung Heizkurve |
-| `heating_curve_endpoint` | `temperature` | 3400 | Heizkurve Endpunkt |
-| `heating_curve_parallel_shift` | `temperature` | 3400 | Heizkurve Parallelverschiebung |
-| `heating_curve_night_setback` | `temperature` | 3400 | Heizkurve Nachtabsenkung |
-| `heating_curve_constant_return` | `temperature` | 3400 | Heizkurve Festwert Rücklauf |
-| `heating_curve_mc1_end_point` | `temperature` | 3400 | Heizkurve Mischkreis 1 Endpunkt |
+| `heating_curve_hc_return_offset` | `temperature` | 3400 | Abweichung Rücklauf-Temperatur zu der der Heizkreis-Heizkurve |
+| `heating_curve_hc_endpoint` | `temperature` | 3400 | Heizkurve Heizkreis Endpunkt |
+| `heating_curve_hc_parallel_shift` | `temperature` | 3400 | Heizkurve Heizkreis Parallelverschiebung |
+| `heating_curve_hc_night_setback` | `temperature` | 3400 | Heizkurve Heizkreis Nachtabsenkung |
+| `heating_curve_hc_constant_return` | `temperature` | 3400 | Heizkurve Heizkreis Festwert Rücklauf |
+| `heating_curve_mc1_endpoint` | `temperature` | 3400 | Heizkurve Mischkreis 1 Endpunkt |
 | `heating_curve_mc1_parallel_shift` | `temperature` | 3400 | Heizkurve Mischkreis 1 Parallelverschiebung |
 | `heating_curve_mc1_night_setback` | `temperature` | 3400 | Heizkurve Mischkreis 1 Nachtabsenkung |
 | `heating_curve_mc1_constant_flow` | `temperature` | 3400 | Heizkurve Mischkreis 1 Festwert Vorlauf |
@@ -662,12 +662,12 @@ The following numeric sensors can be configured:
 | `mixed_circuit_1_temperature` | `temperature` | 1100 | Temperature of mixed circuit 1 |
 | `mixed_circuit_1_set_temperature` | `temperature` | 1100 | Set-emperature of mixed circuit 1 |
 | `remote_adjuster_temperature` | `temperature` | 1100 | Temperature of the remote adjuster |
-| `heating_curve_offset` | `temperature` | 3400 | Offset heating curve |
-| `heating_curve_endpoint` | `temperature` | 3400 | Heating curve endpoint |
-| `heating_curve_parallel_shift` | `temperature` | 3400 | Heating curve parallel shift |
-| `heating_curve_night_setback` | `temperature` | 3400 | Heating curve night setback |
-| `heating_curve_constant_return` | `temperature` | 3400 | Heating curve constant return |
-| `heating_curve_mc1_end_point` | `temperature` | 3400 | Heating curve mixed circuit 1 endpoint |
+| `heating_curve_hc_return_offset` | `temperature` | 3400 | Offset return temperature to that of heat cuircuit heating curve |
+| `heating_curve_hc_endpoint` | `temperature` | 3400 | Heating curve heat cuircuit endpoint |
+| `heating_curve_hc_parallel_shift` | `temperature` | 3400 | Heating curve heat cuircuit parallel shift |
+| `heating_curve_hc_night_setback` | `temperature` | 3400 | Heating curve heat cuircuit night setback |
+| `heating_curve_hc_constant_return` | `temperature` | 3400 | Heating curve heat cuircuit constant return |
+| `heating_curve_mc1_endpoint` | `temperature` | 3400 | Heating curve mixed circuit 1 endpoint |
 | `heating_curve_mc1_parallel_shift` | `temperature` | 3400 | Heating curve mixed circuit 1 parallel shift |
 | `heating_curve_mc1_night_setback` | `temperature` | 3400 | Heating curve mixed circuit 1 night setback |
 | `heating_curve_mc1_constant_flow` | `temperature` | 3400 | Heating curve mixed circuit 1 constant flow |
