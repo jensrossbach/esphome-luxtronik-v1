@@ -886,7 +886,7 @@ text_sensor:
 ### Actions
 The Luxtronik component provides actions for programming the Luxtronik heating control unit.
 
-#### Set Energy Meter
+#### Set Hot Water Set Temperature
 | Action | Description |
 | ------ | ----------- |
 | `luxtronik_v1.set_hot_water_set_temperature` | Sets the hot water set temperature to the given value |
