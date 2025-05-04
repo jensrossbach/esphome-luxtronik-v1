@@ -38,6 +38,7 @@ namespace esphome::luxtronik_v1
     public:
     SetHotWaterSetTemperatureAction(Luxtronik *luxtronik)
             : m_luxtronik(luxtronik)
+            , m_set_temperature_value()
         {
         }
 

@@ -52,8 +52,8 @@ namespace esphome::luxtronik_v1
 
     static constexpr const char* const TYPE_STORE_CONFIG      = "999";
     static constexpr const char* const TYPE_STORE_CONFIG_ACK  = "993";
-    static constexpr const char* const TYPE_STORE_CONFIG_NACK = "778;1;999";
     static constexpr const char* const TYPE_STORE_CONFIG_SEQ  = "999993993999";
+    static constexpr const char* const TYPE_NACK              = "778";
 
     static constexpr const char ASCII_CR      = 0x0D;  // cariage return ('\r')
     static constexpr const char ASCII_LF      = 0x0A;  // line feed ('\n')
@@ -71,6 +71,7 @@ namespace esphome::luxtronik_v1
     static constexpr const size_t MIN_SLOT_LENGTH     = 10;
 
     static constexpr const size_t INDEX_RESPONSE_START =  5;
+    static constexpr const size_t INDEX_NACK_START     =  4;
     static constexpr const size_t INDEX_SLOT_ID        =  8;
     static constexpr const size_t INDEX_SLOT_START     = 10;
 
@@ -211,6 +212,7 @@ namespace esphome::luxtronik_v1
         , m_lost_response(false)
         , m_response_ready(false)
         , m_slot_block(false)
+        , m_config_response_state(0)
         , m_retry_count(0)
         , m_store_config_ack()
         , m_dataset_list()
@@ -415,13 +417,21 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::next_dataset()
     {
-        m_request_queue.pop_front();
-
-        if (!m_request_queue.empty())
+        // only schedule if there is at least one dataset additionally to the current one
+        if (m_request_queue.size() > 1)
         {
             m_timer.schedule(
                         std::chrono::milliseconds(m_request_delay),
-                        [this]() { request_data(); });
+                        [this]()
+                        {
+                            m_request_queue.pop_front();
+                            request_data();
+                        });
+        }
+        else
+        {
+            // remove current dataset as it was the last one
+            m_request_queue.pop_front();
         }
     }
 
@@ -484,6 +494,7 @@ namespace esphome::luxtronik_v1
         {
             ack_response();
             m_store_config_ack += response;
+            m_config_response_state = 0;
 
             if (m_store_config_ack == TYPE_STORE_CONFIG_SEQ)
             {
@@ -931,17 +942,22 @@ namespace esphome::luxtronik_v1
         }
         else if (starts_with(response, TYPE_HOT_WATER_CONFIG))
         {
-            ack_response();
+            if (m_config_response_state != 1)  // ignore echo
+            {
+                ack_response();
 
-            size_t start = INDEX_RESPONSE_START;
-            size_t end = response.find(DELIMITER, start);
-            // skip number of elements
+                size_t start = INDEX_RESPONSE_START;
+                size_t end = response.find(DELIMITER, start);
+                // skip number of elements
 
-            start = end + 1;
-            end = response.find(DELIMITER, start);
-            m_sensor_hot_water_set_temperature.set_state(response, start, end);
+                start = end + 1;
+                end = response.find(DELIMITER, start);
+                m_sensor_hot_water_set_temperature.set_state(response, start, end);
 
-            next_dataset();
+                next_dataset();
+            }
+
+            ++m_config_response_state;
         }
         else if (starts_with(response, TYPE_HOT_WATER_MODE))
         {
@@ -974,10 +990,19 @@ namespace esphome::luxtronik_v1
 
             next_dataset();
         }
-        else if (response == TYPE_STORE_CONFIG_NACK)
+        else if (starts_with(response, TYPE_NACK))
         {
             ack_response();
-            ESP_LOGW(TAG, "Configuration storing request refused, maybe double request");
+
+            size_t start = INDEX_NACK_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+
+            std::string cmd = response.substr(start, end - start);
+            ESP_LOGW(TAG, "Request refused:  REQ %s", cmd.c_str());
 
             next_dataset();
         }

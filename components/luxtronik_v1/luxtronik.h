@@ -278,6 +278,7 @@ namespace esphome::luxtronik_v1
         bool m_lost_response;
         bool m_response_ready;
         bool m_slot_block;
+        uint8_t m_config_response_state;
         uint16_t m_retry_count;
         std::string m_store_config_ack;
         std::vector<const char*> m_dataset_list;

@@ -113,7 +113,7 @@ namespace esphome::luxtronik_v1
             ++m_size;
         }
 
-        const void pop_front()
+        void pop_front()
         {
             if (m_head != nullptr)
             {
