@@ -98,7 +98,7 @@ async def to_code(config):
     cv.Schema(
     {
         cv.Required(CONF_ID): cv.use_id(Luxtronik),
-        cv.Required(CONF_VALUE): cv.templatable(cv.positive_float)
+        cv.Required(CONF_VALUE): cv.templatable(cv.float_range(min = 30.0, max = 65.0))
     }))
 async def set_hot_water_set_temperature_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])

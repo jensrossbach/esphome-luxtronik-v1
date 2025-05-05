@@ -445,7 +445,7 @@ Die Luxtronik-Komponente stellt Aktionen zur Verfügung, um die Luxtronik Heizun
 ##### Parameter
 | Parameter | Typ | Bereich | Beschreibung |
 | --------- | --- | ------- | ------------ |
-| `value` | `float` | 0.0&nbsp;...&nbsp;99.0 | Zielwert für die Soll-Temperatur des Brauchwarmwassers in °C |
+| `value` | `float` | 30.0&nbsp;...&nbsp;65.0 | Zielwert für die Soll-Temperatur des Brauchwarmwassers in °C |
 
 Anstelle eines festen Zahlenwerts kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
 
@@ -916,7 +916,7 @@ The Luxtronik component provides actions for programming the Luxtronik heating c
 ##### Parameters
 | Parameter | Type | Range | Description |
 | --------- | ---- | ----- | ----------- |
-| `value` | `float` | 0.0&nbsp;...&nbsp;99.0 | Target value for the hot water set temperature in °C |
+| `value` | `float` | 30.0&nbsp;...&nbsp;65.0 | Target value for the hot water set temperature in °C |
 
 Instead of a fixed numeric value, it is also possible to specify a lambda expression that returns the value to be passed to the action.
 

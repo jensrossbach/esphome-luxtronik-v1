@@ -1136,7 +1136,11 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::set_hot_water_set_temperature(float value)
     {
-        if ((value >= 0) && (value < 100))
+        if ((value < 30.0) || (value > 65.0))
+        {
+            ESP_LOGW(TAG, "Invalid value for hot water set temperature:  VAL %.1f °C", value);
+        }
+        else
         {
             ESP_LOGD(TAG, "Queuing requests for setting hot water set temperature:  VAL %.1f °C", value);
 
@@ -1148,10 +1152,6 @@ namespace esphome::luxtronik_v1
             {
                 request_data();
             }
-        }
-        else
-        {
-            ESP_LOGW(TAG, "Invalid value for hot water set temperature:  VAL %.1f °C", value);
         }
     }
 
@@ -1167,30 +1167,69 @@ namespace esphome::luxtronik_v1
         if (!value.mc1_night_setback_avail)  { value.mc1_night_setback  = m_sensor_heating_curve_mc1_night_setback.get_state();  }
         if (!value.mc1_const_flow_avail)     { value.mc1_const_flow     = m_sensor_heating_curve_mc1_constant_flow.get_state();  }
 
-        ESP_LOGD(
-            TAG,
-            "Queuing requests for setting heating curves:  HOF %.1f °C  HEP %.1f °C  HPS %.1f °C  HNS %.1f °C  HCR %.1f °C  MEP %.1f °C  MPS %.1f °C  MNS %.1f °C  MCF %.1f °C",
-            value.hc_return_offset,
-            value.hc_endpoint, value.hc_parallel_shift, value.hc_night_setback, value.hc_const_return,
-            value.mc1_endpoint, value.mc1_parallel_shift, value.mc1_night_setback, value.mc1_const_flow);
-
-        m_request_queue.push_back(TYPE_HEATING_CURVES_CONFIG);
-        m_request_queue.push_back(
-                            std::string(TYPE_HEATING_CURVES_CONFIG) + ";9;" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.hc_return_offset * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.hc_endpoint * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.hc_parallel_shift * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.hc_night_setback * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.hc_const_return * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.mc1_endpoint * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.mc1_parallel_shift * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.mc1_night_setback * 10))) + ";" +
-                            std::to_string(static_cast<int32_t>(std::floor(value.mc1_const_flow * 10))));
-        m_request_queue.push_back(TYPE_STORE_CONFIG);
-
-        if (!m_timer.is_running())
+        if ((value.hc_return_offset < -5.0) || (value.hc_return_offset > 5.0))
         {
-            request_data();
+            ESP_LOGW(TAG, "Invalid value for heat circuit return offset:  VAL %.1f °C", value.hc_return_offset);
+        }
+        else if (value.hc_endpoint < 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for heat circuit endpoint:  VAL %.1f °C", value.hc_endpoint);
+        }
+        else if (value.hc_parallel_shift < 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for heat circuit parallel shift:  VAL %.1f °C", value.hc_parallel_shift);
+        }
+        else if (value.hc_night_setback > 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for heat circuit night setback:  VAL %.1f °C", value.hc_night_setback);
+        }
+        else if (value.hc_const_return < 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for heat circuit constant return:  VAL %.1f °C", value.hc_const_return);
+        }
+        else if (value.mc1_endpoint < 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for mixed circuit 1 endpoint:  VAL %.1f °C", value.mc1_endpoint);
+        }
+        else if (value.mc1_parallel_shift < 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for mixed circuit 1 parallel shift:  VAL %.1f °C", value.mc1_parallel_shift);
+        }
+        else if (value.mc1_night_setback > 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for mixed circuit 1 night setback:  VAL %.1f °C", value.mc1_night_setback);
+        }
+        else if (value.mc1_const_flow < 0.0)
+        {
+            ESP_LOGW(TAG, "Invalid value for mixed circuit 1 constant flow:  VAL %.1f °C", value.mc1_const_flow);
+        }
+        else
+        {
+            ESP_LOGD(
+                TAG,
+                "Queuing requests for setting heating curves:  HRO %.1f °C  HEP %.1f °C  HPS %.1f °C  HNS %.1f °C  HCR %.1f °C  MEP %.1f °C  MPS %.1f °C  MNS %.1f °C  MCF %.1f °C",
+                value.hc_return_offset,
+                value.hc_endpoint, value.hc_parallel_shift, value.hc_night_setback, value.hc_const_return,
+                value.mc1_endpoint, value.mc1_parallel_shift, value.mc1_night_setback, value.mc1_const_flow);
+
+            m_request_queue.push_back(TYPE_HEATING_CURVES_CONFIG);
+            m_request_queue.push_back(
+                                std::string(TYPE_HEATING_CURVES_CONFIG) + ";9;" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_return_offset * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_endpoint * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_parallel_shift * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_night_setback * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_const_return * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_endpoint * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_parallel_shift * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_night_setback * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_const_flow * 10))));
+            m_request_queue.push_back(TYPE_STORE_CONFIG);
+
+            if (!m_timer.is_running())
+            {
+                request_data();
+            }
         }
     }
 
