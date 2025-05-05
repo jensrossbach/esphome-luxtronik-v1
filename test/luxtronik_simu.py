@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Jens-Uwe Rossbach
+# Copyright (c) 2024-2025 Jens-Uwe Rossbach
 #
 # This code is licensed under the MIT License.
 #
@@ -26,74 +26,131 @@
 
 import serial
 
-def sendTemperatures():
-    ser.write(b'1100;12;254;257;261;456;128;480;470;177;201;750;0;0\r\n')
+hot_water_set_temp = '460'
+heating_curve = '0;320;220;0;350;350;200;0;350'
 
-def sendInputs():
-    ser.write(b'1200;6;1;1;0;1;1;0\r\n')
+def respond(str):
+    ser.write(str.encode('ascii'))
+    ser.write(b'\r\n')
+    print(f'>> {str}')
 
-def sendOutputs():
-    ser.write(b'1300;13;0;0;1;1;0;1;0;0;0;0;0;0;0\r\n')
+def echo(input):
+    ser.write(input)
+    ser.write(b'\r\n')
+    print(f'>> {input.decode("ascii")}')
 
-def sendProcessingTimes():
-    ser.write(b'1400;29;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;1;3;0;0;0;0; 0;38;0;0;0;0;0;0\r\n')
+def send_temperatures():
+    respond(f'1100;12;267;257;150;276;230;384;{hot_water_set_temp};238;235;750;0;0')
 
-def sendOperationTimes():
-    ser.write(b'1450;9;3628317;2161;1678;3121663;2162;1443;372727; 0;6230122\r\n')
+def send_inputs():
+    respond('1200;6;0;1;0;1;1;0')
+
+def send_outputs():
+    respond('1300;13;0;0;0;0;0;1;0;0;0;0;0;0;0')
+
+def send_processing_times():
+    respond('1400;29;0;0;0;0;0;0;0;0;0;0;0;0;0;0;1;1;3;0;0;0;0;0;38;0;0;0;0;0;0')
+
+def send_operation_times():
+    respond('1450;9;3628317;2161;1678;3121663;2162;1443;372727;0;6230122')
 
 def sendErrors():
-    ser.write(b'1500;5\r\n')
-    ser.write(b'1500;1500;6;709;22;11;8;11;54\r\n')
-    ser.write(b'1500;1501;6;715;22;11;8;12;4\r\n')
-    ser.write(b'1500;1502;6;709;22;11;8;12;4\r\n')
-    ser.write(b'1500;1503;6;711;11;12;8;20;24\r\n')
-    ser.write(b'1500;1504;6;708;13;12;8;14;9\r\n')
-    ser.write(b'1500;5\r\n')
+    respond('1500;5')
+    respond('1500;1500;6;718;31;7;24;9;28')
+    respond('1500;1501;6;718;31;7;24;11;24')
+    respond('1500;1502;6;718;31;7;24;14;11')
+    respond('1500;1503;6;718;2;8;24;10;23')
+    respond('1500;1504;6;718;3;8;24;10;48')
+    respond('1500;5')
 
-def sendShutdowns():
-    ser.write(b'1600;5\r\n')
-    ser.write(b'1600;1600;6;010;19;12;8;12;32\r\n')
-    ser.write(b'1600;1601;6;010;19;12;8;14;54\r\n')
-    ser.write(b'1600;1602;6;010;19;12;8;17;10\r\n')
-    ser.write(b'1600;1603;6;010;19;12;8;19;31\r\n')
-    ser.write(b'1600;1604;6;010;19;12;8;21;14\r\n')
-    ser.write(b'1600;5\r\n')
+def send_deactivations():
+    respond('1600;5')
+    respond('1600;1600;6;010;3;8;24;23;47')
+    respond('1600;1601;6;010;4;8;24;23;47')
+    respond('1600;1602;6;010;5;8;24;23;48')
+    respond('1600;1603;6;010;6;8;24;23;47')
+    respond('1600;1604;6;010;7;8;24;23;46')
+    respond('1600;5')
 
-def sendInformation():
-    ser.write(b'1700;12;14;V2.33;1;0;19;2;22;7;29;22;0;0\r\n')
+def send_information():
+    respond('1700;12;12; V2.33;1;5;22;1;24;6;56;44;0;0')
 
-def parseCommand(cmd):
-    print('Parsing command: ' + cmd.decode('ascii'))
+def send_heating_curve(cmd):
+    respond(f'{cmd};9;{heating_curve}')
 
+def send_heating_mode():
+    respond('3405;1;4')
+
+def send_hot_water_set_temp():
+    respond(f'3501;1;{hot_water_set_temp}')
+
+def send_hot_water_mode():
+    respond('3505;1;0')
+
+def send_store_config_ack():
+    respond('993')
+    respond('993')
+    respond('999')
+
+def parse_command(cmd):
     try:
-        if cmd.decode('ascii').startswith('1100'):
-            sendTemperatures()
-        elif cmd.decode('ascii').startswith('1200'):
-            sendInputs()
-        elif cmd.decode('ascii').startswith('1300'):
-            sendOutputs()
-        elif cmd.decode('ascii').startswith('1500'):
+        cmd_str = cmd.decode('ascii')
+        print('Parsing command: ' + cmd_str)
+
+        if cmd_str == '1100':
+            send_temperatures()
+        elif cmd_str == '1200':
+            send_inputs()
+        elif cmd_str == '1300':
+            send_outputs()
+        elif cmd_str == '1400':
+            send_processing_times()
+        elif cmd_str == '1450':
+            send_operation_times()
+        elif cmd_str == '1500':
             sendErrors()
-        elif cmd.decode('ascii').startswith('1600'):
-            sendShutdowns()
-        elif cmd.decode('ascii').startswith('1700'):
-            sendInformation()
-        elif cmd.decode('ascii').startswith('1800'):
+        elif cmd_str == '1600':
+            send_deactivations()
+        elif cmd_str == '1700':
+            send_information()
+        elif cmd_str == '1800':
             ser.write(b'1800;8\r\n')
-            sendTemperatures()
-            sendInputs()
-            sendOutputs()
-            sendProcessingTimes()
-            sendOperationTimes()
+            send_temperatures()
+            send_inputs()
+            send_outputs()
+            send_processing_times()
+            send_operation_times()
             sendErrors()
-            sendShutdowns()
-            sendInformation()
+            send_deactivations()
+            send_information()
             ser.write(b'1800;8\r\n')
+        elif cmd_str == '3400':
+            send_heating_curve('3400')
+        elif cmd_str.startswith('3401'):
+            if len(cmd_str) == 4:
+                send_heating_curve('3401')
+            elif len(cmd_str) > 7:
+                global heating_curve
+                heating_curve = cmd_str[7:]
+                send_heating_curve('3401')
+        elif cmd_str == '3405':
+            send_heating_mode()
+        elif cmd_str.startswith('3501'):
+            if len(cmd_str) == 4:
+                send_hot_water_set_temp()
+            elif len(cmd_str) > 7:
+                global hot_water_set_temp
+                hot_water_set_temp = cmd_str[7:]
+                send_hot_water_set_temp()
+        elif cmd_str == '3505':
+            send_hot_water_mode()
+        elif cmd_str == '999':
+            send_store_config_ack()
     except UnicodeDecodeError:
         print('Invalid data received')
 
 ser = serial.Serial(
-        port = 'COM3',
+        port = 'COM4',
         baudrate = 57600,
         bytesize = serial.EIGHTBITS,
         stopbits = 1,
@@ -111,7 +168,8 @@ try:
                 print('0D:', end = '', flush = True)
             elif c[0] == 0x0A:
                 print('0A')
-                parseCommand(cmd)
+                echo(cmd)
+                parse_command(cmd)
                 cmd = bytearray()
             else:
                 print(f'{c[0]:02x}' + ':', end = '', flush = True)
