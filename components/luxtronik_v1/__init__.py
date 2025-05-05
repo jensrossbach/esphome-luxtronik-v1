@@ -42,10 +42,21 @@ CONF_RESPONSE_TIMEOUT = "response_timeout"
 CONF_MAX_RETRIES      = "max_retries"
 CONF_INCLUDE_DATASETS = "include_datasets"
 
+CONF_HC_RETURN_OFFSET   = "hc_return_offset"
+CONF_HC_ENDPOINT        = "hc_endpoint"
+CONF_HC_PARALLEL_SHIFT  = "hc_parallel_shift"
+CONF_HC_NIGHT_SETBACK   = "hc_night_setback"
+CONF_HC_CONST_RETURN    = "hc_const_return"
+CONF_MC1_ENDPOINT       = "mc1_endpoint"
+CONF_MC1_PARALLEL_SHIFT = "mc1_parallel_shift"
+CONF_MC1_NIGHT_SETBACK  = "mc1_night_setback"
+CONF_MC1_CONST_FLOW     = "mc1_const_flow"
+
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
 SetHotWaterSetTemperatureAction = luxtronik_ns.class_("SetHotWaterSetTemperatureAction", automation.Action)
+SetHeatingCurvesAction = luxtronik_ns.class_("SetHeatingCurvesAction", automation.Action)
 
 def unique_list(value):
     if len(value) != len(set(value)):
@@ -95,5 +106,55 @@ async def set_hot_water_set_temperature_action_to_code(config, action_id, templa
 
     tmpl = await cg.templatable(config[CONF_VALUE], args, float)
     cg.add(act.set_hot_water_set_temperature_value(tmpl))
+
+    return act
+
+@automation.register_action(
+    "luxtronik_v1.set_heating_curves",
+    SetHeatingCurvesAction,
+    cv.Schema(
+    {
+        cv.Required(CONF_ID): cv.use_id(Luxtronik),
+        cv.Optional(CONF_HC_RETURN_OFFSET): cv.templatable(cv.float_range(min = -5.0, max = 5.0)),
+        cv.Optional(CONF_HC_ENDPOINT): cv.templatable(cv.positive_float),
+        cv.Optional(CONF_HC_PARALLEL_SHIFT): cv.templatable(cv.positive_float),
+        cv.Optional(CONF_HC_NIGHT_SETBACK): cv.templatable(cv.float_range(max = 0.0)),
+        cv.Optional(CONF_HC_CONST_RETURN): cv.templatable(cv.positive_float),
+        cv.Optional(CONF_MC1_ENDPOINT): cv.templatable(cv.positive_float),
+        cv.Optional(CONF_MC1_PARALLEL_SHIFT): cv.templatable(cv.positive_float),
+        cv.Optional(CONF_MC1_NIGHT_SETBACK): cv.templatable(cv.float_range(max = 0.0)),
+        cv.Optional(CONF_MC1_CONST_FLOW): cv.templatable(cv.positive_float)
+    }))
+async def set_heating_curves_action_to_code(config, action_id, template_arg, args):
+    parent = await cg.get_variable(config[CONF_ID])
+    act = cg.new_Pvariable(action_id, template_arg, parent)
+
+    if CONF_HC_RETURN_OFFSET in config:
+        tmpl = await cg.templatable(config[CONF_HC_RETURN_OFFSET], args, float)
+        cg.add(act.set_heating_curve_hc_return_offset_value(tmpl))
+    if CONF_HC_ENDPOINT in config:
+        tmpl = await cg.templatable(config[CONF_HC_ENDPOINT], args, float)
+        cg.add(act.set_heating_curve_hc_endpoint_value(tmpl))
+    if CONF_HC_PARALLEL_SHIFT in config:
+        tmpl = await cg.templatable(config[CONF_HC_PARALLEL_SHIFT], args, float)
+        cg.add(act.set_heating_curve_hc_parallel_shift_value(tmpl))
+    if CONF_HC_NIGHT_SETBACK in config:
+        tmpl = await cg.templatable(config[CONF_HC_NIGHT_SETBACK], args, float)
+        cg.add(act.set_heating_curve_hc_night_setback_value(tmpl))
+    if CONF_HC_CONST_RETURN in config:
+        tmpl = await cg.templatable(config[CONF_HC_CONST_RETURN], args, float)
+        cg.add(act.set_heating_curve_hc_constant_return_value(tmpl))
+    if CONF_MC1_ENDPOINT in config:
+        tmpl = await cg.templatable(config[CONF_MC1_ENDPOINT], args, float)
+        cg.add(act.set_heating_curve_mc1_endpoint_value(tmpl))
+    if CONF_MC1_PARALLEL_SHIFT in config:
+        tmpl = await cg.templatable(config[CONF_MC1_PARALLEL_SHIFT], args, float)
+        cg.add(act.set_heating_curve_mc1_parallel_shift_value(tmpl))
+    if CONF_MC1_NIGHT_SETBACK in config:
+        tmpl = await cg.templatable(config[CONF_MC1_NIGHT_SETBACK], args, float)
+        cg.add(act.set_heating_curve_mc1_night_setback_value(tmpl))
+    if CONF_MC1_CONST_FLOW in config:
+        tmpl = await cg.templatable(config[CONF_MC1_CONST_FLOW], args, float)
+        cg.add(act.set_heating_curve_mc1_constant_flow_value(tmpl))
 
     return act
