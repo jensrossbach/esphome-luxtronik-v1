@@ -53,6 +53,28 @@ namespace esphome::luxtronik_v1
     class Luxtronik : public PollingComponent
     {
     public:
+        struct HeatingCurves
+        {
+            bool hc_return_offset_avail;
+            float hc_return_offset;
+            bool hc_endpoint_avail;
+            float hc_endpoint;
+            bool hc_parallel_shift_avail;
+            float hc_parallel_shift;
+            bool hc_night_setback_avail;
+            float hc_night_setback;
+            bool hc_const_return_avail;
+            float hc_const_return;
+            bool mc1_endpoint_avail;
+            float mc1_endpoint;
+            bool mc1_parallel_shift_avail;
+            float mc1_parallel_shift;
+            bool mc1_night_setback_avail;
+            float mc1_night_setback;
+            bool mc1_const_flow_avail;
+            float mc1_const_flow;
+        };
+
         Luxtronik(
             uart::UARTComponent* uart,
             uint16_t request_delay,
@@ -66,6 +88,7 @@ namespace esphome::luxtronik_v1
 
         void add_dataset(const char* code);
         void set_hot_water_set_temperature(float value);
+        void set_heating_curves(HeatingCurves& value);
 
 #ifdef USE_SENSOR
         void set_sensor_flow_temperature(sensor::Sensor* sensor)                 { m_sensor_flow_temperature.set_sensor(sensor);                 }
@@ -155,11 +178,22 @@ namespace esphome::luxtronik_v1
         void request_data();
         void send_request(const std::string& request);
         void parse_response(const std::string& response);
+        void parse_temperatures(const std::string& response);
+        void parse_inputs(const std::string& response);
+        void parse_outputs(const std::string& response);
+        void parse_operating_hours(const std::string& response);
+        void parse_errors(const std::string& response);
+        void parse_deactivations(const std::string& response);
+        void parse_information(const std::string& response);
+        void parse_heating_curves(const std::string& response);
+        void parse_heating_mode(const std::string& response);
+        void parse_hot_water_config(const std::string& response);
+        void parse_hot_water_mode(const std::string& response);
         void handle_timeout();
         void clear_uart_buffer();
         void parse_slot(const std::string& slot, StringSensor& sensor_code, StringSensor& sensor_time);
 
-        void ack_response()
+        void accept_response()
         {
             m_timer.cancel();
             m_retry_count = 0;

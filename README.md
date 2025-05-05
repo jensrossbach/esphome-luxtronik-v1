@@ -212,15 +212,15 @@ Die folgenden numerischen Sensoren können konfiguriert werden:
 | `mixed_circuit_1_temperature` | `temperature` | 1100 | Ist-Temperatur Vorlauf Mischkreis 1 |
 | `mixed_circuit_1_set_temperature` | `temperature` | 1100 | Soll-Temperatur Vorlauf Mischkreis 1 |
 | `remote_adjuster_temperature` | `temperature` | 1100 | Temperatur Raumfernversteller |
-| `heating_curve_hc_return_offset` | `temperature` | 3400 | Abweichung Rücklauf-Temperatur zu der der Heizkreis-Heizkurve |
-| `heating_curve_hc_endpoint` | `temperature` | 3400 | Heizkurve Heizkreis Endpunkt |
-| `heating_curve_hc_parallel_shift` | `temperature` | 3400 | Heizkurve Heizkreis Parallelverschiebung |
-| `heating_curve_hc_night_setback` | `temperature` | 3400 | Heizkurve Heizkreis Nachtabsenkung |
-| `heating_curve_hc_constant_return` | `temperature` | 3400 | Heizkurve Heizkreis Festwert Rücklauf |
-| `heating_curve_mc1_endpoint` | `temperature` | 3400 | Heizkurve Mischkreis 1 Endpunkt |
-| `heating_curve_mc1_parallel_shift` | `temperature` | 3400 | Heizkurve Mischkreis 1 Parallelverschiebung |
-| `heating_curve_mc1_night_setback` | `temperature` | 3400 | Heizkurve Mischkreis 1 Nachtabsenkung |
-| `heating_curve_mc1_constant_flow` | `temperature` | 3400 | Heizkurve Mischkreis 1 Festwert Vorlauf |
+| `heating_curve_hc_return_offset` | `temperature` | 3400 | Abweichung der Rücklauf-Temperatur zu der Temperatur der Heizkreis-Heizkurve |
+| `heating_curve_hc_endpoint` | `temperature` | 3400 | Endpunkt der Heizkreis-Heizkurve |
+| `heating_curve_hc_parallel_shift` | `temperature` | 3400 | Parallelverschiebung der Heizkreis-Heizkurve |
+| `heating_curve_hc_night_setback` | `temperature` | 3400 | Nachtabsenkung der Heizkreis-Heizkurve |
+| `heating_curve_hc_constant_return` | `temperature` | 3400 | Festwert für den Rücklauf des Heizkreises |
+| `heating_curve_mc1_endpoint` | `temperature` | 3400 | Endpunkt der Mischkreis-1-Heizkurve |
+| `heating_curve_mc1_parallel_shift` | `temperature` | 3400 | Parallelverschiebung der Mischkreis-1-Heizkurve |
+| `heating_curve_mc1_night_setback` | `temperature` | 3400 | Nachtabsenkung der Mischkreis-1-Heizkurve |
+| `heating_curve_mc1_constant_flow` | `temperature` | 3400 | Festwert für den Vorlauf des Mischkreises 1 |
 | `impulses_compressor_1` | - | 1450 |  Impulse Verdichter 1 |
 | `impulses_compressor_2` | - | 1450 |  Impulse Verdichter 2 |
 
@@ -448,6 +448,28 @@ Die Luxtronik-Komponente stellt Aktionen zur Verfügung, um die Luxtronik Heizun
 | `value` | `float` | 0.0&nbsp;...&nbsp;99.0 | Zielwert für die Soll-Temperatur des Brauchwarmwassers in °C |
 
 Anstelle eines festen Zahlenwerts kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
+
+#### Heizkurven setzen
+| Aktion | Beschreibung |
+| ------ | ------------ |
+| `luxtronik_v1.set_heating_curves` | Setzt einige oder alle Aspekte der Heizkurven |
+
+##### Parameter
+| Parameter | Typ | Bereich | Beschreibung |
+| --------- | --- | ------- | ------------ |
+| `hc_return_offset` | `float` | -5.0&nbsp;...&nbsp;5.0 | Abweichung der Rücklauf-Temperatur zu der Temperatur der Heizkreis-Heizkurve in °C |
+| `hc_endpoint` | `float` | >=&nbsp;0.0 | Endpunkt der Heizkreis-Heizkurve in °C |
+| `hc_parallel_shift` | `float` | >=&nbsp;0.0 | Parallelverschiebung der Heizkreis-Heizkurve in °C |
+| `hc_night_setback` | `float` | <=&nbsp;0.0 | Nachtabsenkung der Heizkreis-Heizkurve in °C |
+| `hc_const_return` | `float` | >=&nbsp;0.0 | Festwert für den Rücklauf des Heizkreises in °C |
+| `mc1_endpoint` | `float` | >=&nbsp;0.0 | Endpunkt der Mischkreis-1-Heizkurve in °C |
+| `mc1_parallel_shift` | `float` | >=&nbsp;0.0 | Parallelverschiebung der Mischkreis-1-Heizkurve in °C |
+| `mc1_night_setback` | `float` | <=&nbsp;0.0 | Nachtabsenkung der Mischkreis-1-Heizkurve in °C |
+| `mc1_const_flow` | `float` | >=&nbsp;0.0 | Festwert für den Vorlauf des Mischkreises 1 in °C |
+
+Anstelle eines festen Zahlenwerts kann bei allen Parametern auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
+
+Alle Parameter sind optional und können weggelassen werden (wobei aber mindestens ein Parameter angegeben werden sollte, damit die Aktion Sinn macht). Fehlende Werte werden durch die aktuellen Werte der entsprechenden Sensoren ersetzt. Damit dies funktioniert, müssen alle relevanten Sensoren konfiguriert sein. Solltest du einzelne Sensoren der Heizkurven in deiner Hausautomatisierungs-Software nicht benötigen, deklariere sie in diesem Fall als "intern" statt sie aus der Konfiguration zu löschen (siehe Konfigurationsvariable `internal` in der Dokumentation der [ESPHome Sensorkomponenten](https://www.esphome.io/components/sensor)).
 
 ## Luxtronik-Konfiguration
 Um die serielle Schnittstelle des Luxtronik V1 Heizungssteuergeräts nutzen zu können, muss diese zunächst freigeschaltet werden. Dazu musst du im Menü der Luxtronik Benutzerschnittstelle zu _Service_ -> _Einstellungen_ -> _Datenzugang_ navigieren und die PIN `9445` eingeben. Daraufhin navigiere zu _Service_ -> _Diagnoseprogramme_ und aktiviere die Option "Standard".
@@ -897,6 +919,28 @@ The Luxtronik component provides actions for programming the Luxtronik heating c
 | `value` | `float` | 0.0&nbsp;...&nbsp;99.0 | Target value for the hot water set temperature in °C |
 
 Instead of a fixed numeric value, it is also possible to specify a lambda expression that returns the value to be passed to the action.
+
+#### Set Heating Curves
+| Action | Description |
+| ------ | ----------- |
+| `luxtronik_v1.set_heating_curves` | Sets some or all aspects of the heating curves |
+
+##### Parameter
+| Parameter | Type | Range | Description |
+| --------- | ---- | ----- | ----------- |
+| `hc_return_offset` | `float` | -5.0&nbsp;...&nbsp;5.0 | Offset of the return temperature to that of the heat cuircuit heating curve in °C |
+| `hc_endpoint` | `float` | >=&nbsp;0.0 | Heating curve heat cuircuit endpoint in °C |
+| `hc_parallel_shift` | `float` | >=&nbsp;0.0 | Heating curve heat cuircuit parallel shift in °C |
+| `hc_night_setback` | `float` | <=&nbsp;0.0 | Heating curve heat cuircuit night setback in °C |
+| `hc_const_return` | `float` | >=&nbsp;0.0 | Heating curve heat cuircuit constant return in °C |
+| `mc1_endpoint` | `float` | >=&nbsp;0.0 | Heating curve mixed circuit 1 endpoint in °C |
+| `mc1_parallel_shift` | `float` | >=&nbsp;0.0 | Heating curve mixed circuit 1 parallel shift in °C |
+| `mc1_night_setback` | `float` | <=&nbsp;0.0 | Heating curve mixed circuit 1 night setback in °C |
+| `mc1_const_flow` | `float` | >=&nbsp;0.0 | Heating curve mixed circuit 1 constant flow in °C |
+
+Instead of a fixed numerical value, lambda expressions can also be used for all parameters, which return the value to be passed.
+
+All parameters are optional and can be omitted (although at least one parameter should be specified for the action to make sense). Missing values are substituted by the current values of the corresponding sensors. For this to work, all affected sensors must be configured. If you do not require individual sensors of the heating curves in your home automation software, declared them as "internal" instead of removing them from the configuration in this case (see configuration variable `internal` in the documentation of the [ESPHome sensor components](https://www.esphome.io/components/sensor)).
 
 ## Luxtronik Configuration
 In order to use the serial interface of the Luxtronik V1 heating control unit, it needs to be unlocked first. To do this, navigate to _Service_ -> _Einstellungen_ -> _Datenzugang_ and enter the PIN `9445`. After that, navigate to _Service_ -> _Diagnoseprogramme_ and activate the option "Standard".

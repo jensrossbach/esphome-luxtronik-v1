@@ -305,6 +305,132 @@ number:
     min_value: 20.0
     max_value: 65.0
     step: 0.5
+  # number input for setting return temperature offset from heat curcuit heating curve
+  - platform: template
+    id: heating_curve_hc_return_offset_value
+    name: Abweichung Rücklauf von Heizkurve
+    icon: mdi:plus-minus-variant
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 0.0
+    min_value: -5.0
+    max_value: 5.0
+    step: 0.5
+  # number input for setting heat curcuit heating curve endpoint
+  - platform: template
+    id: heating_curve_hc_endpoint_value
+    name: Heizkurve Endpunkt
+    icon: mdi:arrow-collapse-right
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 35.0
+    min_value: 20.0
+    max_value: 50.0
+    step: 0.5
+  # number input for setting heat curcuit heating curve parallel shift
+  - platform: template
+    id: heating_curve_hc_parallel_shift_value
+    name: Heizkurve Parallelverschiebung
+    icon: mdi:arrow-expand
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 20.0
+    min_value: 0.0
+    max_value: 40.0
+    step: 0.5
+  # number input for setting heat curcuit heating curve night setback
+  - platform: template
+    id: heating_curve_hc_night_setback_value
+    name: Heizkurve Nachtabsenkung
+    icon: mdi:moon-waning-crescent
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 0.0
+    min_value: -10.0
+    max_value: 0.0
+    step: 0.5
+  # number input for setting heat curcuit constant return temperature
+  - platform: template
+    id: heating_curve_hc_constant_return_value
+    name: Heizkurve Festwert Rücklauf
+    icon: mdi:format-vertical-align-center
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 35.0
+    min_value: 0.0
+    max_value: 50.0
+    step: 0.5
+  # number input for setting mixed curcuit 1 endpoint
+  - platform: template
+    id: heating_curve_mc1_endpoint_value
+    name: Heizkurve Mischkreis 1 Endpunkt
+    icon: mdi:arrow-collapse-right
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 35.0
+    min_value: 20.0
+    max_value: 50.0
+    step: 0.5
+  # number input for setting mixed curcuit 1 parallel shift
+  - platform: template
+    id: heating_curve_mc1_parallel_shift_value
+    name: Heizkurve Mischkreis 1 Parallelverschiebung
+    icon: mdi:arrow-expand
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 20.0
+    min_value: 0.0
+    max_value: 40.0
+    step: 0.5
+  # number input for setting mixed curcuit 1 night setback
+  - platform: template
+    id: heating_curve_mc1_night_setback_value
+    name: Heizkurve Mischkreis 1 Nachtabsenkung
+    icon: mdi:moon-waning-crescent
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 0.0
+    min_value: -10.0
+    max_value: 0.0
+    step: 0.5
+  # number input for setting mixed curcuit 1 constant flow temperature
+  - platform: template
+    id: heating_curve_mc1_constant_flow_value
+    name: Heizkurve Mischkreis 1 Festwert Vorlauf
+    icon: mdi:format-vertical-align-center
+    unit_of_measurement: °C
+    device_class: temperature
+    entity_category: config
+    mode: slider
+    optimistic: true
+    initial_value: 35.0
+    min_value: 0.0
+    max_value: 50.0
+    step: 0.5
 
 button:
   # button for sending hot water set temperature to Luxtronik heating control unit
@@ -316,3 +442,20 @@ button:
       - luxtronik_v1.set_hot_water_set_temperature:
           id: luxtronik_heat_pump
           value: !lambda "return id(hot_water_set_temperature_value).state;"
+  # button for sending heating curves to Luxtronik heating control unit
+  - platform: template
+    name: Heizkurve setzen
+    icon: mdi:download
+    entity_category: config
+    on_press:
+      - luxtronik_v1.set_heating_curves:
+          id: luxtronik_heat_pump
+          hc_return_offset: !lambda "return id(heating_curve_hc_return_offset_value).state;"
+          hc_endpoint: !lambda "return id(heating_curve_hc_endpoint_value).state;"
+          hc_parallel_shift: !lambda "return id(heating_curve_hc_parallel_shift_value).state;"
+          hc_night_setback: !lambda "return id(heating_curve_hc_night_setback_value).state;"
+          hc_const_return: !lambda "return id(heating_curve_hc_constant_return_value).state;"
+          mc1_endpoint: !lambda "return id(heating_curve_mc1_endpoint_value).state;"
+          mc1_parallel_shift: !lambda "return id(heating_curve_mc1_parallel_shift_value).state;"
+          mc1_night_setback: !lambda "return id(heating_curve_mc1_night_setback_value).state;"
+          mc1_const_flow: !lambda "return id(heating_curve_mc1_constant_flow_value).state;"

@@ -93,6 +93,15 @@ namespace esphome::luxtronik_v1
 #endif
         }
 
+        float get_state() const
+        {
+#ifdef USE_SENSOR
+            return (m_sensor != nullptr) ? m_sensor->state : 0.0;
+#else
+            return 0.0;
+#endif
+        }
+
 #ifdef USE_SENSOR
         void set_sensor(sensor::Sensor* sensor) { m_sensor = sensor; }
         sensor::Sensor* get_sensor() { return m_sensor; }

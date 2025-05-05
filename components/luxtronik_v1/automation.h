@@ -56,4 +56,104 @@ namespace esphome::luxtronik_v1
         Luxtronik *m_luxtronik;
         TemplatableValue<float, Ts...> m_set_temperature_value;
     };
+
+    template<typename... Ts> class SetHeatingCurvesAction : public Action<Ts...>
+    {
+    public:
+    SetHeatingCurvesAction(Luxtronik *luxtronik)
+            : m_luxtronik(luxtronik)
+            , m_hc_return_offset_value()
+            , m_hc_endpoint_value()
+            , m_hc_parallel_shift_value()
+            , m_hc_night_setback_value()
+            , m_hc_const_return_value()
+            , m_mc1_endpoint_value()
+            , m_mc1_parallel_shift_value()
+            , m_mc1_night_setback_value()
+            , m_mc1_const_flow_value()
+        {
+        }
+
+        void play(Ts... x) override
+        {
+            Luxtronik::HeatingCurves heating_curves;
+            heating_curves.hc_return_offset_avail = m_hc_return_offset_value.has_value();
+            heating_curves.hc_return_offset = m_hc_return_offset_value.value(x...);
+            heating_curves.hc_endpoint_avail = m_hc_endpoint_value.has_value();
+            heating_curves.hc_endpoint = m_hc_endpoint_value.value(x...);
+            heating_curves.hc_parallel_shift_avail = m_hc_parallel_shift_value.has_value();
+            heating_curves.hc_parallel_shift = m_hc_parallel_shift_value.value(x...);
+            heating_curves.hc_night_setback_avail = m_hc_night_setback_value.has_value();
+            heating_curves.hc_night_setback = m_hc_night_setback_value.value(x...);
+            heating_curves.hc_const_return_avail = m_hc_const_return_value.has_value();
+            heating_curves.hc_const_return = m_hc_const_return_value.value(x...);
+            heating_curves.mc1_endpoint_avail = m_mc1_endpoint_value.has_value();
+            heating_curves.mc1_endpoint = m_mc1_endpoint_value.value(x...);
+            heating_curves.mc1_parallel_shift_avail = m_mc1_parallel_shift_value.has_value();
+            heating_curves.mc1_parallel_shift = m_mc1_parallel_shift_value.value(x...);
+            heating_curves.mc1_night_setback_avail = m_mc1_night_setback_value.has_value();
+            heating_curves.mc1_night_setback = m_mc1_night_setback_value.value(x...);
+            heating_curves.mc1_const_flow_avail = m_mc1_const_flow_value.has_value();
+            heating_curves.mc1_const_flow = m_mc1_const_flow_value.value(x...);
+
+            m_luxtronik->set_heating_curves(heating_curves);
+        }
+
+        template<typename V> void set_heating_curve_hc_return_offset_value(V value)
+        {
+            m_hc_return_offset_value = value;
+        }
+
+        template<typename V> void set_heating_curve_hc_endpoint_value(V value)
+        {
+            m_hc_endpoint_value = value;
+        }
+
+        template<typename V> void set_heating_curve_hc_parallel_shift_value(V value)
+        {
+            m_hc_parallel_shift_value = value;
+        }
+
+        template<typename V> void set_heating_curve_hc_night_setback_value(V value)
+        {
+            m_hc_night_setback_value = value;
+        }
+
+        template<typename V> void set_heating_curve_hc_constant_return_value(V value)
+        {
+            m_hc_const_return_value = value;
+        }
+
+        template<typename V> void set_heating_curve_mc1_endpoint_value(V value)
+        {
+            m_mc1_endpoint_value = value;
+        }
+
+        template<typename V> void set_heating_curve_mc1_parallel_shift_value(V value)
+        {
+            m_mc1_parallel_shift_value = value;
+        }
+
+        template<typename V> void set_heating_curve_mc1_night_setback_value(V value)
+        {
+            m_mc1_night_setback_value = value;
+        }
+
+        template<typename V> void set_heating_curve_mc1_constant_flow_value(V value)
+        {
+            m_mc1_const_flow_value = value;
+        }
+
+    protected:
+        Luxtronik *m_luxtronik;
+        TemplatableValue<float, Ts...> m_hc_return_offset_value;
+        TemplatableValue<float, Ts...> m_hc_endpoint_value;
+        TemplatableValue<float, Ts...> m_hc_parallel_shift_value;
+        TemplatableValue<float, Ts...> m_hc_night_setback_value;
+        TemplatableValue<float, Ts...> m_hc_const_return_value;
+        TemplatableValue<float, Ts...> m_mc1_endpoint_value;
+        TemplatableValue<float, Ts...> m_mc1_parallel_shift_value;
+        TemplatableValue<float, Ts...> m_mc1_night_setback_value;
+        TemplatableValue<float, Ts...> m_mc1_const_flow_value;
+    };
 }  // namespace esphome::ferraris
