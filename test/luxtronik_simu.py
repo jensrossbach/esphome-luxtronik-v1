@@ -27,6 +27,7 @@
 import serial
 
 heating_mode = '4'
+hot_water_mode = '0'
 hot_water_set_temp = '460'
 heating_curve = '0;320;220;0;350;350;200;0;350'
 
@@ -79,14 +80,11 @@ def send_information():
 def send_heating_curve(cmd):
     respond(f'{cmd};9;{heating_curve}')
 
-def send_heating_mode(cmd):
-    respond(f'{cmd};1;{heating_mode}')
+def send_operational_mode(cmd, mode):
+    respond(f'{cmd};1;{mode}')
 
 def send_hot_water_set_temp():
     respond(f'3501;1;{hot_water_set_temp}')
-
-def send_hot_water_mode():
-    respond('3505;1;0')
 
 def send_store_config_ack():
     respond('993')
@@ -94,6 +92,11 @@ def send_store_config_ack():
     respond('999')
 
 def parse_command(cmd):
+    global heating_curve
+    global heating_mode
+    global hot_water_mode
+    global hot_water_set_temp
+
     try:
         cmd_str = cmd.decode('ascii')
         print('Parsing command: ' + cmd_str)
@@ -131,27 +134,30 @@ def parse_command(cmd):
             if len(cmd_str) == 4:
                 send_heating_curve('3401')
             elif len(cmd_str) > 7:
-                global heating_curve
                 heating_curve = cmd_str[7:]
                 send_heating_curve('3401')
         elif cmd_str == '3405':
-            send_heating_mode('3405')
+            send_operational_mode('3405', heating_mode)
         elif cmd_str.startswith('3406'):
             if len(cmd_str) == 4:
-                send_heating_mode('3406')
+                send_operational_mode('3406', heating_mode)
             elif len(cmd_str) > 7:
-                global heating_mode
                 heating_mode = cmd_str[7:]
-                send_heating_mode('3406')
+                send_operational_mode('3406', heating_mode)
         elif cmd_str.startswith('3501'):
             if len(cmd_str) == 4:
                 send_hot_water_set_temp()
             elif len(cmd_str) > 7:
-                global hot_water_set_temp
                 hot_water_set_temp = cmd_str[7:]
                 send_hot_water_set_temp()
         elif cmd_str == '3505':
-            send_hot_water_mode()
+            send_operational_mode('3505', hot_water_mode)
+        elif cmd_str.startswith('3506'):
+            if len(cmd_str) == 4:
+                send_operational_mode('3506', hot_water_mode)
+            elif len(cmd_str) > 7:
+                hot_water_mode = cmd_str[7:]
+                send_operational_mode('3506', hot_water_mode)
         elif cmd_str == '999':
             send_store_config_ack()
     except UnicodeDecodeError:

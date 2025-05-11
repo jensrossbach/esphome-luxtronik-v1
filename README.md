@@ -460,6 +460,29 @@ Folgende Betriebsarten werden unterstützt:
 
 Anstelle eines festen Modus kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Modus zurückgibt.
 
+#### Betriebsart für die Brauchwarmwasserzubereitung setzen
+| Aktion | Beschreibung |
+| ------ | ------------ |
+| `luxtronik_v1.set_hot_water_mode` | Setzt die Betriebsart für die Brauchwarmwasserzubereitung auf den angegebenen Modus |
+
+##### Parameter
+| Parameter | Typ | Bereich | Benötigt | Beschreibung |
+| --------- | --- | ------- | -------- | ------------ |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | ja | ID der [Luxtronik-Komponente](#luxtronik-komponente) |
+| `mode` | Zahl | `0`, `1`, `2`, `3`, `4` | ja | Betriebsart für die Brauchwarmwasserzubereitung |
+
+Folgende Betriebsarten werden unterstützt:
+
+| Betriebsart | Beschreibung |
+| ----------- | ------------ |
+| `0` | Automatik |
+| `1` | Zweiter Wärmeerzeuger |
+| `2` | Party |
+| `3` | Ferien |
+| `4` | Aus |
+
+Anstelle eines festen Modus kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Modus zurückgibt.
+
 #### Soll-Temperatur für Brauchwarmwasser setzen
 | Aktion | Beschreibung |
 | ------ | ------------ |
@@ -948,7 +971,7 @@ The Luxtronik component provides various actions for programming the Luxtronik h
 | `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | yes | ID of the [Luxtronik component](#luxtronik-component) |
 | `mode` | Number | `0`, `1`, `2`, `3`, `4` | yes | Heating mode to be activated |
 
-Folgende Betriebsarten werden unterstützt:
+The following modes are supported:
 
 | Mode | Description |
 | ---- | ----------- |
@@ -958,7 +981,30 @@ Folgende Betriebsarten werden unterstützt:
 | `3` | Vacation |
 | `4` | Off |
 
-Instead of a fixed numeric value, it is also possible to specify a lambda expression that returns the value to be passed to the action.
+Instead of a fixed numeric mode, it is also possible to specify a lambda expression that returns the mode to be passed to the action.
+
+#### Set Hot Water Mode
+| Action | Description |
+| ------ | ----------- |
+| `luxtronik_v1.set_hot_water_mode` | Sets the hot water mode to the given mode |
+
+##### Parameters
+| Parameter | Type | Range | Mandatory | Description |
+| --------- | ---- | ----- | --------- | ----------- |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | yes | ID of the [Luxtronik component](#luxtronik-component) |
+| `mode` | Number | `0`, `1`, `2`, `3`, `4` | yes | Hot water mode to be activated |
+
+The following modes are supported:
+
+| Mode | Description |
+| ---- | ----------- |
+| `0` | Automatic |
+| `1` | Second Heater |
+| `2` | Party |
+| `3` | Vacation |
+| `4` | Off |
+
+Instead of a fixed numeric mode, it is also possible to specify a lambda expression that returns the mode to be passed to the action.
 
 #### Set Hot Water Set Temperature
 | Action | Description |

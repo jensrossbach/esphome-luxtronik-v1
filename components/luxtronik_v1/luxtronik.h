@@ -53,6 +53,12 @@ namespace esphome::luxtronik_v1
     class Luxtronik : public PollingComponent
     {
     public:
+        enum OperationalModeType
+        {
+            HEATING   = 0,
+            HOT_WATER = 1
+        };
+
         struct HeatingCurves
         {
             bool hc_return_offset_avail;
@@ -87,7 +93,7 @@ namespace esphome::luxtronik_v1
         void dump_config() override;
 
         void add_dataset(const char* code);
-        void set_heating_mode(uint8_t value);
+        void set_operational_mode(OperationalModeType type, uint8_t value);
         void set_hot_water_set_temperature(float value);
         void set_heating_curves(HeatingCurves& value);
 

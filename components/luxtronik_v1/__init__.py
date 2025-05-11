@@ -53,10 +53,12 @@ CONF_MC1_PARALLEL_SHIFT = "mc1_parallel_shift"
 CONF_MC1_NIGHT_SETBACK  = "mc1_night_setback"
 CONF_MC1_CONST_FLOW     = "mc1_const_flow"
 
+TYPE_HEATING_MODE   = 0
+TYPE_HOT_WATER_MODE = 1
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
-SetHeatingModeAction = luxtronik_ns.class_("SetHeatingModeAction", automation.Action)
+SetOperationalModeAction = luxtronik_ns.class_("SetOperationalModeAction", automation.Action)
 SetHotWaterSetTemperatureAction = luxtronik_ns.class_("SetHotWaterSetTemperatureAction", automation.Action)
 SetHeatingCurvesAction = luxtronik_ns.class_("SetHeatingCurvesAction", automation.Action)
 
@@ -80,6 +82,11 @@ CONFIG_SCHEMA = cv.Schema(
             unique_list)
 }).extend(uart.UART_DEVICE_SCHEMA).extend(cv.polling_component_schema("60s"))
 
+SET_OPERATIONAL_MODE_SCHEMA = cv.Schema(
+{
+    cv.Required(CONF_ID): cv.use_id(Luxtronik),
+    cv.Required(CONF_MODE): cv.templatable(cv.int_range(min = 0, max = 4))
+})
 
 async def to_code(config):
     uart_cmp = await cg.get_variable(config[CONF_UART_ID])
@@ -96,18 +103,27 @@ async def to_code(config):
 
 @automation.register_action(
     "luxtronik_v1.set_heating_mode",
-    SetHeatingModeAction,
-    cv.Schema(
-    {
-        cv.Required(CONF_ID): cv.use_id(Luxtronik),
-        cv.Required(CONF_MODE): cv.templatable(cv.int_range(min = 0, max = 4))
-    }))
+    SetOperationalModeAction,
+    SET_OPERATIONAL_MODE_SCHEMA)
 async def set_heating_mode_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
-    act = cg.new_Pvariable(action_id, template_arg, parent)
+    act = cg.new_Pvariable(action_id, template_arg, parent, TYPE_HEATING_MODE)
 
     tmpl = await cg.templatable(config[CONF_MODE], args, int)
-    cg.add(act.set_heating_mode_value(tmpl))
+    cg.add(act.set_operational_mode_value(tmpl))
+
+    return act
+
+@automation.register_action(
+    "luxtronik_v1.set_hot_water_mode",
+    SetOperationalModeAction,
+    SET_OPERATIONAL_MODE_SCHEMA)
+async def set_hot_water_mode_action_to_code(config, action_id, template_arg, args):
+    parent = await cg.get_variable(config[CONF_ID])
+    act = cg.new_Pvariable(action_id, template_arg, parent, TYPE_HOT_WATER_MODE)
+
+    tmpl = await cg.templatable(config[CONF_MODE], args, int)
+    cg.add(act.set_operational_mode_value(tmpl))
 
     return act
 
