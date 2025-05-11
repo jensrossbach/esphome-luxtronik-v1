@@ -218,6 +218,7 @@ text_sensor:
           - vacation -> Ferien
           - off -> Aus
     hot_water_mode:
+      id: current_hot_water_mode
       name: Betriebsart Brauchwarmwasser
       # alternatively, the filters can be removed and translation can be done in Home Assistant
       filters:
@@ -462,6 +463,27 @@ select:
             auto idx = id(target_heating_mode).index_of(x);
             return idx.has_value() ? idx.value() : 255;
       - lambda: "id(target_heating_mode).publish_state(x);"
+  # selection for heating mode
+  - platform: template
+    id: target_hot_water_mode
+    name: Betriebsart Brauchwarmwasser
+    icon: mdi:water-boiler
+    entity_category: config
+    options:
+      - Automatik
+      - Zweiter Wärmeerzeuger
+      - Party
+      - Ferien
+      - Aus
+    lambda: !lambda |-
+      return id(current_hot_water_mode).state;
+    set_action:
+      - luxtronik_v1.set_hot_water_mode:
+          id: lwc_100
+          mode: !lambda |-
+            auto idx = id(target_hot_water_mode).index_of(x);
+            return idx.has_value() ? idx.value() : 255;
+      - lambda: "id(target_hot_water_mode).publish_state(x);"
 
 button:
   # button for sending heating curves to Luxtronik heating control unit

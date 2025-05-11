@@ -33,28 +33,30 @@
 
 namespace esphome::luxtronik_v1
 {
-    template<typename... Ts> class SetHeatingModeAction : public Action<Ts...>
+    template<typename... Ts> class SetOperationalModeAction : public Action<Ts...>
     {
     public:
-        SetHeatingModeAction(Luxtronik *luxtronik)
+        SetOperationalModeAction(Luxtronik *luxtronik, uint8_t mode_type)
             : m_luxtronik(luxtronik)
-            , m_heating_mode_value()
+            , m_mode_type(static_cast<Luxtronik::OperationalModeType>(mode_type))
+            , m_operational_mode_value()
         {
         }
 
         void play(Ts... x) override
         {
-            m_luxtronik->set_heating_mode(m_heating_mode_value.value(x...));
+            m_luxtronik->set_operational_mode(m_mode_type, m_operational_mode_value.value(x...));
         }
 
-        template<typename V> void set_heating_mode_value(V value)
+        template<typename V> void set_operational_mode_value(V value)
         {
-            m_heating_mode_value = value;
+            m_operational_mode_value = value;
         }
 
     protected:
         Luxtronik *m_luxtronik;
-        TemplatableValue<uint8_t, Ts...> m_heating_mode_value;
+        Luxtronik::OperationalModeType m_mode_type;
+        TemplatableValue<uint8_t, Ts...> m_operational_mode_value;
     };
 
     template<typename... Ts> class SetHotWaterSetTemperatureAction : public Action<Ts...>
