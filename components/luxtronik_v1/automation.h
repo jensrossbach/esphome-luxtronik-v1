@@ -33,10 +33,34 @@
 
 namespace esphome::luxtronik_v1
 {
+    template<typename... Ts> class SetHeatingModeAction : public Action<Ts...>
+    {
+    public:
+        SetHeatingModeAction(Luxtronik *luxtronik)
+            : m_luxtronik(luxtronik)
+            , m_heating_mode_value()
+        {
+        }
+
+        void play(Ts... x) override
+        {
+            m_luxtronik->set_heating_mode(m_heating_mode_value.value(x...));
+        }
+
+        template<typename V> void set_heating_mode_value(V value)
+        {
+            m_heating_mode_value = value;
+        }
+
+    protected:
+        Luxtronik *m_luxtronik;
+        TemplatableValue<uint8_t, Ts...> m_heating_mode_value;
+    };
+
     template<typename... Ts> class SetHotWaterSetTemperatureAction : public Action<Ts...>
     {
     public:
-    SetHotWaterSetTemperatureAction(Luxtronik *luxtronik)
+        SetHotWaterSetTemperatureAction(Luxtronik *luxtronik)
             : m_luxtronik(luxtronik)
             , m_set_temperature_value()
         {
@@ -60,7 +84,7 @@ namespace esphome::luxtronik_v1
     template<typename... Ts> class SetHeatingCurvesAction : public Action<Ts...>
     {
     public:
-    SetHeatingCurvesAction(Luxtronik *luxtronik)
+        SetHeatingCurvesAction(Luxtronik *luxtronik)
             : m_luxtronik(luxtronik)
             , m_hc_return_offset_value()
             , m_hc_endpoint_value()

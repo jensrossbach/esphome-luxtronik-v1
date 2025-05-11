@@ -89,7 +89,7 @@ external_components:
 ```
 
 > [!TIP]
-> Im obigen Beispiel wird der neueste Stand der Komponente aus dem `main` Branch des Repositories geladen. Ich empfehle aber, mittels Versionsnummer auf einen freigegebenen Stand zu verweisen, um mehr Kontrolle darüber zu haben, welcher Software-Stand verwendet wird und um besser auf "breaking changes" reagieren zu können. Siehe Beispielkonfiguration, wie das gemacht werden kann.
+> Im obigen Beispiel wird der neueste Stand der Komponente aus dem `main` Branch des Repositories geladen. Außerhalb der freigegebenen Versionsstände ist der `main` Branch aber als instabil anzusehen. Deshalb empfehle ich, mittels Versionsnummer auf einen freigegebenen Stand zu verweisen, um mehr Kontrolle darüber zu haben, welcher Software-Stand verwendet wird und um besser auf "breaking changes" reagieren zu können. Siehe Beispielkonfiguration, wie das gemacht werden kann.
 
 Die folgenden generischen Einstellungen können konfiguriert werden:
 
@@ -435,7 +435,30 @@ text_sensor:
 ```
 
 ### Aktionen
-Die Luxtronik-Komponente stellt Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
+Die Luxtronik-Komponente stellt verschiedene Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
+
+#### Betriebsart der Heizung setzen
+| Aktion | Beschreibung |
+| ------ | ------------ |
+| `luxtronik_v1.set_heating_mode` | Setzt die Betriebsart der Heizung auf den angegebenen Modus |
+
+##### Parameter
+| Parameter | Typ | Bereich | Benötigt | Beschreibung |
+| --------- | --- | ------- | -------- | ------------ |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | ja | ID der [Luxtronik-Komponente](#luxtronik-komponente) |
+| `mode` | Zahl | `0`, `1`, `2`, `3`, `4` | ja | Betriebsart der Heizung |
+
+Folgende Betriebsarten werden unterstützt:
+
+| Betriebsart | Beschreibung |
+| ----------- | ------------ |
+| `0` | Automatik |
+| `1` | Zweiter Wärmeerzeuger |
+| `2` | Party |
+| `3` | Ferien |
+| `4` | Aus |
+
+Anstelle eines festen Modus kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Modus zurückgibt.
 
 #### Soll-Temperatur für Brauchwarmwasser setzen
 | Aktion | Beschreibung |
@@ -443,9 +466,10 @@ Die Luxtronik-Komponente stellt Aktionen zur Verfügung, um die Luxtronik Heizun
 | `luxtronik_v1.set_hot_water_set_temperature` | Setzt die Soll-Temperatur für Brauchwarmwasser auf den angegebenen Wert |
 
 ##### Parameter
-| Parameter | Typ | Bereich | Beschreibung |
-| --------- | --- | ------- | ------------ |
-| `value` | `float` | 30.0&nbsp;...&nbsp;65.0 | Zielwert für die Soll-Temperatur des Brauchwarmwassers in °C |
+| Parameter | Typ | Bereich | Benötigt | Beschreibung |
+| --------- | --- | ------- | -------- | ------------ |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | ja | ID der [Luxtronik-Komponente](#luxtronik-komponente) |
+| `value` | Zahl | 30.0&nbsp;...&nbsp;65.0 | ja | Zielwert für die Soll-Temperatur des Brauchwarmwassers in °C |
 
 Anstelle eines festen Zahlenwerts kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
 
@@ -455,21 +479,23 @@ Anstelle eines festen Zahlenwerts kann auch ein Lambda-Ausdruck verwendet werden
 | `luxtronik_v1.set_heating_curves` | Setzt einige oder alle Aspekte der Heizkurven |
 
 ##### Parameter
-| Parameter | Typ | Bereich | Beschreibung |
-| --------- | --- | ------- | ------------ |
-| `hc_return_offset` | `float` | -5.0&nbsp;...&nbsp;5.0 | Abweichung der Rücklauf-Temperatur zu der Temperatur der Heizkreis-Heizkurve in °C |
-| `hc_endpoint` | `float` | >=&nbsp;0.0 | Endpunkt der Heizkreis-Heizkurve in °C |
-| `hc_parallel_shift` | `float` | >=&nbsp;0.0 | Parallelverschiebung der Heizkreis-Heizkurve in °C |
-| `hc_night_setback` | `float` | <=&nbsp;0.0 | Nachtabsenkung der Heizkreis-Heizkurve in °C |
-| `hc_const_return` | `float` | >=&nbsp;0.0 | Festwert für den Rücklauf des Heizkreises in °C |
-| `mc1_endpoint` | `float` | >=&nbsp;0.0 | Endpunkt der Mischkreis-1-Heizkurve in °C |
-| `mc1_parallel_shift` | `float` | >=&nbsp;0.0 | Parallelverschiebung der Mischkreis-1-Heizkurve in °C |
-| `mc1_night_setback` | `float` | <=&nbsp;0.0 | Nachtabsenkung der Mischkreis-1-Heizkurve in °C |
-| `mc1_const_flow` | `float` | >=&nbsp;0.0 | Festwert für den Vorlauf des Mischkreises 1 in °C |
+| Parameter | Typ | Bereich | Benötigt | Beschreibung |
+| --------- | --- | ------- | -------- | ------------ |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | ja | ID der [Luxtronik-Komponente](#luxtronik-komponente) |
+| `hc_return_offset` | Zahl | -5.0&nbsp;...&nbsp;5.0 | nein | Abweichung der Rücklauf-Temperatur zu der Temperatur der Heizkreis-Heizkurve in °C |
+| `hc_endpoint` | Zahl | >=&nbsp;0.0 | nein |  Endpunkt der Heizkreis-Heizkurve in °C |
+| `hc_parallel_shift` | Zahl | >=&nbsp;0.0 | nein |  Parallelverschiebung der Heizkreis-Heizkurve in °C |
+| `hc_night_setback` | Zahl | <=&nbsp;0.0 | nein |  Nachtabsenkung der Heizkreis-Heizkurve in °C |
+| `hc_const_return` | Zahl | >=&nbsp;0.0 | nein |  Festwert für den Rücklauf des Heizkreises in °C |
+| `mc1_endpoint` | Zahl | >=&nbsp;0.0 | nein |  Endpunkt der Mischkreis-1-Heizkurve in °C |
+| `mc1_parallel_shift` | Zahl | >=&nbsp;0.0 | nein |  Parallelverschiebung der Mischkreis-1-Heizkurve in °C |
+| `mc1_night_setback` | Zahl | <=&nbsp;0.0 | nein |  Nachtabsenkung der Mischkreis-1-Heizkurve in °C |
+| `mc1_const_flow` | Zahl | >=&nbsp;0.0 | nein |  Festwert für den Vorlauf des Mischkreises 1 in °C |
 
 Anstelle eines festen Zahlenwerts kann bei allen Parametern auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
 
-Alle Parameter sind optional und können weggelassen werden (wobei aber mindestens ein Parameter angegeben werden sollte, damit die Aktion Sinn macht). Fehlende Werte werden durch die aktuellen Werte der entsprechenden Sensoren ersetzt. Damit dies funktioniert, müssen alle relevanten Sensoren konfiguriert sein. Solltest du einzelne Sensoren der Heizkurven in deiner Hausautomatisierungs-Software nicht benötigen, deklariere sie in diesem Fall als "intern" statt sie aus der Konfiguration zu löschen (siehe Konfigurationsvariable `internal` in der Dokumentation der [ESPHome Sensorkomponenten](https://www.esphome.io/components/sensor)).
+> [!TIP]
+> Obwohl alle Heizkurven-Parameter optional sind, sollte aber mindestens ein Parameter angegeben werden, damit die Aktion Sinn macht. Fehlende Werte werden durch die aktuellen Werte der entsprechenden Sensoren ersetzt. Damit dies funktioniert, müssen alle relevanten Sensoren konfiguriert sein. Solltest du einzelne Sensoren der Heizkurven in deiner Hausautomatisierungs-Software nicht benötigen, deklariere sie in diesem Fall als "intern" statt sie aus der Konfiguration zu löschen (siehe Konfigurationsvariable `internal` in der Dokumentation der [ESPHome Sensorkomponenten](https://www.esphome.io/components/sensor)).
 
 ## Luxtronik-Konfiguration
 Um die serielle Schnittstelle des Luxtronik V1 Heizungssteuergeräts nutzen zu können, muss diese zunächst freigeschaltet werden. Dazu musst du im Menü der Luxtronik Benutzerschnittstelle zu _Service_ -> _Einstellungen_ -> _Datenzugang_ navigieren und die PIN `9445` eingeben. Daraufhin navigiere zu _Service_ -> _Diagnoseprogramme_ und aktiviere die Option "Standard".
@@ -562,6 +588,9 @@ external_components:
   - source: github://jensrossbach/esphome-luxtronik-v1
     components: [luxtronik_v1]
 ```
+
+> [!TIP]
+> In the example above, the latest version of the component is loaded from the `main` branch of the repository. Outside of the released versions, however, the `main` branch is considered unstable. I therefore recommend referring to a released version by means of a version number in order to have more control over which software version is used and to be able to react better to breaking changes. See the example configuration for how this can be done.
 
 The following generic configuration items can be configured:
 
@@ -906,7 +935,30 @@ text_sensor:
 ```
 
 ### Actions
-The Luxtronik component provides actions for programming the Luxtronik heating control unit.
+The Luxtronik component provides various actions for programming the Luxtronik heating control unit.
+
+#### Set Heating Mode
+| Action | Description |
+| ------ | ----------- |
+| `luxtronik_v1.set_heating_mode` | Sets the heating mode to the given mode |
+
+##### Parameters
+| Parameter | Type | Range | Mandatory | Description |
+| --------- | ---- | ----- | --------- | ----------- |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | yes | ID of the [Luxtronik component](#luxtronik-component) |
+| `mode` | Number | `0`, `1`, `2`, `3`, `4` | yes | Heating mode to be activated |
+
+Folgende Betriebsarten werden unterstützt:
+
+| Mode | Description |
+| ---- | ----------- |
+| `0` | Automatic |
+| `1` | Second Heater |
+| `2` | Party |
+| `3` | Vacation |
+| `4` | Off |
+
+Instead of a fixed numeric value, it is also possible to specify a lambda expression that returns the value to be passed to the action.
 
 #### Set Hot Water Set Temperature
 | Action | Description |
@@ -914,9 +966,10 @@ The Luxtronik component provides actions for programming the Luxtronik heating c
 | `luxtronik_v1.set_hot_water_set_temperature` | Sets the hot water set temperature to the given value |
 
 ##### Parameters
-| Parameter | Type | Range | Description |
-| --------- | ---- | ----- | ----------- |
-| `value` | `float` | 30.0&nbsp;...&nbsp;65.0 | Target value for the hot water set temperature in °C |
+| Parameter | Type | Range | Mandatory | Description |
+| --------- | ---- | ----- | --------- | ----------- |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | yes | ID of the [Luxtronik component](#luxtronik-component) |
+| `value` | Number | 30.0&nbsp;...&nbsp;65.0 | yes | Target value for the hot water set temperature in °C |
 
 Instead of a fixed numeric value, it is also possible to specify a lambda expression that returns the value to be passed to the action.
 
@@ -926,21 +979,23 @@ Instead of a fixed numeric value, it is also possible to specify a lambda expres
 | `luxtronik_v1.set_heating_curves` | Sets some or all aspects of the heating curves |
 
 ##### Parameter
-| Parameter | Type | Range | Description |
-| --------- | ---- | ----- | ----------- |
-| `hc_return_offset` | `float` | -5.0&nbsp;...&nbsp;5.0 | Offset of the return temperature to that of the heat cuircuit heating curve in °C |
-| `hc_endpoint` | `float` | >=&nbsp;0.0 | Heating curve heat cuircuit endpoint in °C |
-| `hc_parallel_shift` | `float` | >=&nbsp;0.0 | Heating curve heat cuircuit parallel shift in °C |
-| `hc_night_setback` | `float` | <=&nbsp;0.0 | Heating curve heat cuircuit night setback in °C |
-| `hc_const_return` | `float` | >=&nbsp;0.0 | Heating curve heat cuircuit constant return in °C |
-| `mc1_endpoint` | `float` | >=&nbsp;0.0 | Heating curve mixed circuit 1 endpoint in °C |
-| `mc1_parallel_shift` | `float` | >=&nbsp;0.0 | Heating curve mixed circuit 1 parallel shift in °C |
-| `mc1_night_setback` | `float` | <=&nbsp;0.0 | Heating curve mixed circuit 1 night setback in °C |
-| `mc1_const_flow` | `float` | >=&nbsp;0.0 | Heating curve mixed circuit 1 constant flow in °C |
+| Parameter | Type | Range | Mandatory | Description |
+| --------- | ---- | ----- | --------- | ----------- |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | yes | ID of the [Luxtronik component](#luxtronik-component) |
+| `hc_return_offset` | Number | -5.0&nbsp;...&nbsp;5.0 | no | Offset of the return temperature to that of the heat cuircuit heating curve in °C |
+| `hc_endpoint` | Number | >=&nbsp;0.0 | no |  Heating curve heat cuircuit endpoint in °C |
+| `hc_parallel_shift` | Number | >=&nbsp;0.0 | no |  Heating curve heat cuircuit parallel shift in °C |
+| `hc_night_setback` | Number | <=&nbsp;0.0 | no |  Heating curve heat cuircuit night setback in °C |
+| `hc_const_return` | Number | >=&nbsp;0.0 | no |  Heating curve heat cuircuit constant return in °C |
+| `mc1_endpoint` | Number | >=&nbsp;0.0 | no |  Heating curve mixed circuit 1 endpoint in °C |
+| `mc1_parallel_shift` | Number | >=&nbsp;0.0 | no |  Heating curve mixed circuit 1 parallel shift in °C |
+| `mc1_night_setback` | Number | <=&nbsp;0.0 | no |  Heating curve mixed circuit 1 night setback in °C |
+| `mc1_const_flow` | Number | >=&nbsp;0.0 | no |  Heating curve mixed circuit 1 constant flow in °C |
 
 Instead of a fixed numerical value, lambda expressions can also be used for all parameters, which return the value to be passed.
 
-All parameters are optional and can be omitted (although at least one parameter should be specified for the action to make sense). Missing values are substituted by the current values of the corresponding sensors. For this to work, all affected sensors must be configured. If you do not require individual sensors of the heating curves in your home automation software, declared them as "internal" instead of removing them from the configuration in this case (see configuration variable `internal` in the documentation of the [ESPHome sensor components](https://www.esphome.io/components/sensor)).
+> [!TIP]
+> Even though all heating curve parameters are optional, at least one parameter should be specified for the action to make sense. Missing values are substituted with the current values of the corresponding sensors. For this to work, all affected sensors must be configured. If you do not require individual sensors of the heating curves in your home automation software, declared them as "internal" instead of removing them from the configuration in this case (see configuration variable `internal` in the documentation of the [ESPHome sensor components](https://www.esphome.io/components/sensor)).
 
 ## Luxtronik Configuration
 In order to use the serial interface of the Luxtronik V1 heating control unit, it needs to be unlocked first. To do this, navigate to _Service_ -> _Einstellungen_ -> _Datenzugang_ and enter the PIN `9445`. After that, navigate to _Service_ -> _Diagnoseprogramme_ and activate the option "Standard".

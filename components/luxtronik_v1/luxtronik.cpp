@@ -48,6 +48,7 @@ namespace esphome::luxtronik_v1
     static constexpr const char* const TYPE_HEATING_CURVES        = "3400";
     static constexpr const char* const TYPE_HEATING_CURVES_CONFIG = "3401";
     static constexpr const char* const TYPE_HEATING_MODE          = "3405";
+    static constexpr const char* const TYPE_HEATING_MODE_CONFIG   = "3406";
     static constexpr const char* const TYPE_HOT_WATER_CONFIG      = "3501";
     static constexpr const char* const TYPE_HOT_WATER_MODE        = "3505";
 
@@ -564,6 +565,15 @@ namespace esphome::luxtronik_v1
         else if (starts_with(response, TYPE_HEATING_MODE))
         {
             parse_heating_mode(response);
+        }
+        else if (starts_with(response, TYPE_HEATING_MODE_CONFIG))
+        {
+            if (m_config_response_state != 1)  // ignore echo
+            {
+                parse_heating_mode(response);
+            }
+
+            ++m_config_response_state;
         }
         else if (starts_with(response, TYPE_HOT_WATER_CONFIG))
         {
@@ -1131,6 +1141,27 @@ namespace esphome::luxtronik_v1
             std::strftime(state, sizeof(state), "%Y-%m-%dT%H:%M%z", &time);
 
             sensor_time.set_state(state);
+        }
+    }
+
+    void Luxtronik::set_heating_mode(uint8_t value)
+    {
+        if (value > static_cast<uint8_t>(OperationalMode::OFF))
+        {
+            ESP_LOGW(TAG, "Invalid value for heating mode:  VAL %d", value);
+        }
+        else
+        {
+            ESP_LOGD(TAG, "Queuing requests for setting heating mode:  VAL %d", value);
+
+            m_request_queue.push_back(TYPE_HEATING_MODE_CONFIG);
+            m_request_queue.push_back(std::string(TYPE_HEATING_MODE_CONFIG) + ";1;" + std::to_string(value));
+            m_request_queue.push_back(TYPE_STORE_CONFIG);
+
+            if (!m_timer.is_running())
+            {
+                request_data();
+            }
         }
     }
 

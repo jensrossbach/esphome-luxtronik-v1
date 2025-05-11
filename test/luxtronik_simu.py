@@ -26,6 +26,7 @@
 
 import serial
 
+heating_mode = '4'
 hot_water_set_temp = '460'
 heating_curve = '0;320;220;0;350;350;200;0;350'
 
@@ -78,8 +79,8 @@ def send_information():
 def send_heating_curve(cmd):
     respond(f'{cmd};9;{heating_curve}')
 
-def send_heating_mode():
-    respond('3405;1;4')
+def send_heating_mode(cmd):
+    respond(f'{cmd};1;{heating_mode}')
 
 def send_hot_water_set_temp():
     respond(f'3501;1;{hot_water_set_temp}')
@@ -134,7 +135,14 @@ def parse_command(cmd):
                 heating_curve = cmd_str[7:]
                 send_heating_curve('3401')
         elif cmd_str == '3405':
-            send_heating_mode()
+            send_heating_mode('3405')
+        elif cmd_str.startswith('3406'):
+            if len(cmd_str) == 4:
+                send_heating_mode('3406')
+            elif len(cmd_str) > 7:
+                global heating_mode
+                heating_mode = cmd_str[7:]
+                send_heating_mode('3406')
         elif cmd_str.startswith('3501'):
             if len(cmd_str) == 4:
                 send_hot_water_set_temp()
