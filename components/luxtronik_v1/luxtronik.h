@@ -87,6 +87,7 @@ namespace esphome::luxtronik_v1
         void dump_config() override;
 
         void add_dataset(const char* code);
+        void set_heating_mode(uint8_t value);
         void set_hot_water_set_temperature(float value);
         void set_heating_curves(HeatingCurves& value);
 

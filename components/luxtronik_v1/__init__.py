@@ -29,7 +29,8 @@ from esphome.components import uart
 from esphome.const      import (
     CONF_ID,
     CONF_UART_ID,
-    CONF_VALUE
+    CONF_VALUE,
+    CONF_MODE
 )
 
 
@@ -55,6 +56,7 @@ CONF_MC1_CONST_FLOW     = "mc1_const_flow"
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
+SetHeatingModeAction = luxtronik_ns.class_("SetHeatingModeAction", automation.Action)
 SetHotWaterSetTemperatureAction = luxtronik_ns.class_("SetHotWaterSetTemperatureAction", automation.Action)
 SetHeatingCurvesAction = luxtronik_ns.class_("SetHeatingCurvesAction", automation.Action)
 
@@ -91,6 +93,23 @@ async def to_code(config):
 
     for ds in config[CONF_INCLUDE_DATASETS]:
         cg.add(cmp.add_dataset(str(ds)))
+
+@automation.register_action(
+    "luxtronik_v1.set_heating_mode",
+    SetHeatingModeAction,
+    cv.Schema(
+    {
+        cv.Required(CONF_ID): cv.use_id(Luxtronik),
+        cv.Required(CONF_MODE): cv.templatable(cv.int_range(min = 0, max = 4))
+    }))
+async def set_heating_mode_action_to_code(config, action_id, template_arg, args):
+    parent = await cg.get_variable(config[CONF_ID])
+    act = cg.new_Pvariable(action_id, template_arg, parent)
+
+    tmpl = await cg.templatable(config[CONF_MODE], args, int)
+    cg.add(act.set_heating_mode_value(tmpl))
+
+    return act
 
 @automation.register_action(
     "luxtronik_v1.set_hot_water_set_temperature",

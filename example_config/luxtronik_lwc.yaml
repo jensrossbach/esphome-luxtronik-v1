@@ -82,6 +82,7 @@ sensor:
     hot_water_temperature:
       name: Ist-Temperatur Brauchwarmwasser
     hot_water_set_temperature:
+      id: current_hot_water_set_temperature
       name: Soll-Temperatur Brauchwarmwasser
     heat_source_input_temperature:
       name: Temperatur Wärmequelleneintritt
@@ -206,6 +207,7 @@ text_sensor:
           - swimming_pool -> Schwimmbad
           - provider_lock -> EVU-Sperre
     heating_mode:
+      id: current_heating_mode
       name: Betriebsart Heizung
       # alternatively, the filters can be removed and translation can be done in Home Assistant
       filters:
@@ -294,17 +296,23 @@ text_sensor:
 number:
   # number input for setting hot water set temperature
   - platform: template
-    id: hot_water_set_temperature_value
+    id: target_hot_water_set_temperature
     name: Soll-Temperatur Brauchwarmwasser
     icon: mdi:coolant-temperature
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
     mode: slider
-    optimistic: true
-    min_value: 20.0
+    min_value: 30.0
     max_value: 65.0
     step: 0.5
+    lambda: |-
+      return id(current_hot_water_set_temperature).state;
+    set_action:
+      - luxtronik_v1.set_hot_water_set_temperature:
+          id: lwc_100
+          value: !lambda "return x;"
+      - lambda: "id(target_hot_water_set_temperature).publish_state(x);"
   # number input for setting return temperature offset from heat curcuit heating curve
   - platform: template
     id: heating_curve_hc_return_offset_value
@@ -432,16 +440,30 @@ number:
     max_value: 50.0
     step: 0.5
 
-button:
-  # button for sending hot water set temperature to Luxtronik heating control unit
+select:
+  # selection for heating mode
   - platform: template
-    name: Brauchwarmwasser Soll-Temperatur setzen
-    icon: mdi:download
+    id: target_heating_mode
+    name: Betriebsart Heizung
+    icon: mdi:state-machine
     entity_category: config
-    on_press:
-      - luxtronik_v1.set_hot_water_set_temperature:
+    options:
+      - Automatik
+      - Zweiter Wärmeerzeuger
+      - Party
+      - Ferien
+      - Aus
+    lambda: !lambda |-
+      return id(current_heating_mode).state;
+    set_action:
+      - luxtronik_v1.set_heating_mode:
           id: luxtronik_heat_pump
-          value: !lambda "return id(hot_water_set_temperature_value).state;"
+          mode: !lambda |-
+            auto idx = id(target_heating_mode).index_of(x);
+            return idx.has_value() ? idx.value() : 255;
+      - lambda: "id(target_heating_mode).publish_state(x);"
+
+button:
   # button for sending heating curves to Luxtronik heating control unit
   - platform: template
     name: Heizkurve setzen
