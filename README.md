@@ -101,7 +101,7 @@ Die folgenden generischen Einstellungen können konfiguriert werden:
 | `request_delay` | Zahl | nein | 0 - 2000 | 0 | Verzögerung in Millisekunden zwischen einzelnen Datensatz-Anfragen |
 | `response_timeout` | Zahl | nein | 500 - 5000 | 2000 | Maximale Zeit in Millisekunden, die nach einer Datensatz-Anfrage auf die Antwort gewartet wird, bevor ein Wiederholungsversuch gestartet wird |
 | `max_retries` | Zahl | nein | 0 - 15 | 5 | Maximale Anzahl an Wiederholungsversuchen, bevor mit der nächsten Datensatz-Anfrage fortgefahren wird |
-| `include_datasets` | Zahlenliste | nein | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3400, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
+| `include_datasets` | Zahlenliste | nein | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3200, 3400, 3405, 3505 | Alle | Datensätze, die angefragt werden sollen <sup>1</sup> |
 
 <sup>1</sup> Es sollte sicher gestellt sein, dass keine Sensoren von ausgelassenen Datensätzen konfiguriert sind, da diese anderenfalls keine Werte erhalten werden. Siehe Abschnitt [Sensoren](#sensoren) um mehr darüber zu erfahren, welche Sensoren in welchen Datensätzen enthalten sind.
 
@@ -119,6 +119,7 @@ luxtronik_v1:
     - 1300
     - 1450
     - 1700
+    - 3200
     - 3400
     - 3405
     - 3505
@@ -326,6 +327,10 @@ Die folgenden Textsensoren können konfiguriert werden:
 | `deactivation_4_time` | `timestamp` | 1600 | Abschaltzeitpunkt #4 im Abschaltungsspeicher |
 | `deactivation_5_code` | - | 1600 | Abschalt-Code #5 im Abschaltungsspeicher (neuester) |
 | `deactivation_5_time` | `timestamp` | 1600 | Abschaltzeitpunkt #5 im Abschaltungsspeicher (neuester) |
+| `hot_water_off_time_week_start_1` | - | 3200 | Tägliche Sperrzeit Brauchwarmwasser 1 Beginn |
+| `hot_water_off_time_week_end_1` | - | 3200 | Tägliche Sperrzeit Brauchwarmwasser 1 Ende |
+| `hot_water_off_time_week_start_2` | - | 3200 | Tägliche Sperrzeit Brauchwarmwasser 2 Beginn |
+| `hot_water_off_time_week_end_2` | - | 3200 | Tägliche Sperrzeit Brauchwarmwasser 2 Ende |
 
 Detaillierte Informationen zu den Konfigurationsmöglichkeiten der einzelnen Elemente findest du in der Dokumentation der [ESPHome Textsensorkomponenten](https://www.esphome.io/components/text_sensor).
 
@@ -625,7 +630,7 @@ The following generic configuration items can be configured:
 | `request_delay` | Number | no | 0 - 2000 | 0 | Delay in milliseconds between individual dataset requests |
 | `response_timeout` | Number | no | 500 - 5000 | 2000 | Maximum time in milliseconds to wait for a response after a dataset request before a retry is done |
 | `max_retries` | Number | no | 0 - 15 | 5 | Maximum number of retries before proceeding with next dataset request |
-| `include_datasets` | List of numbers | no | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3400, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
+| `include_datasets` | List of numbers | no | 1100, 1200, 1300, 1450, 1500, 1600, 1700, 3200, 3400, 3405, 3505 | All | Data sets which should be requested <sup>1</sup> |
 
 <sup>1</sup> It should be ensured that no sensors from omitted data sets are configured, otherwise they will not receive any values. See section [Sensors](#sensors) to find out more about which sensors are contained in which data sets.
 
@@ -643,6 +648,7 @@ luxtronik_v1:
     - 1300
     - 1450
     - 1700
+    - 3200
     - 3400
     - 3405
     - 3505
@@ -850,6 +856,10 @@ The following text sensors can be configured:
 | `deactivation_4_time` | `timestamp` | 1600 | Deactivation timestamp #4 in deaktivation memory |
 | `deactivation_5_code` | - | 1600 | Deactivation code #5 in deaktivation memory (newest) |
 | `deactivation_5_time` | `timestamp` | 1600 | Deactivation timestamp #5 in deaktivation memory (newest) |
+| `hot_water_off_time_week_start_1` | - | 3200 | Daily off-time hot water 1 start |
+| `hot_water_off_time_week_end_1` | - | 3200 | Daily off-time hot water 1 end |
+| `hot_water_off_time_week_start_2` | - | 3200 |  Daily off-time hot water 2 start |
+| `hot_water_off_time_week_end_2` | - | 3200 |  Daily off-time hot water 2 end |
 
 For detailed configuration options of each item, please refer to ESPHome [text sensor component configuration](https://www.esphome.io/components/text_sensor).
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Jens-Uwe Rossbach
+# Copyright (c) 2024-2025 Jens-Uwe Rossbach
 #
 # This code is licensed under the MIT License.
 #
@@ -71,6 +71,10 @@ CONF_DEACTIVATION_4_CODE                 = "deactivation_4_code"
 CONF_DEACTIVATION_4_TIME                 = "deactivation_4_time"
 CONF_DEACTIVATION_5_CODE                 = "deactivation_5_code"
 CONF_DEACTIVATION_5_TIME                 = "deactivation_5_time"
+CONF_HOT_WATER_OFF_TIME_WEEK_START_1     = "hot_water_off_time_week_start_1"
+CONF_HOT_WATER_OFF_TIME_WEEK_END_1       = "hot_water_off_time_week_end_1"
+CONF_HOT_WATER_OFF_TIME_WEEK_START_2     = "hot_water_off_time_week_start_2"
+CONF_HOT_WATER_OFF_TIME_WEEK_END_2       = "hot_water_off_time_week_end_2"
 
 CONF_DURATION_FORMAT                     = "duration_format"
 
@@ -183,6 +187,18 @@ CONFIG_SCHEMA = cv.Schema(
     ),
     cv.Optional(CONF_DEACTIVATION_5_TIME): text_sensor.text_sensor_schema(
         device_class = DEVICE_CLASS_TIMESTAMP
+    ),
+    cv.Optional(CONF_HOT_WATER_OFF_TIME_WEEK_START_1): text_sensor.text_sensor_schema(
+        icon = "mdi:water-boiler-off"
+    ),
+    cv.Optional(CONF_HOT_WATER_OFF_TIME_WEEK_END_1): text_sensor.text_sensor_schema(
+        icon = "mdi:water-boiler-off"
+    ),
+    cv.Optional(CONF_HOT_WATER_OFF_TIME_WEEK_START_2): text_sensor.text_sensor_schema(
+        icon = "mdi:water-boiler-off"
+    ),
+    cv.Optional(CONF_HOT_WATER_OFF_TIME_WEEK_END_2): text_sensor.text_sensor_schema(
+        icon = "mdi:water-boiler-off"
     )
 })
 

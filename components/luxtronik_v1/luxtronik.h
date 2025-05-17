@@ -170,6 +170,10 @@ namespace esphome::luxtronik_v1
         void set_sensor_deactivation_3_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_3_time.set_sensor(sensor);                 }
         void set_sensor_deactivation_4_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_4_time.set_sensor(sensor);                 }
         void set_sensor_deactivation_5_time(text_sensor::TextSensor* sensor)                 { m_sensor_deactivation_5_time.set_sensor(sensor);                 }
+        void set_sensor_hot_water_off_time_week_start_1(text_sensor::TextSensor* sensor)     { m_sensor_hot_water_off_time_week_start_1.set_sensor(sensor);     }
+        void set_sensor_hot_water_off_time_week_end_1(text_sensor::TextSensor* sensor)       { m_sensor_hot_water_off_time_week_end_1.set_sensor(sensor);       }
+        void set_sensor_hot_water_off_time_week_start_2(text_sensor::TextSensor* sensor)     { m_sensor_hot_water_off_time_week_start_2.set_sensor(sensor);     }
+        void set_sensor_hot_water_off_time_week_end_2(text_sensor::TextSensor* sensor)       { m_sensor_hot_water_off_time_week_end_2.set_sensor(sensor);       }
 
         void set_sensor_operating_hours_compressor_1(text_sensor::TextSensor* sensor, int32_t format)        { m_sensor_operating_hours_compressor_1.set_sensor(sensor, format);        }
         void set_sensor_average_operating_time_compressor_1(text_sensor::TextSensor* sensor, int32_t format) { m_sensor_average_operating_time_compressor_1.set_sensor(sensor, format); }
@@ -192,6 +196,7 @@ namespace esphome::luxtronik_v1
         void parse_errors(const std::string& response);
         void parse_deactivations(const std::string& response);
         void parse_information(const std::string& response);
+        void parse_hot_water_off_times_week(const std::string& response);
         void parse_heating_curves(const std::string& response);
         void parse_heating_mode(const std::string& response);
         void parse_hot_water_config(const std::string& response);
@@ -304,6 +309,12 @@ namespace esphome::luxtronik_v1
         StringSensor m_sensor_deactivation_3_time;  // 1600:1602:2-6 - Abschaltung 3 - Datum/Uhrzeit
         StringSensor m_sensor_deactivation_4_time;  // 1600:1603:2-6 - Abschaltung 4 - Datum/Uhrzeit
         StringSensor m_sensor_deactivation_5_time;  // 1600:1604:2-6 - Abschaltung 5 - Datum/Uhrzeit
+
+        // hot water off-times
+        StringSensor m_sensor_hot_water_off_time_week_start_1;  // 3200:2-3 - Sperrzeit 1 - Start
+        StringSensor m_sensor_hot_water_off_time_week_end_1;    // 3200:4-5 - Sperrzeit 1 - Ende
+        StringSensor m_sensor_hot_water_off_time_week_start_2;  // 3200:6-7 - Sperrzeit 2 - Start
+        StringSensor m_sensor_hot_water_off_time_week_end_2;    // 3200:8-9 - Sperrzeit 2 - Ende
 
         // diagnostic
         BoolSensor m_sensor_device_communication;

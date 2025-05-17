@@ -35,23 +35,24 @@ namespace esphome::luxtronik_v1
 {
     static constexpr const char *const TAG = "luxtronik";
 
-    static constexpr const char* const TYPE_TEMPERATURES          = "1100";
-    static constexpr const char* const TYPE_INPUTS                = "1200";
-    static constexpr const char* const TYPE_OUTPUTS               = "1300";
-    static constexpr const char* const TYPE_OPERATING_HOURS       = "1450";
-    static constexpr const char* const TYPE_ERRORS                = "1500";
-    static constexpr const char* const TYPE_ERRORS_SLOT           = "1500;150";
-    static constexpr const char* const TYPE_DEACTIVATIONS         = "1600";
-    static constexpr const char* const TYPE_DEACTIVATIONS_SLOT    = "1600;160";
-    static constexpr const char* const TYPE_INFORMATION           = "1700";
-    static constexpr const char* const TYPE_ALL                   = "1800";
-    static constexpr const char* const TYPE_HEATING_CURVES        = "3400";
-    static constexpr const char* const TYPE_HEATING_CURVES_CONFIG = "3401";
-    static constexpr const char* const TYPE_HEATING_MODE          = "3405";
-    static constexpr const char* const TYPE_HEATING_MODE_CONFIG   = "3406";
-    static constexpr const char* const TYPE_HOT_WATER_TEMP_CONFIG = "3501";
-    static constexpr const char* const TYPE_HOT_WATER_MODE        = "3505";
-    static constexpr const char* const TYPE_HOT_WATER_MODE_CONFIG = "3506";
+    static constexpr const char* const TYPE_TEMPERATURES             = "1100";
+    static constexpr const char* const TYPE_INPUTS                   = "1200";
+    static constexpr const char* const TYPE_OUTPUTS                  = "1300";
+    static constexpr const char* const TYPE_OPERATING_HOURS          = "1450";
+    static constexpr const char* const TYPE_ERRORS                   = "1500";
+    static constexpr const char* const TYPE_ERRORS_SLOT              = "1500;150";
+    static constexpr const char* const TYPE_DEACTIVATIONS            = "1600";
+    static constexpr const char* const TYPE_DEACTIVATIONS_SLOT       = "1600;160";
+    static constexpr const char* const TYPE_INFORMATION              = "1700";
+    static constexpr const char* const TYPE_ALL                      = "1800";
+    static constexpr const char* const TYPE_HOT_WATER_OFF_TIMES_WEEK = "3200";
+    static constexpr const char* const TYPE_HEATING_CURVES           = "3400";
+    static constexpr const char* const TYPE_HEATING_CURVES_CONFIG    = "3401";
+    static constexpr const char* const TYPE_HEATING_MODE             = "3405";
+    static constexpr const char* const TYPE_HEATING_MODE_CONFIG      = "3406";
+    static constexpr const char* const TYPE_HOT_WATER_TEMP_CONFIG    = "3501";
+    static constexpr const char* const TYPE_HOT_WATER_MODE           = "3505";
+    static constexpr const char* const TYPE_HOT_WATER_MODE_CONFIG    = "3506";
 
     static constexpr const char* const TYPE_STORE_CONFIG      = "999";
     static constexpr const char* const TYPE_STORE_CONFIG_ACK  = "993";
@@ -207,6 +208,10 @@ namespace esphome::luxtronik_v1
         , m_sensor_deactivation_3_time()
         , m_sensor_deactivation_4_time()
         , m_sensor_deactivation_5_time()
+        , m_sensor_hot_water_off_time_week_start_1()
+        , m_sensor_hot_water_off_time_week_end_1()
+        , m_sensor_hot_water_off_time_week_start_2()
+        , m_sensor_hot_water_off_time_week_end_2()
         , m_sensor_device_communication()
         , m_request_delay(request_delay)
         , m_response_timeout(response_timeout)
@@ -412,6 +417,11 @@ namespace esphome::luxtronik_v1
         LOG_STRING_SENSOR("Deactivation 3 Time Sensor", m_sensor_deactivation_3_time);
         LOG_STRING_SENSOR("Deactivation 4 Time Sensor", m_sensor_deactivation_4_time);
         LOG_STRING_SENSOR("Deactivation 5 Time Sensor", m_sensor_deactivation_5_code);
+
+        LOG_STRING_SENSOR("Hot Water Off-Time Week Start 1 Sensor", m_sensor_hot_water_off_time_week_start_1);
+        LOG_STRING_SENSOR("Hot Water Off-Time Week End 1 Sensor", m_sensor_hot_water_off_time_week_end_1);
+        LOG_STRING_SENSOR("Hot Water Off-Time Week Start 2 Sensor", m_sensor_hot_water_off_time_week_start_2);
+        LOG_STRING_SENSOR("Hot Water Off-Time Week End 2 Sensor", m_sensor_hot_water_off_time_week_end_2);
     }
 
     void Luxtronik::add_dataset(const char* code)
@@ -549,6 +559,10 @@ namespace esphome::luxtronik_v1
         else if (starts_with(response, TYPE_INFORMATION))
         {
             parse_information(response);
+        }
+        else if (starts_with(response, TYPE_HOT_WATER_OFF_TIMES_WEEK))
+        {
+            parse_hot_water_off_times_week(response);
         }
         else if (starts_with(response, TYPE_HEATING_CURVES))
         {
@@ -979,6 +993,68 @@ namespace esphome::luxtronik_v1
 
             m_sensor_operational_state.set_state(state);
         }
+
+        next_dataset();
+    }
+
+    void Luxtronik::parse_hot_water_off_times_week(const std::string& response)
+    {
+        accept_response();
+
+        std::string hour;
+        std::string minute;
+
+        size_t start = INDEX_RESPONSE_START;
+        size_t end = response.find(DELIMITER, start);
+        // skip number of elements
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        hour = response.substr(start, end - start);
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        minute = response.substr(start, end - start);
+
+        m_sensor_hot_water_off_time_week_start_1.set_state(
+                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                    ((minute.length() == 1) ? '0' + minute : minute));
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        hour = response.substr(start, end - start);
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        minute = response.substr(start, end - start);
+
+        m_sensor_hot_water_off_time_week_end_1.set_state(
+                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                    ((minute.length() == 1) ? '0' + minute : minute));
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        hour = response.substr(start, end - start);
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        minute = response.substr(start, end - start);
+
+        m_sensor_hot_water_off_time_week_start_2.set_state(
+                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                    ((minute.length() == 1) ? '0' + minute : minute));
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        hour = response.substr(start, end - start);
+
+        start = end + 1;
+        end = response.find(DELIMITER, start);
+        minute = response.substr(start, end - start);
+
+        m_sensor_hot_water_off_time_week_end_2.set_state(
+                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                    ((minute.length() == 1) ? '0' + minute : minute));
 
         next_dataset();
     }
