@@ -290,6 +290,14 @@ text_sensor:
       name: Abschaltung 5 - Code
     deactivation_5_time:
       name: Abschaltung 5 - Zeit
+    hot_water_off_time_week_start_1:
+      name: Tägliche Sperrzeit Brauchwarmwasser 1 Beginn
+    hot_water_off_time_week_end_1:
+      name: Tägliche Sperrzeit Brauchwarmwasser 1 Ende
+    hot_water_off_time_week_start_2:
+      name: Tägliche Sperrzeit Brauchwarmwasser 2 Beginn
+    hot_water_off_time_week_end_2:
+      name: Tägliche Sperrzeit Brauchwarmwasser 2 Ende
   - platform: wifi_info
     ip_address:
       name: IP Adresse
@@ -455,7 +463,14 @@ select:
       - Ferien
       - Aus
     lambda: !lambda |-
-      return id(current_heating_mode).state;
+      if (!id(target_heating_mode).has_state() && id(current_heating_mode).has_state())
+      {
+          return id(current_heating_mode).state;
+      }
+      else
+      {
+          return esphome::nullopt;
+      }
     set_action:
       - luxtronik_v1.set_heating_mode:
           id: luxtronik_heat_pump
@@ -476,7 +491,14 @@ select:
       - Ferien
       - Aus
     lambda: !lambda |-
-      return id(current_hot_water_mode).state;
+      if (!id(target_hot_water_mode).has_state() && id(current_hot_water_mode).has_state())
+      {
+          return id(current_hot_water_mode).state;
+      }
+      else
+      {
+          return esphome::nullopt;
+      }
     set_action:
       - luxtronik_v1.set_hot_water_mode:
           id: lwc_100

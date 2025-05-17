@@ -77,6 +77,9 @@ def send_deactivations():
 def send_information():
     respond('1700;12;12; V2.33;1;5;22;1;24;6;56;44;0;0')
 
+def send_hot_water_off_times_week():
+    respond('3200;8;6;0;23;59;0;0;2;30')
+
 def send_heating_curve(cmd):
     respond(f'{cmd};9;{heating_curve}')
 
@@ -128,6 +131,8 @@ def parse_command(cmd):
             send_deactivations()
             send_information()
             ser.write(b'1800;8\r\n')
+        elif cmd_str == '3200':
+            send_hot_water_off_times_week()
         elif cmd_str == '3400':
             send_heating_curve('3400')
         elif cmd_str.startswith('3401'):
