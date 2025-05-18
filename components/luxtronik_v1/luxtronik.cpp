@@ -35,24 +35,25 @@ namespace esphome::luxtronik_v1
 {
     static constexpr const char *const TAG = "luxtronik";
 
-    static constexpr const char* const TYPE_TEMPERATURES             = "1100";
-    static constexpr const char* const TYPE_INPUTS                   = "1200";
-    static constexpr const char* const TYPE_OUTPUTS                  = "1300";
-    static constexpr const char* const TYPE_OPERATING_HOURS          = "1450";
-    static constexpr const char* const TYPE_ERRORS                   = "1500";
-    static constexpr const char* const TYPE_ERRORS_SLOT              = "1500;150";
-    static constexpr const char* const TYPE_DEACTIVATIONS            = "1600";
-    static constexpr const char* const TYPE_DEACTIVATIONS_SLOT       = "1600;160";
-    static constexpr const char* const TYPE_INFORMATION              = "1700";
-    static constexpr const char* const TYPE_ALL                      = "1800";
-    static constexpr const char* const TYPE_HOT_WATER_OFF_TIMES_WEEK = "3200";
-    static constexpr const char* const TYPE_HEATING_CURVES           = "3400";
-    static constexpr const char* const TYPE_HEATING_CURVES_CONFIG    = "3401";
-    static constexpr const char* const TYPE_HEATING_MODE             = "3405";
-    static constexpr const char* const TYPE_HEATING_MODE_CONFIG      = "3406";
-    static constexpr const char* const TYPE_HOT_WATER_TEMP_CONFIG    = "3501";
-    static constexpr const char* const TYPE_HOT_WATER_MODE           = "3505";
-    static constexpr const char* const TYPE_HOT_WATER_MODE_CONFIG    = "3506";
+    static constexpr const char* const TYPE_TEMPERATURES                    = "1100";
+    static constexpr const char* const TYPE_INPUTS                          = "1200";
+    static constexpr const char* const TYPE_OUTPUTS                         = "1300";
+    static constexpr const char* const TYPE_OPERATING_HOURS                 = "1450";
+    static constexpr const char* const TYPE_ERRORS                          = "1500";
+    static constexpr const char* const TYPE_ERRORS_SLOT                     = "1500;150";
+    static constexpr const char* const TYPE_DEACTIVATIONS                   = "1600";
+    static constexpr const char* const TYPE_DEACTIVATIONS_SLOT              = "1600;160";
+    static constexpr const char* const TYPE_INFORMATION                     = "1700";
+    static constexpr const char* const TYPE_ALL                             = "1800";
+    static constexpr const char* const TYPE_HOT_WATER_OFF_TIMES_WEEK        = "3200";
+    static constexpr const char* const TYPE_HOT_WATER_OFF_TIMES_WEEK_CONFIG = "3201";
+    static constexpr const char* const TYPE_HEATING_CURVES                  = "3400";
+    static constexpr const char* const TYPE_HEATING_CURVES_CONFIG           = "3401";
+    static constexpr const char* const TYPE_HEATING_MODE                    = "3405";
+    static constexpr const char* const TYPE_HEATING_MODE_CONFIG             = "3406";
+    static constexpr const char* const TYPE_HOT_WATER_TEMP_CONFIG           = "3501";
+    static constexpr const char* const TYPE_HOT_WATER_MODE                  = "3505";
+    static constexpr const char* const TYPE_HOT_WATER_MODE_CONFIG           = "3506";
 
     static constexpr const char* const TYPE_STORE_CONFIG      = "999";
     static constexpr const char* const TYPE_STORE_CONFIG_ACK  = "993";
@@ -563,6 +564,15 @@ namespace esphome::luxtronik_v1
         else if (starts_with(response, TYPE_HOT_WATER_OFF_TIMES_WEEK))
         {
             parse_hot_water_off_times_week(response);
+        }
+        else if (starts_with(response, TYPE_HOT_WATER_OFF_TIMES_WEEK_CONFIG))
+        {
+            if (m_config_response_state != 1)  // ignore echo
+            {
+                parse_hot_water_off_times_week(response);
+            }
+
+            ++m_config_response_state;
         }
         else if (starts_with(response, TYPE_HEATING_CURVES))
         {
@@ -1267,6 +1277,76 @@ namespace esphome::luxtronik_v1
 
             m_request_queue.push_back(TYPE_HOT_WATER_TEMP_CONFIG);
             m_request_queue.push_back(std::string(TYPE_HOT_WATER_TEMP_CONFIG) + ";1;" + std::to_string(static_cast<uint32_t>(std::floor(value * 10))));
+            m_request_queue.push_back(TYPE_STORE_CONFIG);
+
+            if (!m_timer.is_running())
+            {
+                request_data();
+            }
+        }
+    }
+
+    void Luxtronik::set_hot_water_off_times_week(
+                        uint8_t start_1_hour,
+                        uint8_t start_1_minute,
+                        uint8_t end_1_hour,
+                        uint8_t end_1_minute,
+                        uint8_t start_2_hour,
+                        uint8_t start_2_minute,
+                        uint8_t end_2_hour,
+                        uint8_t end_2_minute)
+    {
+        if (start_1_hour > 23)
+        {
+            ESP_LOGW(TAG, "Invalid value for start 1 hour:  VAL %u", start_1_hour);
+        }
+        else if (start_1_minute > 59)
+        {
+            ESP_LOGW(TAG, "Invalid value for start 1 minute:  VAL %u", start_1_minute);
+        }
+        else if (end_1_hour > 23)
+        {
+            ESP_LOGW(TAG, "Invalid value for end 1 hour:  VAL %u", end_1_hour);
+        }
+        else if (end_1_minute > 59)
+        {
+            ESP_LOGW(TAG, "Invalid value for end 1 minute:  VAL %u", end_1_minute);
+        }
+        else if (start_2_hour > 23)
+        {
+            ESP_LOGW(TAG, "Invalid value for start 2 hour:  VAL %u", start_2_hour);
+        }
+        else if (start_2_minute > 59)
+        {
+            ESP_LOGW(TAG, "Invalid value for start 2 minute:  VAL %u", start_2_minute);
+        }
+        else if (end_2_hour > 23)
+        {
+            ESP_LOGW(TAG, "Invalid value for end 2 hour:  VAL %u", end_2_hour);
+        }
+        else if (end_2_minute > 59)
+        {
+            ESP_LOGW(TAG, "Invalid value for end 2 minute:  VAL %u", end_2_minute);
+        }
+        else
+        {
+            ESP_LOGD(
+                TAG,
+                "Queuing requests for setting hot water off-times week:  S1H %u  S1M %u  E1H %u  E1M %u  S2H %u  S2M %u  E2H %u  E2M %u",
+                start_1_hour, start_1_minute, end_1_hour, end_1_minute,
+                start_2_hour, start_2_minute, end_2_hour, end_2_minute);
+
+            m_request_queue.push_back(TYPE_HOT_WATER_OFF_TIMES_WEEK_CONFIG);
+            m_request_queue.push_back(
+                                std::string(TYPE_HOT_WATER_OFF_TIMES_WEEK_CONFIG) + ";8;" +
+                                std::to_string(static_cast<int32_t>(start_1_hour)) + ";" +
+                                std::to_string(static_cast<int32_t>(start_1_minute)) + ";" +
+                                std::to_string(static_cast<int32_t>(end_1_hour)) + ";" +
+                                std::to_string(static_cast<int32_t>(end_1_minute)) + ";" +
+                                std::to_string(static_cast<int32_t>(start_2_hour)) + ";" +
+                                std::to_string(static_cast<int32_t>(start_2_minute)) + ";" +
+                                std::to_string(static_cast<int32_t>(end_2_hour)) + ";" +
+                                std::to_string(static_cast<int32_t>(end_2_minute)));
             m_request_queue.push_back(TYPE_STORE_CONFIG);
 
             if (!m_timer.is_running())

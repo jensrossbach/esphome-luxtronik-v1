@@ -501,6 +501,26 @@ Anstelle eines festen Modus kann auch ein Lambda-Ausdruck verwendet werden, der 
 
 Anstelle eines festen Zahlenwerts kann auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
 
+#### Tägliche Brauchwarmwasser-Sperrzeiten setzen
+| Aktion | Beschreibung |
+| ------ | ------------ |
+| `luxtronik_v1.set_hot_water_off_times_week` | Setzt die täglichen Sperrzeiten für die Warmwasserzubereitung |
+
+##### Parameter
+| Parameter | Typ | Bereich | Benötigt | Beschreibung |
+| --------- | --- | ------- | -------- | ------------ |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | ja | ID der [Luxtronik-Komponente](#luxtronik-komponente) |
+| `start_1_hour` | Zahl | 0&nbsp;...&nbsp;23 | ja | Stundenwert des Beginns der ersten Sperrzeit |
+| `start_1_minute` | Zahl | 0&nbsp;...&nbsp;59 | ja | Minutenwert des Beginns der ersten Sperrzeit |
+| `end_1_hour` | Zahl | 0&nbsp;...&nbsp;23 | ja | Stundenwert des Endes der ersten Sperrzeit |
+| `end_1_minute` | Zahl | 0&nbsp;...&nbsp;59 | ja | Minutenwert des Endes der ersten Sperrzeit |
+| `start_2_hour` | Zahl | 0&nbsp;...&nbsp;23 | ja |  Stundenwert des Beginns der zweiten Sperrzeit |
+| `start_2_minute` | Zahl | 0&nbsp;...&nbsp;59 | ja | Minutenwert des Beginns der zweiten Sperrzeit |
+| `end_2_hour` | Zahl | 0&nbsp;...&nbsp;23 | ja | Stundenwert des Endes der zweiten Sperrzeit |
+| `end_2_minute` | Zahl | 0&nbsp;...&nbsp;59 | ja | Minutenwert des Endes der zweiten Sperrzeit |
+
+Anstelle eines festen Zahlenwerts kann bei allen Parametern auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
+
 #### Heizkurven setzen
 | Aktion | Beschreibung |
 | ------ | ------------ |
@@ -511,14 +531,14 @@ Anstelle eines festen Zahlenwerts kann auch ein Lambda-Ausdruck verwendet werden
 | --------- | --- | ------- | -------- | ------------ |
 | `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | ja | ID der [Luxtronik-Komponente](#luxtronik-komponente) |
 | `hc_return_offset` | Zahl | -5.0&nbsp;...&nbsp;5.0 | nein | Abweichung der Rücklauf-Temperatur zu der Temperatur der Heizkreis-Heizkurve in °C |
-| `hc_endpoint` | Zahl | >=&nbsp;0.0 | nein |  Endpunkt der Heizkreis-Heizkurve in °C |
-| `hc_parallel_shift` | Zahl | >=&nbsp;0.0 | nein |  Parallelverschiebung der Heizkreis-Heizkurve in °C |
-| `hc_night_setback` | Zahl | <=&nbsp;0.0 | nein |  Nachtabsenkung der Heizkreis-Heizkurve in °C |
-| `hc_const_return` | Zahl | >=&nbsp;0.0 | nein |  Festwert für den Rücklauf des Heizkreises in °C |
-| `mc1_endpoint` | Zahl | >=&nbsp;0.0 | nein |  Endpunkt der Mischkreis-1-Heizkurve in °C |
-| `mc1_parallel_shift` | Zahl | >=&nbsp;0.0 | nein |  Parallelverschiebung der Mischkreis-1-Heizkurve in °C |
-| `mc1_night_setback` | Zahl | <=&nbsp;0.0 | nein |  Nachtabsenkung der Mischkreis-1-Heizkurve in °C |
-| `mc1_const_flow` | Zahl | >=&nbsp;0.0 | nein |  Festwert für den Vorlauf des Mischkreises 1 in °C |
+| `hc_endpoint` | Zahl | >=&nbsp;0.0 | nein | Endpunkt der Heizkreis-Heizkurve in °C |
+| `hc_parallel_shift` | Zahl | >=&nbsp;0.0 | nein | Parallelverschiebung der Heizkreis-Heizkurve in °C |
+| `hc_night_setback` | Zahl | <=&nbsp;0.0 | nein | Nachtabsenkung der Heizkreis-Heizkurve in °C |
+| `hc_const_return` | Zahl | >=&nbsp;0.0 | nein | Festwert für den Rücklauf des Heizkreises in °C |
+| `mc1_endpoint` | Zahl | >=&nbsp;0.0 | nein | Endpunkt der Mischkreis-1-Heizkurve in °C |
+| `mc1_parallel_shift` | Zahl | >=&nbsp;0.0 | nein | Parallelverschiebung der Mischkreis-1-Heizkurve in °C |
+| `mc1_night_setback` | Zahl | <=&nbsp;0.0 | nein | Nachtabsenkung der Mischkreis-1-Heizkurve in °C |
+| `mc1_const_flow` | Zahl | >=&nbsp;0.0 | nein | Festwert für den Vorlauf des Mischkreises 1 in °C |
 
 Anstelle eines festen Zahlenwerts kann bei allen Parametern auch ein Lambda-Ausdruck verwendet werden, der den zu übergebenden Wert zurückgibt.
 
@@ -1028,6 +1048,26 @@ Instead of a fixed numeric mode, it is also possible to specify a lambda express
 | `value` | Number | 30.0&nbsp;...&nbsp;65.0 | yes | Target value for the hot water set temperature in °C |
 
 Instead of a fixed numeric value, it is also possible to specify a lambda expression that returns the value to be passed to the action.
+
+#### Set Hot Water Week Off-Times
+| Action | Description |
+| ------ | ----------- |
+| `luxtronik_v1.set_hot_water_off_times_week` | Sets the daily off-times for hot water preparation |
+
+##### Parameter
+| Parameter | Type | Range | Mandatory | Description |
+| --------- | ---- | ----- | --------- | ----------- |
+| `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | - | yes | ID of the [Luxtronik component](#luxtronik-component) |
+| `start_1_hour` | Number | 0&nbsp;...&nbsp;23 | yes | Hour part of begin of first off-time |
+| `start_1_minute` | Number | 0&nbsp;...&nbsp;59 | yes | Minute part of begin of first off-time |
+| `end_1_hour` | Number | 0&nbsp;...&nbsp;23 | yes | Hour part of end of first off-time |
+| `end_1_minute` | Number | 0&nbsp;...&nbsp;59 | yes | Minute part of end of first off-time |
+| `start_2_hour` | Number | 0&nbsp;...&nbsp;23 | yes |  Hour part of begin of second off-time |
+| `start_2_minute` | Number | 0&nbsp;...&nbsp;59 | yes | Minute part of begin of second off-time |
+| `end_2_hour` | Number | 0&nbsp;...&nbsp;23 | yes | Hour part of end of second off-time |
+| `end_2_minute` | Number | 0&nbsp;...&nbsp;59 | yes | Minute part of end of second off-time |
+
+Instead of a fixed numerical value, lambda expressions can also be used for all parameters, which return the value to be passed.
 
 #### Set Heating Curves
 | Action | Description |
