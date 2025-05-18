@@ -95,22 +95,31 @@ sensor:
     remote_adjuster_temperature:
       name: Temperatur Raumfernversteller
     heating_curve_hc_return_offset:
+      id: current_heating_curve_hc_return_offset
       name: Heizkurve Heizkreis Abweichung Rücklauf
     heating_curve_hc_endpoint:
+      id: current_heating_curve_hc_endpoint
       name: Heizkurve Heizkreis Endpunkt
     heating_curve_hc_parallel_shift:
+      id: current_heating_curve_hc_parallel_shift
       name: Heizkurve Heizkreis Parallelverschiebung
     heating_curve_hc_night_setback:
+      id: current_heating_curve_hc_night_setback
       name: Heizkurve Heizkreis Nachtabsenkung
     heating_curve_hc_constant_return:
+      id: current_heating_curve_hc_constant_return
       name: Heizkurve Heizkreis Festwert Rücklauf
     heating_curve_mc1_endpoint:
+      id: current_heating_curve_mc1_endpoint
       name: Heizkurve Mischkreis 1 Endpunkt
     heating_curve_mc1_parallel_shift:
+      id: current_heating_curve_mc1_parallel_shift
       name: Heizkurve Mischkreis 1 Parallelverschiebung
     heating_curve_mc1_night_setback:
+      id: current_heating_curve_mc1_night_setback
       name: Heizkurve Mischkreis 1 Nachtabsenkung
     heating_curve_mc1_constant_flow:
+      id: current_heating_curve_mc1_constant_flow
       name: Heizkurve Mischkreis 1 Festwert Vorlauf
     impulses_compressor_1:
       name: Impulse Verdichter 1
@@ -291,12 +300,16 @@ text_sensor:
     deactivation_5_time:
       name: Abschaltung 5 - Zeit
     hot_water_off_time_week_start_1:
+      id: current_hot_water_off_time_week_start_1
       name: Tägliche Sperrzeit Brauchwarmwasser 1 Beginn
     hot_water_off_time_week_end_1:
+      id: current_hot_water_off_time_week_end_1
       name: Tägliche Sperrzeit Brauchwarmwasser 1 Ende
     hot_water_off_time_week_start_2:
+      id: current_hot_water_off_time_week_start_2
       name: Tägliche Sperrzeit Brauchwarmwasser 2 Beginn
     hot_water_off_time_week_end_2:
+      id: current_hot_water_off_time_week_end_2
       name: Tägliche Sperrzeit Brauchwarmwasser 2 Ende
   - platform: wifi_info
     ip_address:
@@ -316,138 +329,350 @@ number:
     max_value: 65.0
     step: 0.5
     lambda: |-
-      return id(current_hot_water_set_temperature).state;
+      if (id(current_hot_water_set_temperature).has_state()) { return id(current_hot_water_set_temperature).state; }
+      else { return nullopt; }
     set_action:
       - luxtronik_v1.set_hot_water_set_temperature:
-          id: lwc_100
+          id: luxtronik_heat_pump
           value: !lambda "return x;"
       - lambda: "id(target_hot_water_set_temperature).publish_state(x);"
+  # number input for setting hour part of hot water off-time week start 1
+  - platform: template
+    id: target_hot_water_off_time_week_start_1_hour
+    name: Sperrzeit Brauchwarmwasser 1 Beginn Stunde
+    icon: mdi:alpha-h-box
+    unit_of_measurement: h
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 23
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_start_1);
+      if (!id(hot_water_off_times_week_edit_mode).state && cur->has_state())
+      {
+          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_start_1_hour).publish_state(x);"
+  # number input for setting minute part of hot water off-time week start 1
+  - platform: template
+    id: target_hot_water_off_time_week_start_1_minute
+    name: Sperrzeit Brauchwarmwasser 1 Beginn Minute
+    icon: mdi:alpha-m-box
+    unit_of_measurement: min
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 59
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_start_1);
+      if (!id(target_hot_water_off_time_week_start_1_minute).has_state() && cur->has_state())
+      {
+          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_start_1_minute).publish_state(x);"
+  # number input for setting hour part of hot water off-time week end 1
+  - platform: template
+    id: target_hot_water_off_time_week_end_1_hour
+    name: Sperrzeit Brauchwarmwasser 1 Ende Stunde
+    icon: mdi:alpha-h-box
+    unit_of_measurement: h
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 23
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_end_1);
+      if (!id(target_hot_water_off_time_week_end_1_hour).has_state() && cur->has_state())
+      {
+          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_end_1_hour).publish_state(x);"
+  # number input for setting minute part of hot water off-time week end 1
+  - platform: template
+    id: target_hot_water_off_time_week_end_1_minute
+    name: Sperrzeit Brauchwarmwasser 1 Ende Minute
+    icon: mdi:alpha-m-box
+    unit_of_measurement: min
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 59
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_end_1);
+      if (!id(target_hot_water_off_time_week_end_1_minute).has_state() && cur->has_state())
+      {
+          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_end_1_minute).publish_state(x);"
+  # number input for setting hour part of hot water off-time week start 2
+  - platform: template
+    id: target_hot_water_off_time_week_start_2_hour
+    name: Sperrzeit Brauchwarmwasser 2 Beginn Stunde
+    icon: mdi:alpha-h-box
+    unit_of_measurement: h
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 23
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_start_2);
+      if (!id(target_hot_water_off_time_week_start_2_hour).has_state() && cur->has_state())
+      {
+          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_start_2_hour).publish_state(x);"
+  # number input for setting minute part of hot water off-time week start 2
+  - platform: template
+    id: target_hot_water_off_time_week_start_2_minute
+    name: Sperrzeit Brauchwarmwasser 2 Beginn Minute
+    icon: mdi:alpha-m-box
+    unit_of_measurement: min
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 59
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_start_2);
+      if (!id(target_hot_water_off_time_week_start_2_minute).has_state() && cur->has_state())
+      {
+          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_start_2_minute).publish_state(x);"
+  # number input for setting hour part of hot water off-time week end 2
+  - platform: template
+    id: target_hot_water_off_time_week_end_2_hour
+    name: Sperrzeit Brauchwarmwasser 2 Ende Stunde
+    icon: mdi:alpha-h-box
+    unit_of_measurement: h
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 23
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_end_2);
+      if (!id(target_hot_water_off_time_week_end_2_hour).has_state() && cur->has_state())
+      {
+          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_end_2_hour).publish_state(x);"
+  # number input for setting minute part of hot water off-time week end 1
+  - platform: template
+    id: target_hot_water_off_time_week_end_2_minute
+    name: Sperrzeit Brauchwarmwasser 2 Ende Minute
+    icon: mdi:alpha-m-box
+    unit_of_measurement: min
+    entity_category: config
+    mode: box
+    min_value: 0
+    max_value: 59
+    step: 1
+    lambda: |-
+      auto cur = id(current_hot_water_off_time_week_end_2);
+      if (!id(target_hot_water_off_time_week_end_2_minute).has_state() && cur->has_state())
+      {
+          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
+      }
+      else
+      {
+          return nullopt;
+      }
+    set_action:
+      - lambda: "id(target_hot_water_off_time_week_end_2_minute).publish_state(x);"
   # number input for setting return temperature offset from heat curcuit heating curve
   - platform: template
-    id: heating_curve_hc_return_offset_value
+    id: target_heating_curve_hc_return_offset
     name: Abweichung Rücklauf von Heizkurve
     icon: mdi:plus-minus-variant
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
     mode: slider
-    optimistic: true
-    initial_value: 0.0
     min_value: -5.0
     max_value: 5.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_return_offset).has_state()) { return id(current_heating_curve_hc_return_offset).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_hc_return_offset).publish_state(x);"
   # number input for setting heat curcuit heating curve endpoint
   - platform: template
-    id: heating_curve_hc_endpoint_value
+    id: target_heating_curve_hc_endpoint
     name: Heizkurve Endpunkt
     icon: mdi:arrow-collapse-right
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
-    mode: slider
-    optimistic: true
-    initial_value: 35.0
+    mode: box
     min_value: 20.0
     max_value: 50.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_endpoint).has_state()) { return id(current_heating_curve_hc_endpoint).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_hc_endpoint).publish_state(x);"
   # number input for setting heat curcuit heating curve parallel shift
   - platform: template
-    id: heating_curve_hc_parallel_shift_value
+    id: target_heating_curve_hc_parallel_shift
     name: Heizkurve Parallelverschiebung
     icon: mdi:arrow-expand
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
-    mode: slider
-    optimistic: true
-    initial_value: 20.0
+    mode: box
     min_value: 0.0
     max_value: 40.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_parallel_shift).has_state()) { return id(current_heating_curve_hc_parallel_shift).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_hc_parallel_shift).publish_state(x);"
   # number input for setting heat curcuit heating curve night setback
   - platform: template
-    id: heating_curve_hc_night_setback_value
+    id: target_heating_curve_hc_night_setback
     name: Heizkurve Nachtabsenkung
     icon: mdi:moon-waning-crescent
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
     mode: slider
-    optimistic: true
-    initial_value: 0.0
     min_value: -10.0
     max_value: 0.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_night_setback).has_state()) { return id(current_heating_curve_hc_night_setback).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_hc_night_setback).publish_state(x);"
   # number input for setting heat curcuit constant return temperature
   - platform: template
-    id: heating_curve_hc_constant_return_value
+    id: target_heating_curve_hc_constant_return
     name: Heizkurve Festwert Rücklauf
     icon: mdi:format-vertical-align-center
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
-    mode: slider
-    optimistic: true
-    initial_value: 35.0
+    mode: box
     min_value: 0.0
     max_value: 50.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_constant_return).has_state()) { return id(current_heating_curve_hc_constant_return).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_hc_constant_return).publish_state(x);"
   # number input for setting mixed curcuit 1 endpoint
   - platform: template
-    id: heating_curve_mc1_endpoint_value
+    id: target_heating_curve_mc1_endpoint
     name: Heizkurve Mischkreis 1 Endpunkt
     icon: mdi:arrow-collapse-right
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
-    mode: slider
-    optimistic: true
-    initial_value: 35.0
+    mode: box
     min_value: 20.0
     max_value: 50.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_endpoint).has_state()) { return id(current_heating_curve_mc1_endpoint).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_mc1_endpoint).publish_state(x);"
   # number input for setting mixed curcuit 1 parallel shift
   - platform: template
-    id: heating_curve_mc1_parallel_shift_value
+    id: target_heating_curve_mc1_parallel_shift
     name: Heizkurve Mischkreis 1 Parallelverschiebung
     icon: mdi:arrow-expand
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
-    mode: slider
-    optimistic: true
-    initial_value: 20.0
+    mode: box
     min_value: 0.0
     max_value: 40.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_parallel_shift).has_state()) { return id(current_heating_curve_mc1_parallel_shift).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_mc1_parallel_shift).publish_state(x);"
   # number input for setting mixed curcuit 1 night setback
   - platform: template
-    id: heating_curve_mc1_night_setback_value
+    id: target_heating_curve_mc1_night_setback
     name: Heizkurve Mischkreis 1 Nachtabsenkung
     icon: mdi:moon-waning-crescent
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
     mode: slider
-    optimistic: true
-    initial_value: 0.0
     min_value: -10.0
     max_value: 0.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_night_setback).has_state()) { return id(current_heating_curve_mc1_night_setback).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_mc1_night_setback).publish_state(x);"
   # number input for setting mixed curcuit 1 constant flow temperature
   - platform: template
-    id: heating_curve_mc1_constant_flow_value
+    id: target_heating_curve_mc1_constant_flow
     name: Heizkurve Mischkreis 1 Festwert Vorlauf
     icon: mdi:format-vertical-align-center
     unit_of_measurement: °C
     device_class: temperature
     entity_category: config
-    mode: slider
-    optimistic: true
-    initial_value: 35.0
+    mode: box
     min_value: 0.0
     max_value: 50.0
     step: 0.5
+    lambda: |-
+      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_constant_flow).has_state()) { return id(current_heating_curve_mc1_constant_flow).state; }
+      else { return nullopt; }
+    set_action:
+      - lambda: "id(target_heating_curve_mc1_constant_flow).publish_state(x);"
 
 select:
   # selection for heating mode
@@ -462,15 +687,9 @@ select:
       - Party
       - Ferien
       - Aus
-    lambda: !lambda |-
-      if (!id(target_heating_mode).has_state() && id(current_heating_mode).has_state())
-      {
-          return id(current_heating_mode).state;
-      }
-      else
-      {
-          return esphome::nullopt;
-      }
+    lambda: |-
+      if (id(current_heating_mode).has_state()) { return id(current_heating_mode).state; }
+      else { return nullopt; }
     set_action:
       - luxtronik_v1.set_heating_mode:
           id: luxtronik_heat_pump
@@ -490,24 +709,36 @@ select:
       - Party
       - Ferien
       - Aus
-    lambda: !lambda |-
-      if (!id(target_hot_water_mode).has_state() && id(current_hot_water_mode).has_state())
-      {
-          return id(current_hot_water_mode).state;
-      }
-      else
-      {
-          return esphome::nullopt;
-      }
+    lambda: |-
+      if (id(current_hot_water_mode).has_state()) { return id(current_hot_water_mode).state; }
+      else { return nullopt; }
     set_action:
       - luxtronik_v1.set_hot_water_mode:
-          id: lwc_100
+          id: luxtronik_heat_pump
           mode: !lambda |-
             auto idx = id(target_hot_water_mode).index_of(x);
             return idx.has_value() ? idx.value() : 255;
       - lambda: "id(target_hot_water_mode).publish_state(x);"
 
 button:
+  # button for sending hot water off-times week to Luxtronik heating control unit
+  - platform: template
+    name: Brauchwarmwasser Sperrzeiten setzen
+    icon: mdi:download
+    entity_category: config
+    on_press:
+      - luxtronik_v1.set_hot_water_off_times_week:
+          id: luxtronik_heat_pump
+          start_1_hour: !lambda "return id(target_hot_water_off_time_week_start_1_hour).state;"
+          start_1_minute: !lambda "return id(target_hot_water_off_time_week_start_1_minute).state;"
+          end_1_hour: !lambda "return id(target_hot_water_off_time_week_end_1_hour).state;"
+          end_1_minute: !lambda "return id(target_hot_water_off_time_week_end_1_minute).state;"
+          start_2_hour: !lambda "return id(target_hot_water_off_time_week_start_2_hour).state;"
+          start_2_minute: !lambda "return id(target_hot_water_off_time_week_start_2_minute).state;"
+          end_2_hour: !lambda "return id(target_hot_water_off_time_week_end_2_hour).state;"
+          end_2_minute: !lambda "return id(target_hot_water_off_time_week_end_2_minute).state;"
+      - switch.turn_off:
+          id: hot_water_off_times_week_edit_mode
   # button for sending heating curves to Luxtronik heating control unit
   - platform: template
     name: Heizkurve setzen
@@ -516,12 +747,12 @@ button:
     on_press:
       - luxtronik_v1.set_heating_curves:
           id: luxtronik_heat_pump
-          hc_return_offset: !lambda "return id(heating_curve_hc_return_offset_value).state;"
-          hc_endpoint: !lambda "return id(heating_curve_hc_endpoint_value).state;"
-          hc_parallel_shift: !lambda "return id(heating_curve_hc_parallel_shift_value).state;"
-          hc_night_setback: !lambda "return id(heating_curve_hc_night_setback_value).state;"
-          hc_const_return: !lambda "return id(heating_curve_hc_constant_return_value).state;"
-          mc1_endpoint: !lambda "return id(heating_curve_mc1_endpoint_value).state;"
-          mc1_parallel_shift: !lambda "return id(heating_curve_mc1_parallel_shift_value).state;"
-          mc1_night_setback: !lambda "return id(heating_curve_mc1_night_setback_value).state;"
-          mc1_const_flow: !lambda "return id(heating_curve_mc1_constant_flow_value).state;"
+          hc_return_offset: !lambda "return id(target_heating_curve_hc_return_offset).state;"
+          hc_endpoint: !lambda "return id(target_heating_curve_hc_endpoint).state;"
+          hc_parallel_shift: !lambda "return id(target_heating_curve_hc_parallel_shift).state;"
+          hc_night_setback: !lambda "return id(target_heating_curve_hc_night_setback).state;"
+          hc_const_return: !lambda "return id(target_heating_curve_hc_constant_return).state;"
+          mc1_endpoint: !lambda "return id(target_heating_curve_mc1_endpoint).state;"
+          mc1_parallel_shift: !lambda "return id(target_heating_curve_mc1_parallel_shift).state;"
+          mc1_night_setback: !lambda "return id(target_heating_curve_mc1_night_setback).state;"
+          mc1_const_flow: !lambda "return id(target_heating_curve_mc1_constant_flow).state;"

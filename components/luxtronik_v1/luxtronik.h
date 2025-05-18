@@ -95,6 +95,15 @@ namespace esphome::luxtronik_v1
         void add_dataset(const char* code);
         void set_operational_mode(OperationalModeType type, uint8_t value);
         void set_hot_water_set_temperature(float value);
+        void set_hot_water_off_times_week(
+                uint8_t start_1_hour,
+                uint8_t start_1_minute,
+                uint8_t end_1_hour,
+                uint8_t end_1_minute,
+                uint8_t start_2_hour,
+                uint8_t start_2_minute,
+                uint8_t end_2_hour,
+                uint8_t end_2_minute);
         void set_heating_curves(HeatingCurves& value);
 
 #ifdef USE_SENSOR

@@ -29,6 +29,7 @@ import serial
 heating_mode = '4'
 hot_water_mode = '0'
 hot_water_set_temp = '460'
+hot_water_off_times_week = '6;0;23;59;0;0;2;30'
 heating_curve = '0;320;220;0;350;350;200;0;350'
 
 def respond(str):
@@ -77,8 +78,8 @@ def send_deactivations():
 def send_information():
     respond('1700;12;12; V2.33;1;5;22;1;24;6;56;44;0;0')
 
-def send_hot_water_off_times_week():
-    respond('3200;8;6;0;23;59;0;0;2;30')
+def send_hot_water_off_times_week(cmd):
+    respond(f'{cmd};8;{hot_water_off_times_week}')
 
 def send_heating_curve(cmd):
     respond(f'{cmd};9;{heating_curve}')
@@ -98,6 +99,7 @@ def parse_command(cmd):
     global heating_curve
     global heating_mode
     global hot_water_mode
+    global hot_water_off_times_week
     global hot_water_set_temp
 
     try:
@@ -132,7 +134,13 @@ def parse_command(cmd):
             send_information()
             ser.write(b'1800;8\r\n')
         elif cmd_str == '3200':
-            send_hot_water_off_times_week()
+            send_hot_water_off_times_week('3200')
+        elif cmd_str.startswith('3201'):
+            if len(cmd_str) == 4:
+                send_hot_water_off_times_week('3201')
+            elif len(cmd_str) > 7:
+                hot_water_off_times_week = cmd_str[7:]
+                send_hot_water_off_times_week('3201')
         elif cmd_str == '3400':
             send_heating_curve('3400')
         elif cmd_str.startswith('3401'):
