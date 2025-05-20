@@ -28,6 +28,7 @@
 #include "luxtronik_sensor.h"
 #include "simple_queue.h"
 #include "simple_timer.h"
+#include "task_handler.h"
 
 #include "esphome/core/defines.h"
 #include "esphome/core/component.h"
@@ -50,7 +51,7 @@
 
 namespace esphome::luxtronik_v1
 {
-    class Luxtronik : public PollingComponent
+    class Luxtronik : public PollingComponent, TaskHandler
     {
     public:
         enum OperationalModeType
@@ -87,6 +88,8 @@ namespace esphome::luxtronik_v1
             uint16_t response_timeout,
             uint16_t max_retries);
         virtual ~Luxtronik() = default;
+
+        virtual void enqueue_task(Task&& task) override;
 
         void update() override;
         void loop() override;
@@ -343,6 +346,7 @@ namespace esphome::luxtronik_v1
         uint16_t m_retry_count;
         std::string m_store_config_ack;
         std::vector<const char*> m_dataset_list;
+        SimpleQueue<TaskHandler::Task> m_task_queue;
         SimpleQueue<std::string> m_request_queue;
         SimpleTimer m_timer;
     };
