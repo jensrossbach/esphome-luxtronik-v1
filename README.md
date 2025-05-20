@@ -19,6 +19,7 @@ Dieses Projekt wurde stark von der [Luxtronik V1 ESPHome-Komponente](https://git
     - [Numerische Sensoren](#numerische-sensoren)
     - [Binäre Sensoren](#binäre-sensoren)
     - [Textsensoren](#textsensoren)
+  - [Aktoren](#aktoren)
   - [Aktionen](#aktionen)
 - [Luxtronik-Konfiguration](#luxtronik-konfiguration)
 - [Hilfe/Unterstützung](SUPPORT.md)
@@ -93,8 +94,8 @@ external_components:
 
 Die folgenden generischen Einstellungen können konfiguriert werden:
 
-| Option | Typ | Benötigt | Wertebereich | Standardwert | Beschreibung |
-| ------ | --- | -------- | ------------ |------------- | ------------ |
+| Eigenschaft | Typ | Benötigt | Wertebereich | Standardwert | Beschreibung |
+| ----------- | --- | -------- | ------------ |------------- | ------------ |
 | `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | nein | - | - | Instanz der Luxtronik-Komponente |
 | `uart_id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | ja | - | - | Konfigurierte [UART-Komponente](#uart-komponente) zum Abrufen der Daten von der Luxtronik Heizungssteuerung |
 | `update_interval` | Zahl | nein | Positive Zeitdauer | 60s | Das Intervall, in dem die Komponente Daten vom Heizungssteuergerät abruft |
@@ -439,6 +440,41 @@ text_sensor:
       name: Letzte Abschaltung - Zeit
 ```
 
+### Aktoren
+Die Luxtronik-Komponente stellt Aktoren zur Verfügung, die für die Eingabe von Daten zur Programmierung der Luxtronik Heizungssteuerung dienen.
+
+#### Zahlen-Komponente
+Die Luxtronik-Komponente stellt eine spezifische Zahlen-Komponente ähnlich der Template-Zahlen-Komponente zur Verfügung. Diese nimmt Benutzereingaben entgegen, kann den Wert aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen. Zudem kann ein Schalter für einen Editiermodus konfiguriert werden, um ein Überschreiben des Wertes bei einer Sensoraktualisierung zu vermeiden, solange man noch die Eingaben verändert, ohne diese an die Luxtronik Heizungssteuerung geschickt zu haben.
+
+Zusätzlich zu allen Eigenschaften der [Zahlen-Komponente](https://www.esphome.io/components/number) können noch folgende Einstellungen konfiguriert werden.
+
+| Eigenschaft | Typ | Benötigt | Wertebereich | Standardwert | Beschreibung |
+| ----------- | --- | -------- | ------------ |------------- | ------------ |
+| `min_value` | Zahl | ja | unbegrenzt | - | Kleinstmöglicher Eingabewert |
+| `max_value` | Zahl | ja | unbegrenzt | - | Größtmöglicher Eingabewert |
+| `step` | Zahl | ja | >=&nbsp;0 | 0.5 | Schrittweite für den Eingabewert |
+| `set_action` | [Aktion](https://www.esphome.io/automations/actions#actions) | nein | - | - | Aktionen, die ausgeführt werden sollen, wenn der Wert von der Benutzeroberfläche aus geändert wird (der neue Wert steht Lambda-Funktionen in der Variable `x` zur Verfügung) |
+| `data_source` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | nein | - | - | ID eines [Sensors](https://www.esphome.io/components/sensor), der den Luxtronik-seitigen Wert zur Verfügung stellt |
+| `edit_mode_switch` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | nein | - | - | ID eines [Schalters](https://www.esphome.io/components/switch), der den Editiermodus steuert |
+
+Die Luxtronik Zahlen-Komponente ist standardmäßig der Entitätenkategorie `config` zugeordnet und besitzt die Geräteklasse `temperature` sowie die Einheit `°C`. Diese Standardeigenschaften können bei Bedarf überschrieben werden.
+
+##### Beispiel
+```yaml
+number:
+  - platform: luxtronik_v1
+    name: Soll-Temperatur Brauchwarmwasser
+    icon: mdi:coolant-temperature
+    mode: slider
+    min_value: 30.0
+    max_value: 65.0
+    data_source: current_hot_water_set_temperature
+    set_action:
+      - luxtronik_v1.set_hot_water_set_temperature:
+          id: luxtronik_heat_pump
+          value: !lambda "return x;"
+```
+
 ### Aktionen
 Die Luxtronik-Komponente stellt verschiedene Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
 
@@ -568,6 +604,7 @@ This project was heavily inspired by the [Luxtronik V1 ESPHome component](https:
     - [Numeric Sensors](#numeric-sensors)
     - [Binary Sensors](#binary-sensors)
     - [Text Sensors](#text-sensors)
+  - [Actors](#actors)
   - [Actions](#actions)
 - [Luxtronik Configuration](#luxtronik-configuration)
 - [Help/Support](SUPPORT.md#-getting-support-for-esphome-luxtronik-v1)
@@ -642,8 +679,8 @@ external_components:
 
 The following generic configuration items can be configured:
 
-| Option | Type | Mandatory | Value Range | Default Value | Description |
-| ------ | ---- | --------- | ----------- |-------------- | ----------- |
+| Property | Type | Mandatory | Value Range | Default Value | Description |
+| -------- | ---- | --------- | ----------- |-------------- | ----------- |
 | `id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | no | n/a | n/a | Luxtronik component instance |
 | `uart_id` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | yes | n/a | n/a | Configured [UART component](#uart-component) for retrieving data from the Luxtronik heating control unit |
 | `update_interval` | Number | no | Positive duration | 60s | The interval how often the component fetches data from the heating control unit |
@@ -985,6 +1022,41 @@ text_sensor:
       name: Letzte Abschaltung - Code
     deactivation_5_time:
       name: Letzte Abschaltung - Zeit
+```
+
+### Actors
+The Luxtronik component provides actors that are used to input data for programming the Luxtronik heating control unit.
+
+#### Number Component
+The Luxtronik component provides a specific number component similar to the template number component. It accepts user input, but can also accept the value from a sensor of the Luxtronik heating control unit. In addition, a switch for an editing mode can be configured to prevent the value from being overwritten when the sensor is updated as long as the entries are still being changed without having sent them to the Luxtronik heating control unit.
+
+In addition to all the properties of the [number component](https://www.esphome.io/components/number), the following settings can also be configured.
+
+| Property | Type | Mandatory | Value Range | Default Value | Description |
+| -------- | ---- | --------- | ----------- |-------------- | ----------- |
+| `min_value` | Number | yes | unlimited | - | Smallest possible input value |
+| `max_value` | Number | yes | unlimited | - | Largest possible input value |
+| `step` | Number | yes | >=&nbsp;0 | 0.5 | Step for input value |
+| `set_action` | [Action](https://www.esphome.io/automations/actions#actions) | no | - | - | Actions to be performed when the value is changed from the user interface (the new value is available to lambda functions in the variable `x`) |
+| `data_source` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | no | - | - | ID of a [sensor](https://www.esphome.io/components/sensor) that provides the Luxtronik-side value |
+| `edit_mode_switch` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | no | - | - | ID of a [switch](https://www.esphome.io/components/switch) that controls the editing mode |
+
+By default, the Luxtronik number component is assigned to the entity category `config` and has the device class `temperature` and the unit of measurement `°C`. These standard properties can be overwritten if required.
+
+##### Example
+```yaml
+number:
+  - platform: luxtronik_v1
+    name: Soll-Temperatur Brauchwarmwasser
+    icon: mdi:coolant-temperature
+    mode: slider
+    min_value: 30.0
+    max_value: 65.0
+    data_source: current_hot_water_set_temperature
+    set_action:
+      - luxtronik_v1.set_hot_water_set_temperature:
+          id: luxtronik_heat_pump
+          value: !lambda "return x;"
 ```
 
 ### Actions

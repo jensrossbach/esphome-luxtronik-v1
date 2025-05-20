@@ -317,25 +317,17 @@ text_sensor:
 
 number:
   # number input for setting hot water set temperature
-  - platform: template
-    id: target_hot_water_set_temperature
+  - platform: luxtronik_v1
     name: Soll-Temperatur Brauchwarmwasser
     icon: mdi:coolant-temperature
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: slider
     min_value: 30.0
     max_value: 65.0
-    step: 0.5
-    lambda: |-
-      if (id(current_hot_water_set_temperature).has_state()) { return id(current_hot_water_set_temperature).state; }
-      else { return nullopt; }
+    data_source: current_hot_water_set_temperature
     set_action:
       - luxtronik_v1.set_hot_water_set_temperature:
           id: luxtronik_heat_pump
           value: !lambda "return x;"
-      - lambda: "id(target_hot_water_set_temperature).publish_state(x);"
   # number input for setting hour part of hot water off-time week start 1
   - platform: template
     id: target_hot_water_off_time_week_start_1_hour
@@ -521,158 +513,95 @@ number:
     set_action:
       - lambda: "id(target_hot_water_off_time_week_end_2_minute).publish_state(x);"
   # number input for setting return temperature offset from heat curcuit heating curve
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_hc_return_offset
     name: Abweichung Rücklauf von Heizkurve
     icon: mdi:plus-minus-variant
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: slider
     min_value: -5.0
     max_value: 5.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_return_offset).has_state()) { return id(current_heating_curve_hc_return_offset).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_hc_return_offset).publish_state(x);"
+    data_source: current_heating_curve_hc_return_offset
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting heat curcuit heating curve endpoint
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_hc_endpoint
     name: Heizkurve Endpunkt
     icon: mdi:arrow-collapse-right
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: box
     min_value: 20.0
     max_value: 50.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_endpoint).has_state()) { return id(current_heating_curve_hc_endpoint).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_hc_endpoint).publish_state(x);"
+    data_source: current_heating_curve_hc_endpoint
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting heat curcuit heating curve parallel shift
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_hc_parallel_shift
     name: Heizkurve Parallelverschiebung
     icon: mdi:arrow-expand
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: box
     min_value: 0.0
     max_value: 40.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_parallel_shift).has_state()) { return id(current_heating_curve_hc_parallel_shift).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_hc_parallel_shift).publish_state(x);"
+    data_source: current_heating_curve_hc_parallel_shift
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting heat curcuit heating curve night setback
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_hc_night_setback
     name: Heizkurve Nachtabsenkung
     icon: mdi:moon-waning-crescent
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: slider
     min_value: -10.0
     max_value: 0.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_night_setback).has_state()) { return id(current_heating_curve_hc_night_setback).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_hc_night_setback).publish_state(x);"
+    data_source: current_heating_curve_hc_night_setback
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting heat curcuit constant return temperature
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_hc_constant_return
     name: Heizkurve Festwert Rücklauf
     icon: mdi:format-vertical-align-center
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: box
     min_value: 0.0
     max_value: 50.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_hc_constant_return).has_state()) { return id(current_heating_curve_hc_constant_return).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_hc_constant_return).publish_state(x);"
+    data_source: current_heating_curve_hc_constant_return
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting mixed curcuit 1 endpoint
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_mc1_endpoint
     name: Heizkurve Mischkreis 1 Endpunkt
     icon: mdi:arrow-collapse-right
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: box
     min_value: 20.0
     max_value: 50.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_endpoint).has_state()) { return id(current_heating_curve_mc1_endpoint).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_mc1_endpoint).publish_state(x);"
+    data_source: current_heating_curve_mc1_endpoint
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting mixed curcuit 1 parallel shift
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_mc1_parallel_shift
     name: Heizkurve Mischkreis 1 Parallelverschiebung
     icon: mdi:arrow-expand
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: box
     min_value: 0.0
     max_value: 40.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_parallel_shift).has_state()) { return id(current_heating_curve_mc1_parallel_shift).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_mc1_parallel_shift).publish_state(x);"
+    data_source: current_heating_curve_mc1_parallel_shift
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting mixed curcuit 1 night setback
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_mc1_night_setback
     name: Heizkurve Mischkreis 1 Nachtabsenkung
     icon: mdi:moon-waning-crescent
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: slider
     min_value: -10.0
     max_value: 0.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_night_setback).has_state()) { return id(current_heating_curve_mc1_night_setback).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_mc1_night_setback).publish_state(x);"
+    data_source: current_heating_curve_mc1_night_setback
+    edit_mode_switch: heating_curves_edit_mode
   # number input for setting mixed curcuit 1 constant flow temperature
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_curve_mc1_constant_flow
     name: Heizkurve Mischkreis 1 Festwert Vorlauf
     icon: mdi:format-vertical-align-center
-    unit_of_measurement: °C
-    device_class: temperature
-    entity_category: config
     mode: box
     min_value: 0.0
     max_value: 50.0
-    step: 0.5
-    lambda: |-
-      if (!id(heating_curves_edit_mode).state && id(current_heating_curve_mc1_constant_flow).has_state()) { return id(current_heating_curve_mc1_constant_flow).state; }
-      else { return nullopt; }
-    set_action:
-      - lambda: "id(target_heating_curve_mc1_constant_flow).publish_state(x);"
+    data_source: current_heating_curve_mc1_constant_flow
+    edit_mode_switch: heating_curves_edit_mode
 
 select:
   # selection for heating mode
