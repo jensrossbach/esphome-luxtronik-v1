@@ -62,6 +62,9 @@ CONF_START_2_MINUTE = "start_2_minute"
 CONF_END_2_HOUR     = "end_2_hour"
 CONF_END_2_MINUTE   = "end_2_minute"
 
+CONF_DATA_SOURCE      = "data_source"
+CONF_EDIT_MODE_SWITCH = "edit_mode_switch"
+
 TYPE_HEATING_MODE   = 0
 TYPE_HOT_WATER_MODE = 1
 
