@@ -37,6 +37,8 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 #endif
 
+#include "task_handler.h"
+
 #include <cstdint>
 #include <string>
 
@@ -71,27 +73,30 @@
 
 namespace esphome::luxtronik_v1
 {
-    class NumericSensor
+    class LuxtronikSensor
     {
     public:
-        NumericSensor()
+        LuxtronikSensor(TaskHandler& task_queue)
+            : m_task_handler(task_queue)
+        {
+        }
+
+    protected:
+        TaskHandler& m_task_handler;
+    };
+
+    class NumericSensor : public LuxtronikSensor
+    {
+    public:
+        NumericSensor(TaskHandler& task_queue)
+            : LuxtronikSensor(task_queue)
 #ifdef USE_SENSOR
-            : m_sensor(nullptr)
+            , m_sensor(nullptr)
 #endif
         {
         }
 
-        void set_state(const std::string& input_str, uint16_t start, uint16_t end)
-        {
-#ifdef USE_SENSOR
-            if (m_sensor != nullptr)
-            {
-                m_sensor->publish_state(
-                            static_cast<float>(
-                                std::atoi(input_str.substr(start, end - start).c_str())));
-            }
-#endif
-        }
+        void set_state(const std::string& input_str, uint16_t start, uint16_t end);
 
         float get_state() const
         {
@@ -116,53 +121,27 @@ namespace esphome::luxtronik_v1
     class TemperatureSensor : public NumericSensor
     {
     public:
-        TemperatureSensor()
-            : NumericSensor()
+        TemperatureSensor(TaskHandler& task_queue)
+            : NumericSensor(task_queue)
         {
         }
 
-        void set_state(const std::string& input_str, uint16_t start, uint16_t end)
-        {
-#ifdef USE_SENSOR
-            if (m_sensor != nullptr)
-            {
-                m_sensor->publish_state(
-                            static_cast<float>(
-                                std::atoi(input_str.substr(start, end - start).c_str())) / 10);
-            }
-#endif
-        }
+        void set_state(const std::string& input_str, uint16_t start, uint16_t end);
     };
 
-    class StringSensor
+    class StringSensor : public LuxtronikSensor
     {
     public:
-        StringSensor()
+        StringSensor(TaskHandler& task_queue)
+            : LuxtronikSensor(task_queue)
 #ifdef USE_TEXT_SENSOR
-            : m_sensor(nullptr)
+            , m_sensor(nullptr)
 #endif
         {
         }
 
-        void set_state(const std::string& input_str)
-        {
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor != nullptr)
-            {
-                m_sensor->publish_state(input_str);
-            }
-#endif
-        }
-
-        void set_state(const std::string& input_str, uint16_t start, uint16_t end)
-        {
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor != nullptr)
-            {
-                m_sensor->publish_state(input_str.substr(start, end - start));
-            }
-#endif
-        }
+        void set_state(const std::string& input_str);
+        void set_state(const std::string& input_str, uint16_t start, uint16_t end);
 
         bool has_sensor()
         {
@@ -193,53 +172,13 @@ namespace esphome::luxtronik_v1
             HUMAN_READABLE  // Human readable string in the form "h:mm:ss"
         };
 
-        DurationSensor()
-            : StringSensor()
+        DurationSensor(TaskHandler& task_queue)
+            : StringSensor(task_queue)
             , m_format(Format::ISO_8601)
         {
         }
 
-        void set_state(const std::string& input_str, uint16_t start, uint16_t end)
-        {
-#ifdef USE_TEXT_SENSOR
-            if (m_sensor != nullptr)
-            {
-                std::string state;
-                uint32_t value = static_cast<uint32_t>(std::atol(input_str.substr(start, end - start).c_str()));
-
-                if (value > 0)
-                {
-                    uint32_t hours = value / 3600;
-                    uint32_t minutes = (value / 60) % 60;
-                    uint32_t seconds = value % 60;
-
-                    switch (m_format)
-                    {
-                        case Format::ISO_8601:
-                        {
-                            state = "PT";
-
-                            if (hours > 0)   { state += std::to_string(hours)   + "H"; }
-                            if (minutes > 0) { state += std::to_string(minutes) + "M"; }
-                            if (seconds > 0) { state += std::to_string(seconds) + "S"; }
-
-                            break;
-                        }
-                        case Format::HUMAN_READABLE:
-                        {
-                            state = std::to_string(hours) + ':'
-                                    + ((minutes < 10) ? '0' + std::to_string(minutes) : std::to_string(minutes)) + ':'
-                                    + ((seconds < 10) ? '0' + std::to_string(seconds) : std::to_string(seconds));
-
-                            break;
-                        }
-                    }
-                }
-
-                m_sensor->publish_state(state);
-            }
-#endif
-        }
+        void set_state(const std::string& input_str, uint16_t start, uint16_t end);
 
 #ifdef ESPHOME_LOG_HAS_CONFIG
         const char* get_format() const
@@ -273,36 +212,19 @@ namespace esphome::luxtronik_v1
         Format m_format;
     };
 
-    class BoolSensor
+    class BoolSensor : public LuxtronikSensor
     {
     public:
-        BoolSensor()
+        BoolSensor(TaskHandler& task_queue)
+            : LuxtronikSensor(task_queue)
 #ifdef USE_BINARY_SENSOR
-            : m_sensor(nullptr)
+            , m_sensor(nullptr)
 #endif
         {
         }
 
-        void set_state(const std::string& input_str, uint16_t start, uint16_t end, bool invert = false)
-        {
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor != nullptr)
-            {
-                std::string part = input_str.substr(start, end - start);
-                m_sensor->publish_state(invert ? (part == "0") : (part != "0"));
-            }
-#endif
-        }
-
-        void set_state(bool state)
-        {
-#ifdef USE_BINARY_SENSOR
-            if (m_sensor != nullptr)
-            {
-                m_sensor->publish_state(state);
-            }
-#endif
-        }
+        void set_state(const std::string& input_str, uint16_t start, uint16_t end, bool invert = false);
+        void set_state(bool state);
 
 #ifdef USE_BINARY_SENSOR
         void set_sensor(binary_sensor::BinarySensor* sensor) { m_sensor = sensor; }

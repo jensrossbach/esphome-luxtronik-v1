@@ -135,85 +135,85 @@ namespace esphome::luxtronik_v1
                     uint16_t max_retries)
         : PollingComponent()
         , m_device(uart)
-        , m_sensor_flow_temperature()
-        , m_sensor_return_temperature()
-        , m_sensor_return_set_temperature()
-        , m_sensor_hot_gas_temperature()
-        , m_sensor_outside_temperature()
-        , m_sensor_hot_water_temperature()
-        , m_sensor_hot_water_set_temperature()
-        , m_sensor_heat_source_input_temperature()
-        , m_sensor_heat_source_output_temperature()
-        , m_sensor_mixed_circuit_1_temperature()
-        , m_sensor_mixed_circuit_1_set_temperature()
-        , m_sensor_remote_adjuster_temperature()
-        , m_sensor_defrost_brine_flow()
-        , m_sensor_power_provider_lock_period()
-        , m_sensor_high_pressure_state()
-        , m_sensor_engine_protection()
-        , m_sensor_low_pressure_state()
-        , m_sensor_external_power()
-        , m_sensor_defrost_valve()
-        , m_sensor_hot_water_pump()
-        , m_sensor_floor_heating_pump()
-        , m_sensor_heating_pump()
-        , m_sensor_mixer_1_state()
-        , m_sensor_housing_ventilation()
-        , m_sensor_ventilation_pump()
-        , m_sensor_compressor_1()
-        , m_sensor_compressor_2()
-        , m_sensor_extra_pump()
-        , m_sensor_secondary_heater_1()
-        , m_sensor_secondary_heater_2_failure()
-        , m_sensor_device_type()
-        , m_sensor_firmware_version()
-        , m_sensor_bivalence_level()
-        , m_sensor_operational_state()
-        , m_sensor_heating_curve_hc_return_offset()
-        , m_sensor_heating_curve_hc_endpoint()
-        , m_sensor_heating_curve_hc_parallel_shift()
-        , m_sensor_heating_curve_hc_night_setback()
-        , m_sensor_heating_curve_hc_constant_return()
-        , m_sensor_heating_curve_mc1_endpoint()
-        , m_sensor_heating_curve_mc1_parallel_shift()
-        , m_sensor_heating_curve_mc1_night_setback()
-        , m_sensor_heating_curve_mc1_constant_flow()
-        , m_sensor_heating_mode()
-        , m_sensor_hot_water_mode()
-        , m_sensor_operating_hours_compressor_1()
-        , m_sensor_impulses_compressor_1()
-        , m_sensor_average_operating_time_compressor_1()
-        , m_sensor_operating_hours_compressor_2()
-        , m_sensor_impulses_compressor_2()
-        , m_sensor_average_operating_time_compressor_2()
-        , m_sensor_operating_hours_secondary_heater_1()
-        , m_sensor_operating_hours_secondary_heater_2()
-        , m_sensor_operating_hours_heat_pump()
-        , m_sensor_error_1_code()
-        , m_sensor_error_2_code()
-        , m_sensor_error_3_code()
-        , m_sensor_error_4_code()
-        , m_sensor_error_5_code()
-        , m_sensor_error_1_time()
-        , m_sensor_error_2_time()
-        , m_sensor_error_3_time()
-        , m_sensor_error_4_time()
-        , m_sensor_error_5_time()
-        , m_sensor_deactivation_1_code()
-        , m_sensor_deactivation_2_code()
-        , m_sensor_deactivation_3_code()
-        , m_sensor_deactivation_4_code()
-        , m_sensor_deactivation_5_code()
-        , m_sensor_deactivation_1_time()
-        , m_sensor_deactivation_2_time()
-        , m_sensor_deactivation_3_time()
-        , m_sensor_deactivation_4_time()
-        , m_sensor_deactivation_5_time()
-        , m_sensor_hot_water_off_time_week_start_1()
-        , m_sensor_hot_water_off_time_week_end_1()
-        , m_sensor_hot_water_off_time_week_start_2()
-        , m_sensor_hot_water_off_time_week_end_2()
-        , m_sensor_device_communication()
+        , m_sensor_flow_temperature(*this)
+        , m_sensor_return_temperature(*this)
+        , m_sensor_return_set_temperature(*this)
+        , m_sensor_hot_gas_temperature(*this)
+        , m_sensor_outside_temperature(*this)
+        , m_sensor_hot_water_temperature(*this)
+        , m_sensor_hot_water_set_temperature(*this)
+        , m_sensor_heat_source_input_temperature(*this)
+        , m_sensor_heat_source_output_temperature(*this)
+        , m_sensor_mixed_circuit_1_temperature(*this)
+        , m_sensor_mixed_circuit_1_set_temperature(*this)
+        , m_sensor_remote_adjuster_temperature(*this)
+        , m_sensor_defrost_brine_flow(*this)
+        , m_sensor_power_provider_lock_period(*this)
+        , m_sensor_high_pressure_state(*this)
+        , m_sensor_engine_protection(*this)
+        , m_sensor_low_pressure_state(*this)
+        , m_sensor_external_power(*this)
+        , m_sensor_defrost_valve(*this)
+        , m_sensor_hot_water_pump(*this)
+        , m_sensor_floor_heating_pump(*this)
+        , m_sensor_heating_pump(*this)
+        , m_sensor_mixer_1_state(*this)
+        , m_sensor_housing_ventilation(*this)
+        , m_sensor_ventilation_pump(*this)
+        , m_sensor_compressor_1(*this)
+        , m_sensor_compressor_2(*this)
+        , m_sensor_extra_pump(*this)
+        , m_sensor_secondary_heater_1(*this)
+        , m_sensor_secondary_heater_2_failure(*this)
+        , m_sensor_device_type(*this)
+        , m_sensor_firmware_version(*this)
+        , m_sensor_bivalence_level(*this)
+        , m_sensor_operational_state(*this)
+        , m_sensor_heating_curve_hc_return_offset(*this)
+        , m_sensor_heating_curve_hc_endpoint(*this)
+        , m_sensor_heating_curve_hc_parallel_shift(*this)
+        , m_sensor_heating_curve_hc_night_setback(*this)
+        , m_sensor_heating_curve_hc_constant_return(*this)
+        , m_sensor_heating_curve_mc1_endpoint(*this)
+        , m_sensor_heating_curve_mc1_parallel_shift(*this)
+        , m_sensor_heating_curve_mc1_night_setback(*this)
+        , m_sensor_heating_curve_mc1_constant_flow(*this)
+        , m_sensor_heating_mode(*this)
+        , m_sensor_hot_water_mode(*this)
+        , m_sensor_operating_hours_compressor_1(*this)
+        , m_sensor_impulses_compressor_1(*this)
+        , m_sensor_average_operating_time_compressor_1(*this)
+        , m_sensor_operating_hours_compressor_2(*this)
+        , m_sensor_impulses_compressor_2(*this)
+        , m_sensor_average_operating_time_compressor_2(*this)
+        , m_sensor_operating_hours_secondary_heater_1(*this)
+        , m_sensor_operating_hours_secondary_heater_2(*this)
+        , m_sensor_operating_hours_heat_pump(*this)
+        , m_sensor_error_1_code(*this)
+        , m_sensor_error_2_code(*this)
+        , m_sensor_error_3_code(*this)
+        , m_sensor_error_4_code(*this)
+        , m_sensor_error_5_code(*this)
+        , m_sensor_error_1_time(*this)
+        , m_sensor_error_2_time(*this)
+        , m_sensor_error_3_time(*this)
+        , m_sensor_error_4_time(*this)
+        , m_sensor_error_5_time(*this)
+        , m_sensor_deactivation_1_code(*this)
+        , m_sensor_deactivation_2_code(*this)
+        , m_sensor_deactivation_3_code(*this)
+        , m_sensor_deactivation_4_code(*this)
+        , m_sensor_deactivation_5_code(*this)
+        , m_sensor_deactivation_1_time(*this)
+        , m_sensor_deactivation_2_time(*this)
+        , m_sensor_deactivation_3_time(*this)
+        , m_sensor_deactivation_4_time(*this)
+        , m_sensor_deactivation_5_time(*this)
+        , m_sensor_hot_water_off_time_week_start_1(*this)
+        , m_sensor_hot_water_off_time_week_end_1(*this)
+        , m_sensor_hot_water_off_time_week_start_2(*this)
+        , m_sensor_hot_water_off_time_week_end_2(*this)
+        , m_sensor_device_communication(*this)
         , m_request_delay(request_delay)
         , m_response_timeout(response_timeout)
         , m_max_retries(max_retries)
@@ -226,9 +226,15 @@ namespace esphome::luxtronik_v1
         , m_retry_count(0)
         , m_store_config_ack()
         , m_dataset_list()
+        , m_task_queue()
         , m_request_queue()
         , m_timer()
     {
+    }
+
+    void Luxtronik::enqueue_task(Task&& task)
+    {
+        m_task_queue.push_back(std::move(task));
     }
 
     void Luxtronik::update()
@@ -255,57 +261,65 @@ namespace esphome::luxtronik_v1
 
     void Luxtronik::loop()
     {
-        m_timer.loop();
-
-        if (m_response_ready)
+        if (!m_task_queue.empty())
         {
-            // we have a full response, so parse it
-            parse_response(m_response_buffer);
-
-            m_response_ready = false;
+            m_task_queue.front()();
+            m_task_queue.pop_front();
         }
         else
         {
-            while (m_device.available())  // read data as long as available
+            m_timer.loop();
+
+            if (m_response_ready)
             {
-                if (m_cursor == sizeof(m_response_buffer))  // wrap around
+                // we have a full response, so parse it
+                parse_response(m_response_buffer);
+
+                m_response_ready = false;
+            }
+            else
+            {
+                while (m_device.available())  // read data as long as available
                 {
-                    // if this happens, it's time to increase the response buffer ;)
-                    ESP_LOGW(TAG, "Response too long, overwriting start of buffer");
-
-                    m_cursor = 0;
-                }
-
-                uint8_t byte;
-                bool res = m_device.read_byte(&byte);
-                ESP_LOGVV(TAG, "Data read:  CRS %u  DAT %02X  RES %d", m_cursor, byte, res);
-
-                // response is terminated by CRLF, we ignore CR and only react on LF
-                if (byte != ASCII_CR)
-                {
-                    if (byte == ASCII_LF)  // end of response
+                    if (m_cursor == sizeof(m_response_buffer))  // wrap around
                     {
-                        m_response_buffer[m_cursor] = '\0';
+                        // if this happens, it's time to increase the response buffer ;)
+                        ESP_LOGW(TAG, "Response too long, overwriting start of buffer");
+
                         m_cursor = 0;
-
-                        // we have a full response, so parse it in next loop
-                        m_response_ready = true;
-
-                        break;
                     }
-                    else
+
+                    uint8_t byte;
+                    bool res = m_device.read_byte(&byte);
+                    ESP_LOGVV(TAG, "Data read:  CRS %u  DAT %02X  RES %d", m_cursor, byte, res);
+
+                    // response is terminated by CRLF, we ignore CR and only react on LF
+                    if (byte != ASCII_CR)
                     {
-                        if ((byte >= MIN_PRINTABLE) && (byte <= MAX_PRINTABLE))
+                        if (byte == ASCII_LF)  // end of response
                         {
-                            m_response_buffer[m_cursor] = byte;
+                            m_response_buffer[m_cursor] = '\0';
+                            m_cursor = 0;
+
+                            // we have a full response, so parse it in next loop
+                            m_response_ready = true;
+
+                            break;
                         }
                         else
                         {
-                            // convert any non-printable characters
-                            m_response_buffer[m_cursor] = '.';
-                        }
+                            if ((byte >= MIN_PRINTABLE) && (byte <= MAX_PRINTABLE))
+                            {
+                                m_response_buffer[m_cursor] = byte;
+                            }
+                            else
+                            {
+                                // convert any non-printable characters
+                                m_response_buffer[m_cursor] = '.';
+                            }
 
-                        ++m_cursor;
+                            ++m_cursor;
+                        }
                     }
                 }
             }
