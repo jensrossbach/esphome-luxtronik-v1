@@ -475,6 +475,39 @@ number:
           value: !lambda "return x;"
 ```
 
+#### Auswahl-Komponente
+Die Luxtronik-Komponente stellt eine spezifische Auswahl-Komponente ähnlich der Template-Auswahl-Komponente zur Verfügung. Diese kann über die Benutzeroberfläche gesteuert werden, kann die aktuelle Auswahl aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen.
+
+Zusätzlich zu allen Eigenschaften der [Auswahl-Komponente](https://www.esphome.io/components/select) können noch folgende Einstellungen konfiguriert werden.
+
+| Eigenschaft | Typ | Benötigt | Wertebereich | Standardwert | Beschreibung |
+| ----------- | --- | -------- | ------------ |------------- | ------------ |
+| `options` | Liste | ja | - | - | Liste der Auswahlmöglichkeiten |
+| `set_action` | [Aktion](https://www.esphome.io/automations/actions#actions) | nein | - | - | Aktionen, die ausgeführt werden sollen, wenn die Auswahl von der Benutzeroberfläche aus geändert wird (Lambda-Funktionen steht der Name der neuen Auswahl in der Variable `x` und der Index der neuen Auswahl in der Variable `i` zur Verfügung) |
+| `data_source` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | nein | - | - | ID eines [Text-Sensors](https://www.esphome.io/components/text_sensor), der die Luxtronik-seitige Auswahl zur Verfügung stellt |
+
+Die Luxtronik Auswahl-Komponente ist standardmäßig der Entitätenkategorie `config` zugeordnet. Diese Standardeigenschaft kann bei Bedarf überschrieben werden.
+
+##### Beispiel
+```yaml
+select:
+  - platform: luxtronik_v1
+    id: target_heating_mode
+    name: Betriebsart Heizung
+    icon: mdi:radiator
+    options:
+      - Automatik
+      - Zweiter Wärmeerzeuger
+      - Party
+      - Ferien
+      - Aus
+    data_source: current_heating_mode
+    set_action:
+      - luxtronik_v1.set_heating_mode:
+          id: luxtronik_heat_pump
+          mode: !lambda "return i;"
+```
+
 ### Aktionen
 Die Luxtronik-Komponente stellt verschiedene Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
 
@@ -1057,6 +1090,39 @@ number:
       - luxtronik_v1.set_hot_water_set_temperature:
           id: luxtronik_heat_pump
           value: !lambda "return x;"
+```
+
+#### Select Component
+The Luxtronik component provides a specific select component similar to the template select component. It can be controlled from the user interface, but can also accept the current selection from a sensor of the Luxtronik heating control unit.
+
+In addition to all the properties of the [select component](https://www.esphome.io/components/select), the following settings can also be configured.
+
+| Property | Type | Mandatory | Value Range | Default Value | Description |
+| -------- | ---- | --------- | ----------- |-------------- | ----------- |
+| `options` | List | yes | - | - | List of selection options |
+| `set_action` | [Action](https://www.esphome.io/automations/actions#actions) | no | - | - | Actions to be performed when the selection is changed from the user interface (lambda functions can access the name of the new selection via variable `x` and the index of the new selection via variable `i`) |
+| `data_source` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | no | - | - | ID of a [text sensor](https://www.esphome.io/components/text_sensor) that provides the Luxtronik-side selection |
+
+By default, the Luxtronik select component is assigned to the entity category `config`. This standard property can be overwritten if required.
+
+##### Example
+```yaml
+select:
+  - platform: luxtronik_v1
+    id: target_heating_mode
+    name: Betriebsart Heizung
+    icon: mdi:radiator
+    options:
+      - Automatik
+      - Zweiter Wärmeerzeuger
+      - Party
+      - Ferien
+      - Aus
+    data_source: current_heating_mode
+    set_action:
+      - luxtronik_v1.set_heating_mode:
+          id: luxtronik_heat_pump
+          mode: !lambda "return i;"
 ```
 
 ### Actions
