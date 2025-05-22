@@ -605,49 +605,37 @@ number:
 
 select:
   # selection for heating mode
-  - platform: template
+  - platform: luxtronik_v1
     id: target_heating_mode
     name: Betriebsart Heizung
-    icon: mdi:state-machine
-    entity_category: config
+    icon: mdi:radiator
     options:
       - Automatik
       - Zweiter Wärmeerzeuger
       - Party
       - Ferien
       - Aus
-    lambda: |-
-      if (id(current_heating_mode).has_state()) { return id(current_heating_mode).state; }
-      else { return nullopt; }
+    data_source: current_heating_mode
     set_action:
       - luxtronik_v1.set_heating_mode:
           id: luxtronik_heat_pump
-          mode: !lambda |-
-            auto idx = id(target_heating_mode).index_of(x);
-            return idx.has_value() ? idx.value() : 255;
-      - lambda: "id(target_heating_mode).publish_state(x);"
+          mode: !lambda "return i;"
   # selection for heating mode
-  - platform: template
+  - platform: luxtronik_v1
     id: target_hot_water_mode
     name: Betriebsart Brauchwarmwasser
     icon: mdi:water-boiler
-    entity_category: config
     options:
       - Automatik
       - Zweiter Wärmeerzeuger
       - Party
       - Ferien
       - Aus
-    lambda: |-
-      if (id(current_hot_water_mode).has_state()) { return id(current_hot_water_mode).state; }
-      else { return nullopt; }
+    data_source: current_hot_water_mode
     set_action:
       - luxtronik_v1.set_hot_water_mode:
           id: luxtronik_heat_pump
-          mode: !lambda |-
-            auto idx = id(target_hot_water_mode).index_of(x);
-            return idx.has_value() ? idx.value() : 255;
-      - lambda: "id(target_hot_water_mode).publish_state(x);"
+          mode: !lambda "return i;"
 
 button:
   # button for sending hot water off-times week to Luxtronik heating control unit
