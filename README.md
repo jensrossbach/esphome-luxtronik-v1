@@ -508,6 +508,29 @@ select:
           mode: !lambda "return i;"
 ```
 
+#### Zeitauswahl-Komponente
+Die Luxtronik-Komponente stellt eine spezifische Zeitauswahl-Komponente ähnlich der Template-Zeitauswahl-Komponente zur Verfügung. Diese nimmt Benutzereingaben entgegen, kann den Wert aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen. Zudem kann ein Schalter für einen Editiermodus konfiguriert werden, um ein Überschreiben des Wertes bei einer Sensoraktualisierung zu vermeiden, solange man noch die Eingaben verändert, ohne diese an die Luxtronik Heizungssteuerung geschickt zu haben.
+
+Zusätzlich zu allen Eigenschaften der [Datums-/Zeitauswahl-Komponente](https://www.esphome.io/components/datetime) können noch folgende Einstellungen konfiguriert werden.
+
+| Eigenschaft | Typ | Benötigt | Wertebereich | Standardwert | Beschreibung |
+| ----------- | --- | -------- | ------------ |------------- | ------------ |
+| `set_action` | [Aktion](https://www.esphome.io/automations/actions#actions) | nein | - | - | Aktionen, die ausgeführt werden sollen, wenn der Wert von der Benutzeroberfläche aus geändert wird (der neue Wert steht Lambda-Funktionen in der Variable `x` zur Verfügung) |
+| `data_source` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | nein | - | - | ID eines [Text Sensors](https://www.esphome.io/components/text_sensor), der den Luxtronik-seitigen Wert zur Verfügung stellt |
+| `edit_mode_switch` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | nein | - | - | ID eines [Schalters](https://www.esphome.io/components/switch), der den Editiermodus steuert |
+
+Die Luxtronik Zeitauswahl-Komponente ist standardmäßig der Entitätenkategorie `config` zugeordnet. Diese Standardeigenschaft kann bei Bedarf überschrieben werden.
+
+##### Beispiel
+```yaml
+datetime:
+  - platform: luxtronik_v1
+    id: target_hot_water_off_time_week_start_1
+    name: Tägliche Sperrzeit Brauchwarmwasser 1 Beginn
+    data_source: current_hot_water_off_time_week_start_1
+    edit_mode_switch: hot_water_off_times_week_edit_mode
+```
+
 ### Aktionen
 Die Luxtronik-Komponente stellt verschiedene Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
 
@@ -1123,6 +1146,29 @@ select:
       - luxtronik_v1.set_heating_mode:
           id: luxtronik_heat_pump
           mode: !lambda "return i;"
+```
+
+#### Time Select Component
+The Luxtronik component provides a specific time select component similar to the template time select component. It accepts user input, but can also accept the value from a sensor of the Luxtronik heating control unit. In addition, a switch for an editing mode can be configured to prevent the value from being overwritten when the sensor is updated as long as the entries are still being changed without having sent them to the Luxtronik heating control unit.
+
+In addition to all the properties of the [datetime component](https://www.esphome.io/components/datetime), the following settings can also be configured.
+
+| Property | Type | Mandatory | Value Range | Default Value | Description |
+| -------- | ---- | --------- | ----------- |-------------- | ----------- |
+| `set_action` | [Action](https://www.esphome.io/automations/actions#actions) | no | - | - | Actions to be performed when the value is changed from the user interface (the new value is available to lambda functions in the variable `x`) |
+| `data_source` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | no | - | - | ID of a [text sensor](https://www.esphome.io/components/text_sensor) that provides the Luxtronik-side value |
+| `edit_mode_switch` | [ID](https://www.esphome.io/guides/configuration-types#config-id) | no | - | - | ID of a [switch](https://www.esphome.io/components/switch) that controls the editing mode |
+
+By default, the Luxtronik time select component is assigned to the entity category `config`. This standard property can be overwritten if required.
+
+##### Example
+```yaml
+datetime:
+  - platform: luxtronik_v1
+    id: target_hot_water_off_time_week_start_1
+    name: Tägliche Sperrzeit Brauchwarmwasser 1 Beginn
+    data_source: current_hot_water_off_time_week_start_1
+    edit_mode_switch: hot_water_off_times_week_edit_mode
 ```
 
 ### Actions
