@@ -328,190 +328,6 @@ number:
       - luxtronik_v1.set_hot_water_set_temperature:
           id: luxtronik_heat_pump
           value: !lambda "return x;"
-  # number input for setting hour part of hot water off-time week start 1
-  - platform: template
-    id: target_hot_water_off_time_week_start_1_hour
-    name: Sperrzeit Brauchwarmwasser 1 Beginn Stunde
-    icon: mdi:alpha-h-box
-    unit_of_measurement: h
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 23
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_start_1);
-      if (!id(hot_water_off_times_week_edit_mode).state && cur->has_state())
-      {
-          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_start_1_hour).publish_state(x);"
-  # number input for setting minute part of hot water off-time week start 1
-  - platform: template
-    id: target_hot_water_off_time_week_start_1_minute
-    name: Sperrzeit Brauchwarmwasser 1 Beginn Minute
-    icon: mdi:alpha-m-box
-    unit_of_measurement: min
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 59
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_start_1);
-      if (!id(target_hot_water_off_time_week_start_1_minute).has_state() && cur->has_state())
-      {
-          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_start_1_minute).publish_state(x);"
-  # number input for setting hour part of hot water off-time week end 1
-  - platform: template
-    id: target_hot_water_off_time_week_end_1_hour
-    name: Sperrzeit Brauchwarmwasser 1 Ende Stunde
-    icon: mdi:alpha-h-box
-    unit_of_measurement: h
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 23
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_end_1);
-      if (!id(target_hot_water_off_time_week_end_1_hour).has_state() && cur->has_state())
-      {
-          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_end_1_hour).publish_state(x);"
-  # number input for setting minute part of hot water off-time week end 1
-  - platform: template
-    id: target_hot_water_off_time_week_end_1_minute
-    name: Sperrzeit Brauchwarmwasser 1 Ende Minute
-    icon: mdi:alpha-m-box
-    unit_of_measurement: min
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 59
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_end_1);
-      if (!id(target_hot_water_off_time_week_end_1_minute).has_state() && cur->has_state())
-      {
-          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_end_1_minute).publish_state(x);"
-  # number input for setting hour part of hot water off-time week start 2
-  - platform: template
-    id: target_hot_water_off_time_week_start_2_hour
-    name: Sperrzeit Brauchwarmwasser 2 Beginn Stunde
-    icon: mdi:alpha-h-box
-    unit_of_measurement: h
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 23
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_start_2);
-      if (!id(target_hot_water_off_time_week_start_2_hour).has_state() && cur->has_state())
-      {
-          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_start_2_hour).publish_state(x);"
-  # number input for setting minute part of hot water off-time week start 2
-  - platform: template
-    id: target_hot_water_off_time_week_start_2_minute
-    name: Sperrzeit Brauchwarmwasser 2 Beginn Minute
-    icon: mdi:alpha-m-box
-    unit_of_measurement: min
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 59
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_start_2);
-      if (!id(target_hot_water_off_time_week_start_2_minute).has_state() && cur->has_state())
-      {
-          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_start_2_minute).publish_state(x);"
-  # number input for setting hour part of hot water off-time week end 2
-  - platform: template
-    id: target_hot_water_off_time_week_end_2_hour
-    name: Sperrzeit Brauchwarmwasser 2 Ende Stunde
-    icon: mdi:alpha-h-box
-    unit_of_measurement: h
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 23
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_end_2);
-      if (!id(target_hot_water_off_time_week_end_2_hour).has_state() && cur->has_state())
-      {
-          return atoi(cur->state.substr(0, cur->state.find(':')).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_end_2_hour).publish_state(x);"
-  # number input for setting minute part of hot water off-time week end 1
-  - platform: template
-    id: target_hot_water_off_time_week_end_2_minute
-    name: Sperrzeit Brauchwarmwasser 2 Ende Minute
-    icon: mdi:alpha-m-box
-    unit_of_measurement: min
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 59
-    step: 1
-    lambda: |-
-      auto cur = id(current_hot_water_off_time_week_end_2);
-      if (!id(target_hot_water_off_time_week_end_2_minute).has_state() && cur->has_state())
-      {
-          return atoi(cur->state.substr(cur->state.find(':') + 1).c_str());
-      }
-      else
-      {
-          return nullopt;
-      }
-    set_action:
-      - lambda: "id(target_hot_water_off_time_week_end_2_minute).publish_state(x);"
   # number input for setting return temperature offset from heat curcuit heating curve
   - platform: luxtronik_v1
     id: target_heating_curve_hc_return_offset
@@ -603,6 +419,32 @@ number:
     data_source: current_heating_curve_mc1_constant_flow
     edit_mode_switch: heating_curves_edit_mode
 
+datetime:
+  # number input for setting hot water off-time week start 1
+  - platform: luxtronik_v1
+    id: target_hot_water_off_time_week_start_1
+    name: Tägliche Sperrzeit Brauchwarmwasser 1 Beginn
+    data_source: current_hot_water_off_time_week_start_1
+    edit_mode_switch: hot_water_off_times_week_edit_mode
+  # number input for setting hot water off-time week end 1
+  - platform: luxtronik_v1
+    id: target_hot_water_off_time_week_end_1
+    name: Tägliche Sperrzeit Brauchwarmwasser 1 Ende
+    data_source: current_hot_water_off_time_week_end_1
+    edit_mode_switch: hot_water_off_times_week_edit_mode
+  # number input for setting hot water off-time week start 2
+  - platform: luxtronik_v1
+    id: target_hot_water_off_time_week_start_2
+    name: Tägliche Sperrzeit Brauchwarmwasser 2 Beginn
+    data_source: current_hot_water_off_time_week_start_2
+    edit_mode_switch: hot_water_off_times_week_edit_mode
+  # number input for setting hot water off-time week end 2
+  - platform: luxtronik_v1
+    id: target_hot_water_off_time_week_end_2
+    name: Tägliche Sperrzeit Brauchwarmwasser 2 Ende
+    data_source: current_hot_water_off_time_week_end_2
+    edit_mode_switch: hot_water_off_times_week_edit_mode
+
 select:
   # selection for heating mode
   - platform: luxtronik_v1
@@ -646,14 +488,14 @@ button:
     on_press:
       - luxtronik_v1.set_hot_water_off_times_week:
           id: luxtronik_heat_pump
-          start_1_hour: !lambda "return id(target_hot_water_off_time_week_start_1_hour).state;"
-          start_1_minute: !lambda "return id(target_hot_water_off_time_week_start_1_minute).state;"
-          end_1_hour: !lambda "return id(target_hot_water_off_time_week_end_1_hour).state;"
-          end_1_minute: !lambda "return id(target_hot_water_off_time_week_end_1_minute).state;"
-          start_2_hour: !lambda "return id(target_hot_water_off_time_week_start_2_hour).state;"
-          start_2_minute: !lambda "return id(target_hot_water_off_time_week_start_2_minute).state;"
-          end_2_hour: !lambda "return id(target_hot_water_off_time_week_end_2_hour).state;"
-          end_2_minute: !lambda "return id(target_hot_water_off_time_week_end_2_minute).state;"
+          start_1_hour: !lambda "return id(target_hot_water_off_time_week_start_1).hour;"
+          start_1_minute: !lambda "return id(target_hot_water_off_time_week_start_1).minute;"
+          end_1_hour: !lambda "return id(target_hot_water_off_time_week_end_1).hour;"
+          end_1_minute: !lambda "return id(target_hot_water_off_time_week_end_1).minute;"
+          start_2_hour: !lambda "return id(target_hot_water_off_time_week_start_2).hour;"
+          start_2_minute: !lambda "return id(target_hot_water_off_time_week_start_2).minute;"
+          end_2_hour: !lambda "return id(target_hot_water_off_time_week_end_2).hour;"
+          end_2_minute: !lambda "return id(target_hot_water_off_time_week_end_2).minute;"
       - switch.turn_off:
           id: hot_water_off_times_week_edit_mode
   # button for sending heating curves to Luxtronik heating control unit
