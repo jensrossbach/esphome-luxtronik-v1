@@ -8,7 +8,7 @@ esphome:
   friendly_name: "Luxtronik LWC"
   project:
     name: jensrossbach.luxtronik_v1
-    version: 1.3.0
+    version: 1.4.0
 
 # example ESP32 firmware (can be replaced by appropriate configuration)
 esp32:
@@ -16,7 +16,7 @@ esp32:
 
 # include Luxtronik V1 component (mandatory)
 external_components:
-  - source: github://jensrossbach/esphome-luxtronik-v1@v1.3.0
+  - source: github://jensrossbach/esphome-luxtronik-v1@v1.4.0
     components: [luxtronik_v1]
 
 # enable logging (optional)
