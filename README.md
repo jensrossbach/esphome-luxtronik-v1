@@ -2,9 +2,9 @@
 > [!NOTE]
 > This is the German version, for the English version, scroll down or click [here](#esphome-luxtronik-v1-english).
 
-Luxtronik V1 ist eine ESPHome-Komponente zur Erstellung einer ESP-Firmware, die die Integration eines Luxtronik V1 Heizungssteuergeräts in das Smart Home ermöglicht. Die Komponente ist primär für die Einbindung in Home Assistant gedacht, aber über MQTT kann auch eine Integration mit einer alternativen Hausautomatisierungs-Software realisiert werden. Die Luxtronik Heizungsregelung in der Version 1 (V1) verfügt nicht über eine Netzwerkschnittstelle, sondern stellt lediglich eine RS-232-Schnittstelle zur Verfügung. Daher ist ein Mikrocontroller als Gateway zwischen Heizungssteuergerät und Netzwerk notwendig.
+Luxtronik V1 ist eine ESPHome-Plattform zur Erstellung einer ESP-Firmware, die die Integration eines Luxtronik V1 Heizungssteuergeräts in das Smart Home ermöglicht. Die Plattform ist primär für die Einbindung in Home Assistant gedacht, aber über MQTT kann auch eine Integration mit einer alternativen Hausautomatisierungs-Software realisiert werden. Die Luxtronik Heizungsregelung in der Version 1 (V1) verfügt nicht über eine Netzwerkschnittstelle, sondern stellt lediglich eine RS-232-Schnittstelle zur Verfügung. Daher ist ein Mikrocontroller als Gateway zwischen Heizungssteuergerät und Netzwerk notwendig.
 
-Dieses Projekt wurde stark von der [Luxtronik V1 ESPHome-Komponente](https://github.com/CBrosius/luxtronik_v1) von [CBrosius](https://github.com/CBrosius) inspiriert. Vielen Dank an CBrosius für die großartige Arbeit, die mir sehr geholfen hat, die Luxtronik-Schnittstelle und die Arbeitsweise von ESPHome-Komponenten zu verstehen.
+Dieses Projekt wurde anfänglich stark vom [Luxtronik V1 ESPHome-Projekt](https://github.com/CBrosius/luxtronik_v1) von [CBrosius](https://github.com/CBrosius) inspiriert. Vielen Dank an CBrosius für die großartige Arbeit, die mir sehr geholfen hat, die Luxtronik-Schnittstelle und die Arbeitsweise von ESPHome-Komponenten zu verstehen.
 
 - [Haftungsausschluss](#haftungsausschluss)
 - [Lizenz](LICENSE)
@@ -77,7 +77,7 @@ Für welche Methode du dich entscheiden solltest, hängt davon ab, wie vertraut 
 Die folgenden Abschnitte beschreiben die wichtigsten Komponenten, die in der Firmware-Konfigurationsdatei enthalten sind.
 
 ### Luxtronik-Komponente
-Die Komponente Luxtronik-V1 ist unabdingbar und muss hinzugefügt werden, um ihre Sensoren zu verwenden.
+Die Luxtronik-Komponente (`luxtronik_v1`) ist das Herz der Luxtronik-Plattform und muss hinzugefügt werden, um die Luxtronik-Sensoren, -Aktoren und -Aktionen zu verwenden.
 
 Da es sich um eine benutzerdefinierte Komponente handelt, die nicht Teil von ESPHome ist, muss sie explizit importiert werden. Am einfachsten ist es, die Komponente direkt aus diesem Repository zu laden.
 
@@ -127,7 +127,7 @@ luxtronik_v1:
 ```
 
 ### UART-Komponente
-Eine [UART-Komponente](https://www.esphome.io/components/uart.html) ist für die korrekte Funktion der Luxtronik-Komponente zwingend erforderlich und muss daher immer hinzugefügt werden. Die seriellen Kommunikationsparameter (Baudrate, Datenbits, Stopbits und Parität) sind durch die Luxtronik V1 Heizungssteuerung fest vorgegeben und dürfen daher nicht verändert werden. Lediglich die RX- und TX-Pins können in Abhängigkeit von der verwendeten Hardware angepasst werden.
+Eine [UART-Komponente](https://www.esphome.io/components/uart.html) ist für die korrekte Funktion der Luxtronik-Plattform zwingend erforderlich und muss daher immer hinzugefügt werden. Die seriellen Kommunikationsparameter (Baudrate, Datenbits, Stopbits und Parität) sind durch die Luxtronik V1 Heizungssteuerung fest vorgegeben und dürfen daher nicht verändert werden. Lediglich die RX- und TX-Pins können in Abhängigkeit von der verwendeten Hardware angepasst werden.
 
 | Parameter | Wert         |
 | --------- | ------------ |
@@ -195,7 +195,7 @@ wifi:
 ```
 
 ### Sensoren
-Die Luxtronik-Komponente verfügt über verschiedene Sensoren, welche Daten von der Heizungssteuerung ausgeben. Alle Sensoren sind optional und können weggelassen werden, wenn sie nicht benötigt werden. Je nach Art der von der Luxtronik-Heizungssteuerung gelieferten Daten werden entweder numerische, binäre oder Textsensoren verwendet, um die Werte auszugeben.
+Die Luxtronik-Plattform stellt verschiedene Sensoren zur Verfügung, welche Daten von der Heizungssteuerung ausgeben. Alle Sensoren sind optional und können weggelassen werden, wenn sie nicht benötigt werden. Je nach Art der von der Luxtronik-Heizungssteuerung gelieferten Daten werden entweder numerische, binäre oder Textsensoren verwendet, um die Werte auszugeben.
 
 #### Numerische Sensoren
 Die folgenden numerischen Sensoren können konfiguriert werden:
@@ -441,10 +441,10 @@ text_sensor:
 ```
 
 ### Aktoren
-Die Luxtronik-Komponente stellt Aktoren zur Verfügung, die für die Eingabe von Daten zur Programmierung der Luxtronik Heizungssteuerung dienen.
+Die Luxtronik-Plattform stellt Aktoren zur Verfügung, die für die Eingabe von Daten zur Programmierung der Luxtronik Heizungssteuerung dienen.
 
 #### Zahlen-Komponente
-Die Luxtronik-Komponente stellt eine spezifische Zahlen-Komponente ähnlich der Template-Zahlen-Komponente zur Verfügung. Diese nimmt Benutzereingaben entgegen, kann den Wert aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen. Zudem kann ein Schalter für einen Editiermodus konfiguriert werden, um ein Überschreiben des Wertes bei einer Sensoraktualisierung zu vermeiden, solange man noch die Eingaben verändert, ohne diese an die Luxtronik Heizungssteuerung geschickt zu haben.
+Die Luxtronik Zahlen-Komponente nimmt Benutzereingaben entgegen, kann ihren internen Wert aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen. Zudem kann ein Schalter für einen Editiermodus konfiguriert werden, um ein Überschreiben des Wertes bei einer Sensoraktualisierung zu vermeiden, solange man noch die Eingaben verändert, ohne diese an die Luxtronik Heizungssteuerung geschickt zu haben.
 
 Zusätzlich zu allen Eigenschaften der [Zahlen-Komponente](https://www.esphome.io/components/number) können noch folgende Einstellungen konfiguriert werden.
 
@@ -476,7 +476,7 @@ number:
 ```
 
 #### Auswahl-Komponente
-Die Luxtronik-Komponente stellt eine spezifische Auswahl-Komponente ähnlich der Template-Auswahl-Komponente zur Verfügung. Diese kann über die Benutzeroberfläche gesteuert werden, kann die aktuelle Auswahl aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen.
+Die Luxtronik Auswahl-Komponente kann einerseits über die Benutzeroberfläche gesteuert werden, andererseits die aktuelle Auswahl aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen.
 
 Zusätzlich zu allen Eigenschaften der [Auswahl-Komponente](https://www.esphome.io/components/select) können noch folgende Einstellungen konfiguriert werden.
 
@@ -509,7 +509,7 @@ select:
 ```
 
 #### Zeitauswahl-Komponente
-Die Luxtronik-Komponente stellt eine spezifische Zeitauswahl-Komponente ähnlich der Template-Zeitauswahl-Komponente zur Verfügung. Diese nimmt Benutzereingaben entgegen, kann den Wert aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen. Zudem kann ein Schalter für einen Editiermodus konfiguriert werden, um ein Überschreiben des Wertes bei einer Sensoraktualisierung zu vermeiden, solange man noch die Eingaben verändert, ohne diese an die Luxtronik Heizungssteuerung geschickt zu haben.
+Die Luxtronik Zeitauswahl-Komponente nimmt Benutzereingaben entgegen, kann ihren internen Wert aber auch von einem Sensor der Luxtronik Heizungssteuerung übernehmen. Zudem kann ein Schalter für einen Editiermodus konfiguriert werden, um ein Überschreiben des Wertes bei einer Sensoraktualisierung zu vermeiden, solange man noch die Eingaben verändert, ohne diese an die Luxtronik Heizungssteuerung geschickt zu haben.
 
 Zusätzlich zu allen Eigenschaften der [Datums-/Zeitauswahl-Komponente](https://www.esphome.io/components/datetime) können noch folgende Einstellungen konfiguriert werden.
 
@@ -532,7 +532,7 @@ datetime:
 ```
 
 ### Aktionen
-Die Luxtronik-Komponente stellt verschiedene Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
+Die Luxtronik-Plattform stellt verschiedene Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
 
 #### Betriebsart der Heizung setzen
 | Aktion | Beschreibung |
@@ -643,9 +643,9 @@ Um die serielle Schnittstelle des Luxtronik V1 Heizungssteuergeräts nutzen zu k
 -----
 
 # ESPHome Luxtronik V1 (English)
-Luxtronik V1 is an ESPHome component to build an ESP firmware for integrating a Luxtronik V1 heating control unit into your smart home. It is primarily intended for integration into Home Assistant, but integration with an alternative home automation software can also be realized via MQTT. The Luxtronik heating control unit in version 1 (V1) does not have a network interface, but only provides an RS-232 interface. A microcontroller is therefore required as a gateway between the heating control unit and the network.
+Luxtronik V1 is an ESPHome platform to build an ESP firmware for integrating a Luxtronik V1 heating control unit into your smart home. It is primarily intended for integration into Home Assistant, but integration with an alternative home automation software can also be realized via MQTT. The Luxtronik heating control unit in version 1 (V1) does not have a network interface, but only provides an RS-232 interface. A microcontroller is therefore required as a gateway between the heating control unit and the network.
 
-This project was heavily inspired by the [Luxtronik V1 ESPHome component](https://github.com/CBrosius/luxtronik_v1) from [CBrosius](https://github.com/CBrosius). Many thanks to CBrosius for the great work that helped me a lot to understand the Luxtronik interface as well as how ESPHome components work.
+In the beginning, this project was heavily inspired by the [Luxtronik V1 ESPHome project](https://github.com/CBrosius/luxtronik_v1) from [CBrosius](https://github.com/CBrosius). Many thanks to CBrosius for the great work that helped me a lot to understand the Luxtronik interface as well as how ESPHome components work.
 
 - [Disclaimer](#disclaimer)
 - [License](LICENSE)
@@ -718,7 +718,7 @@ Which method you should choose depends on how familiar you are with ESPHome and 
 The following sections describe the most notable components contained in the firmware configuration file.
 
 ### Luxtronik Component
-The Luxtronik component is essential and must be added in order to use its sensors.
+The Luxtronik component (`luxtronik_v1`) is the heart of the Luxtronik platform and must be added in order to use the Luxtronik sensors, actors and actions.
 
 As this is a custom component which is not part of ESPHome, it must be imported explicitly. The easiest way is to load the component directly from this repository.
 
@@ -768,7 +768,7 @@ luxtronik_v1:
 ```
 
 ### UART Component
-A [UART component](https://www.esphome.io/components/uart.html) is mandatory for the Luxtronik V1 component to function correctly and must therefore always be added. The serial communication parameters (baud rate, data bits, stop bits and parity) are inherently defined by the Luxtronik V1 heating control unit and must not be changed therefore. Only the RX and TX pins can be adapted depending on the used hardware.
+A [UART component](https://www.esphome.io/components/uart.html) is essential for the Luxtronik platform to function correctly and must therefore always be added. The serial communication parameters (baud rate, data bits, stop bits and parity) are inherently defined by the Luxtronik V1 heating control unit and must not be changed therefore. Only the RX and TX pins can be adapted depending on the used hardware.
 
 | Parameter | Value       |
 | --------- | ----------- |
@@ -836,7 +836,7 @@ wifi:
 ```
 
 ### Sensors
-The Luxtronik V1 component provides various sensors which expose data from the heating control unit. All sensors are optional and can be omitted if not needed. Depending on the type of data provided by the Luxtronik heating control unit, either numeric, binary or text sensors are used to expose the values.
+The Luxtronik platform provides various sensors which expose data from the heating control unit. All sensors are optional and can be omitted if not needed. Depending on the type of data provided by the Luxtronik heating control unit, either numeric, binary or text sensors are used to expose the values.
 
 #### Numeric Sensors
 The following numeric sensors can be configured:
@@ -1081,10 +1081,10 @@ text_sensor:
 ```
 
 ### Actors
-The Luxtronik component provides actors that are used to input data for programming the Luxtronik heating control unit.
+The Luxtronik platform provides actors that are used to input data for programming the Luxtronik heating control unit.
 
 #### Number Component
-The Luxtronik component provides a specific number component similar to the template number component. It accepts user input, but can also accept the value from a sensor of the Luxtronik heating control unit. In addition, a switch for an editing mode can be configured to prevent the value from being overwritten when the sensor is updated as long as the entries are still being changed without having sent them to the Luxtronik heating control unit.
+The Luxtronik number component accepts user input, but can also update its internal value from a sensor of the Luxtronik heating control unit. In addition, a switch for an editing mode can be configured to prevent the value from being overwritten when the sensor is updated as long as the entries are still being changed without having sent them to the Luxtronik heating control unit.
 
 In addition to all the properties of the [number component](https://www.esphome.io/components/number), the following settings can also be configured.
 
@@ -1116,7 +1116,7 @@ number:
 ```
 
 #### Select Component
-The Luxtronik component provides a specific select component similar to the template select component. It can be controlled from the user interface, but can also accept the current selection from a sensor of the Luxtronik heating control unit.
+The Luxtronik select component can be controlled from the user interface on one side and on the other side can also update its current selection from a sensor of the Luxtronik heating control unit.
 
 In addition to all the properties of the [select component](https://www.esphome.io/components/select), the following settings can also be configured.
 
@@ -1149,7 +1149,7 @@ select:
 ```
 
 #### Time Select Component
-The Luxtronik component provides a specific time select component similar to the template time select component. It accepts user input, but can also accept the value from a sensor of the Luxtronik heating control unit. In addition, a switch for an editing mode can be configured to prevent the value from being overwritten when the sensor is updated as long as the entries are still being changed without having sent them to the Luxtronik heating control unit.
+The Luxtronik time select component accepts user input, but can also update its internal value from a sensor of the Luxtronik heating control unit. In addition, a switch for an editing mode can be configured to prevent the value from being overwritten when the sensor is updated as long as the entries are still being changed without having sent them to the Luxtronik heating control unit.
 
 In addition to all the properties of the [datetime component](https://www.esphome.io/components/datetime), the following settings can also be configured.
 
@@ -1172,7 +1172,7 @@ datetime:
 ```
 
 ### Actions
-The Luxtronik component provides various actions for programming the Luxtronik heating control unit.
+The Luxtronik platform provides various actions for programming the Luxtronik heating control unit.
 
 #### Set Heating Mode
 | Action | Description |
