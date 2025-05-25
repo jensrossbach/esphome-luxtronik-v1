@@ -424,24 +424,28 @@ datetime:
   - platform: luxtronik_v1
     id: target_hot_water_off_time_week_start_1
     name: Tägliche Sperrzeit Brauchwarmwasser 1 Beginn
+    icon: mdi:water-boiler-off
     data_source: current_hot_water_off_time_week_start_1
     edit_mode_switch: hot_water_off_times_week_edit_mode
   # number input for setting hot water off-time week end 1
   - platform: luxtronik_v1
     id: target_hot_water_off_time_week_end_1
     name: Tägliche Sperrzeit Brauchwarmwasser 1 Ende
+    icon: mdi:water-boiler-off
     data_source: current_hot_water_off_time_week_end_1
     edit_mode_switch: hot_water_off_times_week_edit_mode
   # number input for setting hot water off-time week start 2
   - platform: luxtronik_v1
     id: target_hot_water_off_time_week_start_2
     name: Tägliche Sperrzeit Brauchwarmwasser 2 Beginn
+    icon: mdi:water-boiler-off
     data_source: current_hot_water_off_time_week_start_2
     edit_mode_switch: hot_water_off_times_week_edit_mode
   # number input for setting hot water off-time week end 2
   - platform: luxtronik_v1
     id: target_hot_water_off_time_week_end_2
     name: Tägliche Sperrzeit Brauchwarmwasser 2 Ende
+    icon: mdi:water-boiler-off
     data_source: current_hot_water_off_time_week_end_2
     edit_mode_switch: hot_water_off_times_week_edit_mode
 
@@ -479,6 +483,22 @@ select:
           id: luxtronik_heat_pump
           mode: !lambda "return i;"
 
+switch:
+  - platform: template
+    id: hot_water_off_times_week_edit_mode
+    name: Brauchwarmwasser-Sperrzeiten Bearbeitungsmodus
+    icon: mdi:square-edit-outline
+    entity_category: config
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+  - platform: template
+    id: heating_curves_edit_mode
+    name: Heizkurven Bearbeitungsmodus
+    icon: mdi:square-edit-outline
+    entity_category: config
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+
 button:
   # button for sending hot water off-times week to Luxtronik heating control unit
   - platform: template
@@ -515,3 +535,5 @@ button:
           mc1_parallel_shift: !lambda "return id(target_heating_curve_mc1_parallel_shift).state;"
           mc1_night_setback: !lambda "return id(target_heating_curve_mc1_night_setback).state;"
           mc1_const_flow: !lambda "return id(target_heating_curve_mc1_constant_flow).state;"
+      - switch.turn_off:
+          id: heating_curves_edit_mode
