@@ -208,11 +208,11 @@ namespace esphome::luxtronik_v1
         void parse_errors(const std::string& response);
         void parse_deactivations(const std::string& response);
         void parse_information(const std::string& response);
-        void parse_hot_water_off_times_week(const std::string& response);
-        void parse_heating_curves(const std::string& response);
-        void parse_heating_mode(const std::string& response);
-        void parse_hot_water_config(const std::string& response);
-        void parse_hot_water_mode(const std::string& response);
+        void parse_hot_water_off_times_week(const std::string& response, bool update_sensors = true);
+        void parse_heating_curves(const std::string& response, bool update_sensors = true);
+        void parse_heating_mode(const std::string& response, bool update_sensors = true);
+        void parse_hot_water_config(const std::string& response, bool update_sensors = true);
+        void parse_hot_water_mode(const std::string& response, bool update_sensors = true);
         void handle_timeout();
         void clear_uart_buffer();
         void parse_slot(const std::string& slot, StringSensor& sensor_code, StringSensor& sensor_time);

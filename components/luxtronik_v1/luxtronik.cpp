@@ -583,7 +583,7 @@ namespace esphome::luxtronik_v1
         {
             if (m_config_response_state != 1)  // ignore echo
             {
-                parse_hot_water_off_times_week(response);
+                parse_hot_water_off_times_week(response, m_config_response_state != 0);
             }
 
             ++m_config_response_state;
@@ -596,7 +596,7 @@ namespace esphome::luxtronik_v1
         {
             if (m_config_response_state != 1)  // ignore echo
             {
-                parse_heating_curves(response);
+                parse_heating_curves(response, m_config_response_state != 0);
             }
 
             ++m_config_response_state;
@@ -609,7 +609,7 @@ namespace esphome::luxtronik_v1
         {
             if (m_config_response_state != 1)  // ignore echo
             {
-                parse_heating_mode(response);
+                parse_heating_mode(response, m_config_response_state != 0);
             }
 
             ++m_config_response_state;
@@ -618,7 +618,7 @@ namespace esphome::luxtronik_v1
         {
             if (m_config_response_state != 1)  // ignore echo
             {
-                parse_hot_water_config(response);
+                parse_hot_water_config(response, m_config_response_state != 0);
             }
 
             ++m_config_response_state;
@@ -631,7 +631,7 @@ namespace esphome::luxtronik_v1
         {
             if (m_config_response_state != 1)  // ignore echo
             {
-                parse_hot_water_mode(response);
+                parse_hot_water_mode(response, m_config_response_state != 0);
             }
 
             ++m_config_response_state;
@@ -1021,189 +1021,204 @@ namespace esphome::luxtronik_v1
         next_dataset();
     }
 
-    void Luxtronik::parse_hot_water_off_times_week(const std::string& response)
+    void Luxtronik::parse_hot_water_off_times_week(const std::string& response, bool update_sensors)
     {
         accept_response();
 
-        std::string hour;
-        std::string minute;
-
-        size_t start = INDEX_RESPONSE_START;
-        size_t end = response.find(DELIMITER, start);
-        // skip number of elements
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        hour = response.substr(start, end - start);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        minute = response.substr(start, end - start);
-
-        m_sensor_hot_water_off_time_week_start_1.set_state(
-                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
-                    ((minute.length() == 1) ? '0' + minute : minute));
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        hour = response.substr(start, end - start);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        minute = response.substr(start, end - start);
-
-        m_sensor_hot_water_off_time_week_end_1.set_state(
-                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
-                    ((minute.length() == 1) ? '0' + minute : minute));
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        hour = response.substr(start, end - start);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        minute = response.substr(start, end - start);
-
-        m_sensor_hot_water_off_time_week_start_2.set_state(
-                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
-                    ((minute.length() == 1) ? '0' + minute : minute));
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        hour = response.substr(start, end - start);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        minute = response.substr(start, end - start);
-
-        m_sensor_hot_water_off_time_week_end_2.set_state(
-                    ((hour.length() == 1) ? '0' + hour : hour) + ':' +
-                    ((minute.length() == 1) ? '0' + minute : minute));
-
-        next_dataset();
-    }
-
-    void Luxtronik::parse_heating_curves(const std::string& response)
-    {
-        accept_response();
-
-        size_t start = INDEX_RESPONSE_START;
-        size_t end = response.find(DELIMITER, start);
-        // skip number of elements
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_hc_return_offset.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_hc_endpoint.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_hc_parallel_shift.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_hc_night_setback.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_hc_constant_return.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_mc1_endpoint.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_mc1_parallel_shift.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_mc1_night_setback.set_state(response, start, end);
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_heating_curve_mc1_constant_flow.set_state(response, start, end);
-
-        next_dataset();
-    }
-
-    void Luxtronik::parse_heating_mode(const std::string& response)
-    {
-        accept_response();
-
-        size_t start = INDEX_RESPONSE_START;
-        size_t end = response.find(DELIMITER, start);
-        // skip number of elements
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-
-        if (m_sensor_heating_mode.has_sensor())
+        if (update_sensors)
         {
-            std::string state = "";
-            int32_t value = get_number(response, start, end);
+            std::string hour;
+            std::string minute;
 
-            switch (static_cast<OperationalMode>(value))
-            {
-                case OperationalMode::AUTO:          { state = "auto";                break; }
-                case OperationalMode::SECOND_HEATER: { state = "second_heater";       break; }
-                case OperationalMode::PARTY:         { state = "party";               break; }
-                case OperationalMode::VACATION:      { state = "vacation";            break; }
-                case OperationalMode::OFF:           { state = "off";                 break; }
-                default:                             { state = std::to_string(value); break; }
-            }
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
 
-            m_sensor_heating_mode.set_state(state);
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            hour = response.substr(start, end - start);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            minute = response.substr(start, end - start);
+
+            m_sensor_hot_water_off_time_week_start_1.set_state(
+                        ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                        ((minute.length() == 1) ? '0' + minute : minute));
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            hour = response.substr(start, end - start);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            minute = response.substr(start, end - start);
+
+            m_sensor_hot_water_off_time_week_end_1.set_state(
+                        ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                        ((minute.length() == 1) ? '0' + minute : minute));
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            hour = response.substr(start, end - start);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            minute = response.substr(start, end - start);
+
+            m_sensor_hot_water_off_time_week_start_2.set_state(
+                        ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                        ((minute.length() == 1) ? '0' + minute : minute));
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            hour = response.substr(start, end - start);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            minute = response.substr(start, end - start);
+
+            m_sensor_hot_water_off_time_week_end_2.set_state(
+                        ((hour.length() == 1) ? '0' + hour : hour) + ':' +
+                        ((minute.length() == 1) ? '0' + minute : minute));
         }
 
         next_dataset();
     }
 
-    void Luxtronik::parse_hot_water_config(const std::string& response)
+    void Luxtronik::parse_heating_curves(const std::string& response, bool update_sensors)
     {
         accept_response();
 
-        size_t start = INDEX_RESPONSE_START;
-        size_t end = response.find(DELIMITER, start);
-        // skip number of elements
+        if (update_sensors)
+        {
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
 
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-        m_sensor_hot_water_set_temperature.set_state(response, start, end);
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_hc_return_offset.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_hc_endpoint.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_hc_parallel_shift.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_hc_night_setback.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_hc_constant_return.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_endpoint.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_parallel_shift.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_night_setback.set_state(response, start, end);
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_heating_curve_mc1_constant_flow.set_state(response, start, end);
+        }
 
         next_dataset();
     }
 
-    void Luxtronik::parse_hot_water_mode(const std::string& response)
+    void Luxtronik::parse_heating_mode(const std::string& response, bool update_sensors)
     {
         accept_response();
 
-        size_t start = INDEX_RESPONSE_START;
-        size_t end = response.find(DELIMITER, start);
-        // skip number of elements
-
-        start = end + 1;
-        end = response.find(DELIMITER, start);
-
-        if (m_sensor_hot_water_mode.has_sensor())
+        if (update_sensors)
         {
-            std::string state = "";
-            int32_t value = get_number(response, start, end);
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
 
-            switch (static_cast<OperationalMode>(value))
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+
+            if (m_sensor_heating_mode.has_sensor())
             {
-                case OperationalMode::AUTO:          { state = "auto";                break; }
-                case OperationalMode::SECOND_HEATER: { state = "second_heater";       break; }
-                case OperationalMode::PARTY:         { state = "party";               break; }
-                case OperationalMode::VACATION:      { state = "vacation";            break; }
-                case OperationalMode::OFF:           { state = "off";                 break; }
-                default:                             { state = std::to_string(value); break; }
-            }
+                std::string state = "";
+                int32_t value = get_number(response, start, end);
 
-            m_sensor_hot_water_mode.set_state(state);
+                switch (static_cast<OperationalMode>(value))
+                {
+                    case OperationalMode::AUTO:          { state = "auto";                break; }
+                    case OperationalMode::SECOND_HEATER: { state = "second_heater";       break; }
+                    case OperationalMode::PARTY:         { state = "party";               break; }
+                    case OperationalMode::VACATION:      { state = "vacation";            break; }
+                    case OperationalMode::OFF:           { state = "off";                 break; }
+                    default:                             { state = std::to_string(value); break; }
+                }
+
+                m_sensor_heating_mode.set_state(state);
+            }
+        }
+
+        next_dataset();
+    }
+
+    void Luxtronik::parse_hot_water_config(const std::string& response, bool update_sensors)
+    {
+        accept_response();
+
+        if (update_sensors)
+        {
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+            m_sensor_hot_water_set_temperature.set_state(response, start, end);
+        }
+
+        next_dataset();
+    }
+
+    void Luxtronik::parse_hot_water_mode(const std::string& response, bool update_sensors)
+    {
+        accept_response();
+
+        if (update_sensors)
+        {
+            size_t start = INDEX_RESPONSE_START;
+            size_t end = response.find(DELIMITER, start);
+            // skip number of elements
+
+            start = end + 1;
+            end = response.find(DELIMITER, start);
+
+            if (m_sensor_hot_water_mode.has_sensor())
+            {
+                std::string state = "";
+                int32_t value = get_number(response, start, end);
+
+                switch (static_cast<OperationalMode>(value))
+                {
+                    case OperationalMode::AUTO:          { state = "auto";                break; }
+                    case OperationalMode::SECOND_HEATER: { state = "second_heater";       break; }
+                    case OperationalMode::PARTY:         { state = "party";               break; }
+                    case OperationalMode::VACATION:      { state = "vacation";            break; }
+                    case OperationalMode::OFF:           { state = "off";                 break; }
+                    default:                             { state = std::to_string(value); break; }
+                }
+
+                m_sensor_hot_water_mode.set_state(state);
+            }
         }
 
         next_dataset();
@@ -1353,13 +1368,13 @@ namespace esphome::luxtronik_v1
             m_request_queue.push_back(TYPE_HOT_WATER_OFF_TIMES_WEEK_CONFIG);
             m_request_queue.push_back(
                                 std::string(TYPE_HOT_WATER_OFF_TIMES_WEEK_CONFIG) + ";8;" +
-                                std::to_string(static_cast<int32_t>(start_1_hour)) + ";" +
-                                std::to_string(static_cast<int32_t>(start_1_minute)) + ";" +
-                                std::to_string(static_cast<int32_t>(end_1_hour)) + ";" +
-                                std::to_string(static_cast<int32_t>(end_1_minute)) + ";" +
-                                std::to_string(static_cast<int32_t>(start_2_hour)) + ";" +
-                                std::to_string(static_cast<int32_t>(start_2_minute)) + ";" +
-                                std::to_string(static_cast<int32_t>(end_2_hour)) + ";" +
+                                std::to_string(static_cast<int32_t>(start_1_hour)) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(start_1_minute)) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(end_1_hour)) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(end_1_minute)) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(start_2_hour)) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(start_2_minute)) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(end_2_hour)) + DELIMITER +
                                 std::to_string(static_cast<int32_t>(end_2_minute)));
             m_request_queue.push_back(TYPE_STORE_CONFIG);
 
@@ -1430,14 +1445,14 @@ namespace esphome::luxtronik_v1
             m_request_queue.push_back(TYPE_HEATING_CURVES_CONFIG);
             m_request_queue.push_back(
                                 std::string(TYPE_HEATING_CURVES_CONFIG) + ";9;" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.hc_return_offset * 10))) + ";" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.hc_endpoint * 10))) + ";" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.hc_parallel_shift * 10))) + ";" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.hc_night_setback * 10))) + ";" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.hc_const_return * 10))) + ";" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_endpoint * 10))) + ";" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_parallel_shift * 10))) + ";" +
-                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_night_setback * 10))) + ";" +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_return_offset * 10))) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_endpoint * 10))) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_parallel_shift * 10))) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_night_setback * 10))) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(std::floor(value.hc_const_return * 10))) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_endpoint * 10))) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_parallel_shift * 10))) + DELIMITER +
+                                std::to_string(static_cast<int32_t>(std::floor(value.mc1_night_setback * 10))) + DELIMITER +
                                 std::to_string(static_cast<int32_t>(std::floor(value.mc1_const_flow * 10))));
             m_request_queue.push_back(TYPE_STORE_CONFIG);
 
