@@ -247,16 +247,7 @@ namespace esphome::luxtronik_v1
         m_sensor_device_communication.set_state(m_lost_response);
         m_lost_response = false;
 
-        // push all configured periodic datasets into the queue
-        for (const char* dataset : m_dataset_list)
-        {
-            m_request_queue.push_back(dataset);
-        }
-
-        if (!m_timer.is_running())
-        {
-            request_data();
-        }
+        request_datasets();
     }
 
     void Luxtronik::loop()
@@ -437,6 +428,20 @@ namespace esphome::luxtronik_v1
         LOG_STRING_SENSOR("Hot Water Off-Time Week End 1 Sensor", m_sensor_hot_water_off_time_week_end_1);
         LOG_STRING_SENSOR("Hot Water Off-Time Week Start 2 Sensor", m_sensor_hot_water_off_time_week_start_2);
         LOG_STRING_SENSOR("Hot Water Off-Time Week End 2 Sensor", m_sensor_hot_water_off_time_week_end_2);
+    }
+
+    void Luxtronik::request_datasets()
+    {
+        // push all configured periodic datasets into the queue
+        for (const char* dataset : m_dataset_list)
+        {
+            m_request_queue.push_back(dataset);
+        }
+
+        if (!m_timer.is_running())
+        {
+            request_data();
+        }
     }
 
     void Luxtronik::add_dataset(const char* code)
@@ -650,6 +655,7 @@ namespace esphome::luxtronik_v1
             std::string cmd = response.substr(start, end - start);
             ESP_LOGW(TAG, "Request refused:  REQ %s", cmd.c_str());
 
+            m_lost_response = true;
             next_dataset();
         }
         else if (starts_with(response, TYPE_NACK_779))
@@ -665,6 +671,10 @@ namespace esphome::luxtronik_v1
             // try again to exit config mode
             m_request_queue.push_front(TYPE_STORE_CONFIG);
             request_data();
+        }
+        else
+        {
+            ESP_LOGW(TAG, "Unsupported response from Luxtronik:  DATA %s", response.c_str());
         }
     }
 

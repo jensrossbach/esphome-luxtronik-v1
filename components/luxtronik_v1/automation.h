@@ -33,6 +33,23 @@
 
 namespace esphome::luxtronik_v1
 {
+    template<typename... Ts> class RequestDatasetsAction : public Action<Ts...>
+    {
+    public:
+        RequestDatasetsAction(Luxtronik *luxtronik)
+            : m_luxtronik(luxtronik)
+        {
+        }
+
+        void play(Ts... x) override
+        {
+            m_luxtronik->request_datasets();
+        }
+
+    protected:
+        Luxtronik *m_luxtronik;
+    };
+
     template<typename... Ts> class SetOperationalModeAction : public Action<Ts...>
     {
     public:

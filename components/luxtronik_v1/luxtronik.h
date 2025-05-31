@@ -95,6 +95,8 @@ namespace esphome::luxtronik_v1
         void loop() override;
         void dump_config() override;
 
+        void request_datasets();
+
         void add_dataset(const char* code);
         void set_operational_mode(OperationalModeType type, uint8_t value);
         void set_hot_water_set_temperature(float value);

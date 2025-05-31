@@ -70,6 +70,8 @@ TYPE_HOT_WATER_MODE = 1
 
 luxtronik_ns = cg.esphome_ns.namespace("luxtronik_v1")
 Luxtronik = luxtronik_ns.class_("Luxtronik", cg.PollingComponent)
+
+RequestDatasetsAction = luxtronik_ns.class_("RequestDatasetsAction", automation.Action)
 SetOperationalModeAction = luxtronik_ns.class_("SetOperationalModeAction", automation.Action)
 SetHotWaterSetTemperatureAction = luxtronik_ns.class_("SetHotWaterSetTemperatureAction", automation.Action)
 SetHotWaterOffTimesWeekAction = luxtronik_ns.class_("SetHotWaterOffTimesWeekAction", automation.Action)
@@ -113,6 +115,19 @@ async def to_code(config):
 
     for ds in config[CONF_INCLUDE_DATASETS]:
         cg.add(cmp.add_dataset(str(ds)))
+
+@automation.register_action(
+    "luxtronik_v1.request_datasets",
+    RequestDatasetsAction,
+    cv.Schema(
+    {
+        cv.Required(CONF_ID): cv.use_id(Luxtronik)
+    }))
+async def request_datasets_action_to_code(config, action_id, template_arg, args):
+    parent = await cg.get_variable(config[CONF_ID])
+    act = cg.new_Pvariable(action_id, template_arg, parent)
+
+    return act
 
 @automation.register_action(
     "luxtronik_v1.set_heating_mode",
