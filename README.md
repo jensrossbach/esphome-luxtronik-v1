@@ -532,7 +532,14 @@ datetime:
 ```
 
 ### Aktionen
-Die Luxtronik-Plattform stellt verschiedene Aktionen zur Verfügung, um die Luxtronik Heizungssteuerung zu programmieren.
+Die Luxtronik-Plattform stellt verschiedene Aktionen zur Verfügung, um das Verhalten zu steuern oder die Luxtronik Heizungssteuerung zu programmieren.
+
+#### Datensätze explizit anfragen
+| Aktion | Beschreibung |
+| ------ | ------------ |
+| `luxtronik_v1.request_datasets` | Fragt alle konfigurierten Datensätze an |
+
+Diese diagnostische Aktion kann verwendet werden, um abseits der regulären Aktualisierungsintervalle die konfigurierten Datensätze explizit anzufragen.
 
 #### Betriebsart der Heizung setzen
 | Aktion | Beschreibung |
@@ -1172,7 +1179,14 @@ datetime:
 ```
 
 ### Actions
-The Luxtronik platform provides various actions for programming the Luxtronik heating control unit.
+The Luxtronik platform provides various actions for controlling the behavior or programming the Luxtronik heating control unit.
+
+#### Explicitly request Data Sets
+| Aktion | Beschreibung |
+| ------ | ------------ |
+| `luxtronik_v1.request_datasets` | Requests all configured data sets |
+
+This diagnostic action can be used to explicitly request the configured data sets apart from the regular update intervals.
 
 #### Set Heating Mode
 | Action | Description |
