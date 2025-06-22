@@ -1,0 +1,70 @@
+name: Problem Report
+description: Create a report to help improve the software
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this bug report.
+  - type: textarea
+    attributes:
+      label: Current behavior
+      description: A concise description of what you're experiencing
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: A concise description of what you expected to happen
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the observed behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Logs
+      description: Logs on debug level or higher to help analyze your problem
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Configuration
+      description: YAML configuration of your ESPHome firmware
+      render: yaml
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: ESPHome version
+      description: |
+        Version of the ESPHome platform used, e.g., 2025.5
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Luxtronik V1 version
+      description: |
+        Version of the Luxtronik V1 platform used, e.g., 1.4.2
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Microcontroller type
+      description: |
+        Type of the microcontroller used, e.g., ESP32, ESP8266
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Add any other information about the problem here
+    validations:
+      required: false
