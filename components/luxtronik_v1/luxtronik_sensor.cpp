@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024-2025 Jens-Uwe Rossbach
+ * Copyright (c) 2024-2026 Jens-Uwe Rossbach
  *
  * This code is licensed under the MIT License.
  *
@@ -60,7 +60,7 @@ namespace esphome::luxtronik_v1
         if (m_sensor != nullptr)
         {
             m_task_handler.enqueue_task(std::bind(
-                                &text_sensor::TextSensor::publish_state,
+                                static_cast<void (text_sensor::TextSensor::*)(const std::string&)>(&text_sensor::TextSensor::publish_state),
                                 m_sensor, input_str));
         }
 #endif
@@ -72,7 +72,7 @@ namespace esphome::luxtronik_v1
         if (m_sensor != nullptr)
         {
             m_task_handler.enqueue_task(std::bind(
-                                &text_sensor::TextSensor::publish_state,
+                                static_cast<void (text_sensor::TextSensor::*)(const std::string&)>(&text_sensor::TextSensor::publish_state),
                                 m_sensor, input_str.substr(start, end - start)));
         }
 #endif
@@ -116,7 +116,7 @@ namespace esphome::luxtronik_v1
             }
 
             m_task_handler.enqueue_task(std::bind(
-                                &text_sensor::TextSensor::publish_state,
+                                static_cast<void (text_sensor::TextSensor::*)(const std::string&)>(&text_sensor::TextSensor::publish_state),
                                 m_sensor, std::move(state)));
         }
 #endif

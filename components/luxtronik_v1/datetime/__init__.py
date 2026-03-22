@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Jens-Uwe Rossbach
+# Copyright (c) 2025-2026 Jens-Uwe Rossbach
 #
 # This code is licensed under the MIT License.
 #
@@ -27,7 +27,8 @@ import esphome.config_validation as cv
 from esphome            import automation
 from esphome.components import datetime, switch, text_sensor
 from esphome.const      import (
-    CONF_SET_ACTION
+    CONF_SET_ACTION,
+    ENTITY_CATEGORY_CONFIG
 )
 from ..                 import (
     luxtronik_ns,
@@ -37,19 +38,19 @@ from ..                 import (
 
 
 LuxtronikTime = luxtronik_ns.class_("LuxtronikTime", datetime.TimeEntity)
-EntityCategory = cg.global_ns.enum("esphome::EntityCategory")
 
 CONFIG_SCHEMA = datetime.time_schema(LuxtronikTime).extend(
 {
     cv.Optional(CONF_SET_ACTION): automation.validate_automation(single = True),
     cv.Optional(CONF_DATA_SOURCE): cv.use_id(text_sensor.TextSensor),
     cv.Optional(CONF_EDIT_MODE_SWITCH): cv.use_id(switch.Switch)
-})
+}).extend(cv.ENTITY_BASE_SCHEMA.extend({
+    cv.Optional("entity_category", default=ENTITY_CATEGORY_CONFIG): cv.entity_category,
+}))
 
 
 async def to_code(config):
     tim = await datetime.new_datetime(config)
-    cg.add(tim.set_entity_category(EntityCategory.ENTITY_CATEGORY_CONFIG))
 
     if CONF_DATA_SOURCE in config:
         sns = await cg.get_variable(config[CONF_DATA_SOURCE])
