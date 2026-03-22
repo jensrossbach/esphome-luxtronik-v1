@@ -1,4 +1,4 @@
-# Copyright (c) 2024-2025 Jens-Uwe Rossbach
+# Copyright (c) 2024-2026 Jens-Uwe Rossbach
 #
 # This code is licensed under the MIT License.
 #
@@ -122,7 +122,8 @@ async def to_code(config):
     cv.Schema(
     {
         cv.Required(CONF_ID): cv.use_id(Luxtronik)
-    }))
+    }),
+    synchronous = True)
 async def request_datasets_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent)
@@ -132,7 +133,8 @@ async def request_datasets_action_to_code(config, action_id, template_arg, args)
 @automation.register_action(
     "luxtronik_v1.set_heating_mode",
     SetOperationalModeAction,
-    SET_OPERATIONAL_MODE_SCHEMA)
+    SET_OPERATIONAL_MODE_SCHEMA,
+    synchronous = True)
 async def set_heating_mode_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent, TYPE_HEATING_MODE)
@@ -145,7 +147,8 @@ async def set_heating_mode_action_to_code(config, action_id, template_arg, args)
 @automation.register_action(
     "luxtronik_v1.set_hot_water_mode",
     SetOperationalModeAction,
-    SET_OPERATIONAL_MODE_SCHEMA)
+    SET_OPERATIONAL_MODE_SCHEMA,
+    synchronous = True)
 async def set_hot_water_mode_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent, TYPE_HOT_WATER_MODE)
@@ -162,7 +165,8 @@ async def set_hot_water_mode_action_to_code(config, action_id, template_arg, arg
     {
         cv.Required(CONF_ID): cv.use_id(Luxtronik),
         cv.Required(CONF_VALUE): cv.templatable(cv.float_range(min = 30.0, max = 65.0))
-    }))
+    }),
+    synchronous = True)
 async def set_hot_water_set_temperature_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent)
@@ -186,7 +190,8 @@ async def set_hot_water_set_temperature_action_to_code(config, action_id, templa
         cv.Required(CONF_START_2_MINUTE): cv.templatable(cv.int_range(min = 0, max = 59)),
         cv.Required(CONF_END_2_HOUR): cv.templatable(cv.int_range(min = 0, max = 23)),
         cv.Required(CONF_END_2_MINUTE): cv.templatable(cv.int_range(min = 0, max = 59))
-    }))
+    }),
+    synchronous = True)
 async def set_heating_curves_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent)
@@ -225,7 +230,8 @@ async def set_heating_curves_action_to_code(config, action_id, template_arg, arg
         cv.Optional(CONF_MC1_PARALLEL_SHIFT): cv.templatable(cv.positive_float),
         cv.Optional(CONF_MC1_NIGHT_SETBACK): cv.templatable(cv.float_range(max = 0.0)),
         cv.Optional(CONF_MC1_CONST_FLOW): cv.templatable(cv.positive_float)
-    }))
+    }),
+    synchronous = True)
 async def set_heating_curves_action_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Jens-Uwe Rossbach
+ * Copyright (c) 2025-2026 Jens-Uwe Rossbach
  *
  * This code is licensed under the MIT License.
  *
@@ -41,7 +41,7 @@ namespace esphome::luxtronik_v1
         {
         }
 
-        void play(Ts... x) override
+        void play(const Ts&... x) override
         {
             m_luxtronik->request_datasets();
         }
@@ -60,7 +60,7 @@ namespace esphome::luxtronik_v1
         {
         }
 
-        void play(Ts... x) override
+        void play(const Ts&... x) override
         {
             m_luxtronik->set_operational_mode(m_mode_type, m_operational_mode_value.value(x...));
         }
@@ -85,7 +85,7 @@ namespace esphome::luxtronik_v1
         {
         }
 
-        void play(Ts... x) override
+        void play(const Ts&... x) override
         {
             m_luxtronik->set_hot_water_set_temperature(m_set_temperature_value.value(x...));
         }
@@ -116,7 +116,7 @@ namespace esphome::luxtronik_v1
         {
         }
 
-        void play(Ts... x) override
+        void play(const Ts&... x) override
         {
             m_luxtronik->set_hot_water_off_times_week(
                             m_start_1_hour_value.value(x...),
@@ -198,7 +198,7 @@ namespace esphome::luxtronik_v1
         {
         }
 
-        void play(Ts... x) override
+        void play(const Ts&... x) override
         {
             Luxtronik::HeatingCurves heating_curves;
             heating_curves.hc_return_offset_avail = m_hc_return_offset_value.has_value();
