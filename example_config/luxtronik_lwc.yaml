@@ -13,6 +13,8 @@ esphome:
 # example ESP32 firmware (can be replaced by appropriate configuration)
 esp32:
   board: nodemcu-32s
+  framework:
+    type: esp-idf
 
 # include Luxtronik V1 component (mandatory)
 external_components:
