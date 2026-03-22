@@ -477,14 +477,20 @@ namespace esphome::luxtronik_v1
 
             m_timer.schedule(
                         std::chrono::milliseconds(m_response_timeout),
-                        [this]() { handle_timeout(); });
+                        [this]()
+                        {
+                            ESP_LOGW(
+                                TAG,
+                                "No response from Luxtronik within %u ms:  REQ %s",
+                                m_response_timeout,
+                                m_request_queue.front().c_str());
+                            retry_request();
+                        });
         }
     }
 
-    void Luxtronik::handle_timeout()
+    void Luxtronik::retry_request()
     {
-        ESP_LOGW(TAG, "No response from Luxtronik within %u ms:  REQ %s", m_response_timeout, m_request_queue.front().c_str());
-
         if (++m_retry_count > m_max_retries)
         {
             ESP_LOGW(TAG, "Maximum number of retries reached, skipping data set");
@@ -655,8 +661,8 @@ namespace esphome::luxtronik_v1
             std::string cmd = response.substr(start, end - start);
             ESP_LOGW(TAG, "Request refused:  REQ %s", cmd.c_str());
 
-            m_lost_response = true;
-            next_dataset();
+            // possibly try again
+            retry_request();
         }
         else if (starts_with(response, TYPE_NACK_779))
         {
