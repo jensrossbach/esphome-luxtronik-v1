@@ -139,7 +139,7 @@ async def set_heating_mode_action_to_code(config, action_id, template_arg, args)
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent, TYPE_HEATING_MODE)
 
-    tmpl = await cg.templatable(config[CONF_MODE], args, int)
+    tmpl = await cg.templatable(config[CONF_MODE], args, cg.uint8)
     cg.add(act.set_operational_mode_value(tmpl))
 
     return act
@@ -153,7 +153,7 @@ async def set_hot_water_mode_action_to_code(config, action_id, template_arg, arg
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent, TYPE_HOT_WATER_MODE)
 
-    tmpl = await cg.templatable(config[CONF_MODE], args, int)
+    tmpl = await cg.templatable(config[CONF_MODE], args, cg.uint8)
     cg.add(act.set_operational_mode_value(tmpl))
 
     return act
@@ -196,21 +196,21 @@ async def set_heating_curves_action_to_code(config, action_id, template_arg, arg
     parent = await cg.get_variable(config[CONF_ID])
     act = cg.new_Pvariable(action_id, template_arg, parent)
 
-    tmpl = await cg.templatable(config[CONF_START_1_HOUR], args, int)
+    tmpl = await cg.templatable(config[CONF_START_1_HOUR], args, cg.uint8)
     cg.add(act.set_start_1_hour_value(tmpl))
-    tmpl = await cg.templatable(config[CONF_START_1_MINUTE], args, int)
+    tmpl = await cg.templatable(config[CONF_START_1_MINUTE], args, cg.uint8)
     cg.add(act.set_start_1_minute_value(tmpl))
-    tmpl = await cg.templatable(config[CONF_END_1_HOUR], args, int)
+    tmpl = await cg.templatable(config[CONF_END_1_HOUR], args, cg.uint8)
     cg.add(act.set_end_1_hour_value(tmpl))
-    tmpl = await cg.templatable(config[CONF_END_1_MINUTE], args, int)
+    tmpl = await cg.templatable(config[CONF_END_1_MINUTE], args, cg.uint8)
     cg.add(act.set_end_1_minute_value(tmpl))
-    tmpl = await cg.templatable(config[CONF_START_2_HOUR], args, int)
+    tmpl = await cg.templatable(config[CONF_START_2_HOUR], args, cg.uint8)
     cg.add(act.set_start_2_hour_value(tmpl))
-    tmpl = await cg.templatable(config[CONF_START_2_MINUTE], args, int)
+    tmpl = await cg.templatable(config[CONF_START_2_MINUTE], args, cg.uint8)
     cg.add(act.set_start_2_minute_value(tmpl))
-    tmpl = await cg.templatable(config[CONF_END_2_HOUR], args, int)
+    tmpl = await cg.templatable(config[CONF_END_2_HOUR], args, cg.uint8)
     cg.add(act.set_end_2_hour_value(tmpl))
-    tmpl = await cg.templatable(config[CONF_END_2_MINUTE], args, int)
+    tmpl = await cg.templatable(config[CONF_END_2_MINUTE], args, cg.uint8)
     cg.add(act.set_end_2_minute_value(tmpl))
 
     return act
