@@ -60,6 +60,15 @@ namespace esphome::luxtronik_v1
             HOT_WATER = 1
         };
 
+        enum class OperationalMode : uint8_t
+        {
+            AUTO          = 0,
+            SECOND_HEATER = 1,
+            PARTY         = 2,
+            VACATION      = 3,
+            OFF           = 4
+        };
+
         struct HeatingCurves
         {
             bool hc_return_offset_avail;
@@ -197,6 +206,11 @@ namespace esphome::luxtronik_v1
         void set_sensor_operating_hours_secondary_heater_2(text_sensor::TextSensor* sensor, int32_t format)  { m_sensor_operating_hours_secondary_heater_2.set_sensor(sensor, format);  }
         void set_sensor_operating_hours_heat_pump(text_sensor::TextSensor* sensor, int32_t format)           { m_sensor_operating_hours_heat_pump.set_sensor(sensor, format);           }
 #endif
+
+        TemperatureSensor& get_hot_water_temperature_sensor()     { return m_sensor_hot_water_temperature;     }
+        TemperatureSensor& get_hot_water_set_temperature_sensor() { return m_sensor_hot_water_set_temperature; }
+        StringSensor&      get_hot_water_mode_sensor()            { return m_sensor_hot_water_mode;            }
+        StringSensor&      get_operational_state_sensor()         { return m_sensor_operational_state;         }
 
     private:
         void next_dataset();
