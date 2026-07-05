@@ -539,3 +539,14 @@ button:
           mc1_const_flow: !lambda "return id(target_heating_curve_mc1_constant_flow).state;"
       - switch.turn_off:
           id: heating_curves_edit_mode
+
+climate:
+  - platform: luxtronik_v1
+    id: hwp_climate
+    name: "Warmwasserzubereitung"
+    visual:
+      min_temperature: 30
+      max_temperature: 65
+      temperature_step:
+        target_temperature: 0.5
+        current_temperature: 0.1

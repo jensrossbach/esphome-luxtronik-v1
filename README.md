@@ -531,6 +531,28 @@ datetime:
     edit_mode_switch: hot_water_off_times_week_edit_mode
 ```
 
+#### Klima-Komponente
+Die Luxtronik Klima-Komponente kann zur Steuerung der Brauchwarmwasserzubereitung verwendet werden und ermöglicht es, die Brauchwarmwasserzubereitung über eine Thermostat-ähnliche Benutzeroberfläche zu bedienen.
+
+Alle Eigenschaften der [Klima-Komponente](https://esphome.io/components/climate) können konfiguriert werden, lediglich die Wertebereiche für `visual.min_temperature` und `visual.max_temperature` sind auf die Bereiche `30.0` .. `50.0` und `45.0` bis `65.0` eingeschränkt.
+
+> [!TIP]
+> Die Luxtronik Klima-Komponente verwendet die Sensoren `hot_water_temperature`, `hot_water_set_temperature`, `hot_water_mode` und `operational_state`. Um eine reibungslose Funktion der Komponente zu ermöglichen, müssen daher die genannten Sensoren konfiguriert sein. Solltest du einzelne dieser Sensoren in deiner Hausautomatisierungs-Software nicht benötigen, deklariere sie in diesem Fall als "intern" statt sie aus der Konfiguration zu löschen (siehe Konfigurationsvariable `internal` in der Dokumentation der [ESPHome Sensorkomponenten](https://www.esphome.io/components/sensor)).
+
+##### Beispiel
+```yaml
+climate:
+  - platform: luxtronik_v1
+    id: hot_water
+    name: Brauchwarmwasserzubereitung
+    visual:
+      min_temperature: 30.0
+      max_temperature: 65.0
+      temperature_step:
+        target_temperature: 0.5
+        current_temperature: 0.1
+```
+
 ### Aktionen
 Die Luxtronik-Plattform stellt verschiedene Aktionen zur Verfügung, um das Verhalten zu steuern oder die Luxtronik Heizungssteuerung zu programmieren.
 
@@ -1176,6 +1198,28 @@ datetime:
     name: Tägliche Sperrzeit Brauchwarmwasser 1 Beginn
     data_source: current_hot_water_off_time_week_start_1
     edit_mode_switch: hot_water_off_times_week_edit_mode
+```
+
+#### Climate Component
+The Luxtronik climate component can be used to control domestic hot water production and allows you to operate the domestic hot water system via a thermostat-like user interface.
+
+All properties of the [climate component](https://esphome.io/components/climate) can be configured; only the value ranges for `visual.min_temperature` and `visual.max_temperature` are restricted to the ranges `30.0` .. `50.0` and `45.0` to `65.0`, respectively.
+
+> [!TIP]
+> The Luxtronik Climate component uses the sensors `hot_water_temperature`, `hot_water_set_temperature`, `hot_water_mode`, and `operational_state`. To ensure the component functions properly, these sensors must be configured. If you do not need any of these sensors in your home automation software, declare them as “internal” instead of deleting them from the configuration (see the `internal` configuration variable in the documentation for the [ESPHome sensor components](https://www.esphome.io/components/sensor)).
+
+##### Example
+```yaml
+climate:
+  - platform: luxtronik_v1
+    id: hot_water
+    name: Domestic Hot Water System
+    visual:
+      min_temperature: 30.0
+      max_temperature: 65.0
+      temperature_step:
+        target_temperature: 0.5
+        current_temperature: 0.1
 ```
 
 ### Actions

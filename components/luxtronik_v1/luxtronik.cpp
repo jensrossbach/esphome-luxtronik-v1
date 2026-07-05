@@ -119,15 +119,6 @@ namespace esphome::luxtronik_v1
         STANDBY       = 5
     };
 
-    enum class OperationalMode : uint8_t
-    {
-        AUTO          = 0,
-        SECOND_HEATER = 1,
-        PARTY         = 2,
-        VACATION      = 3,
-        OFF           = 4
-    };
-
     Luxtronik::Luxtronik(
                     uart::UARTComponent* uart,
                     uint16_t request_delay,
