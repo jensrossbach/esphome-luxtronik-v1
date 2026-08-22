@@ -151,7 +151,7 @@ uart:
 ```
 
 ### Time-Komponente
-Eine [Time-Komponente](https://www.esphome.io/components/time) ist nicht unbedingt erforderlich, wird aber empfohlen, wenn du die Fehler- und Abschaltungssensoren verwenden möchtest. Diese Sensoren liefern Zeitstempel, und damit die richtige Zeitzone verwendet wird, muss eine Time-Komponente hinzugefügt werden.
+Eine [Time-Komponente](https://www.esphome.io/components/time) ist nicht unbedingt erforderlich, wird aber empfohlen, wenn du die Fehler- und Abschaltungssensoren verwenden möchtest. Diese Sensoren liefern Zeitstempel und die Time-Komponente stellt sicher, dass die Zeitstempel der Luxtronik Heizungssteuerung anhand der richtigen Zeitzone interpretiert werden.
 
 ##### Beispiel
 Nachfolgend ein Beispiel, das Home Assistant als Zeitquelle verwendet:
@@ -334,6 +334,9 @@ Die folgenden Textsensoren können konfiguriert werden:
 | `hot_water_off_time_week_end_2` | - | 3200 | Tägliche Sperrzeit Brauchwarmwasser 2 Ende |
 
 Detaillierte Informationen zu den Konfigurationsmöglichkeiten der einzelnen Elemente findest du in der Dokumentation der [ESPHome Textsensorkomponenten](https://www.esphome.io/components/text_sensor).
+
+> [!NOTE]
+> Alle Sensoren mit Zeitstempeln enthalten die Zeit als ISO-8601-Zeichenkette in koordinierter Weltzeit (UTC).
 
 Einige der Textsensoren liefern einen festen Satz an vordefinierten Werten. Diese Werte können mit einem Lookup-Filter in übersetzten Text umgewandelt werden. Die möglichen Werte werden im Folgenden beschrieben.
 
@@ -821,7 +824,7 @@ uart:
 ```
 
 ### Time Component
-A [time component](https://www.esphome.io/components/time) is not strictly required but it is recommended in case you want to use the error and deactivation sensors. These sensors provide timestamps and to have the correct time zone applied, a time component has to be added.
+A [time component](https://www.esphome.io/components/time) is not strictly required but it is recommended in case you want to use the error and deactivation sensors. These sensors provide timestamps and the time component ensures that the timestamps from the Luxtronik heating control unit are interpreted in the correct timezone.
 
 ##### Example
 See below example which uses Home Assistant as time source:
@@ -1004,6 +1007,9 @@ The following text sensors can be configured:
 | `hot_water_off_time_week_end_2` | - | 3200 |  Daily off-time hot water 2 end |
 
 For detailed configuration options of each item, please refer to ESPHome [text sensor component configuration](https://www.esphome.io/components/text_sensor).
+
+> [!NOTE]
+> All sensors with timestamps contain the time as ISO-8601 string in coordinated universal time (UTC).
 
 Some of the text sensors provide a fixed set of predefined values. These values can be mapped to translated text using a [lookup filter](https://www.esphome.io/components/text_sensor/#map). The possible values are described below.
 

@@ -24,6 +24,7 @@
 
 
 #include "luxtronik.h"
+#include "esphome/core/time.h"
 #include "esphome/core/log.h"
 
 #include <chrono>
@@ -1244,33 +1245,38 @@ namespace esphome::luxtronik_v1
 
         if (sensor_time.has_sensor())
         {
-            std::tm time = {};
+            ESPTime time{};
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            time.tm_mday = get_number(slot, start, end);
+            time.day_of_month = get_number(slot, start, end);
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            time.tm_mon = get_number(slot, start, end) - 1;  // convert from range 1-12 to range 0-11
+            time.month = get_number(slot, start, end);
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            time.tm_year = get_number(slot, start, end) + 100;  // convert from years since 2000 to years since 1900
+            time.year = get_number(slot, start, end) + 2000;
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            time.tm_hour = get_number(slot, start, end);
+            time.hour = get_number(slot, start, end);
 
             start = end + 1;
             end = slot.find(DELIMITER, start);
-            time.tm_min = get_number(slot, start, end);
+            time.minute = get_number(slot, start, end);
 
-            time.tm_isdst = -1;  // auto-detect daylight saving time
-            std::mktime(&time);  // convert to universal time
+            time.recalc_timestamp_local();
 
-            char state[] = "yyyy-mm-ddThh:mm+zzzz";
-            std::strftime(state, sizeof(state), "%Y-%m-%dT%H:%M%z", &time);
+            ESPTime utc_time = ESPTime::from_epoch_utc(time.timestamp);
+            if (!utc_time.is_valid())
+            {
+                return;
+            }
+
+            char state[] = "yyyy-mm-ddThh:mmZ";
+            utc_time.strftime(state, sizeof(state), "%Y-%m-%dT%H:%MZ");
 
             sensor_time.set_state(state);
         }
